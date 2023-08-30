@@ -1,0 +1,42 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SensorType {
+  BME68X
+}
+
+model Sensor {
+  id                Int                   @id @default(autoincrement())
+
+  name              String                @unique @db.VarChar(50)
+  type              SensorType
+  secret            String                @unique
+
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+
+  bme68XData        BME68XSensorData[]
+}
+
+model BME68XSensorData {
+  id                Int                   @id @default(autoincrement())
+  
+  temperature       Float         
+  humidity          Float
+  pressure          Float
+  gasResistance     Float
+  batteryPercentage Int               
+
+  sensorId          Int
+  sensor            Sensor                @relation(fields: [sensorId], references: [id])
+  createdAt         DateTime              @default(now())
+}

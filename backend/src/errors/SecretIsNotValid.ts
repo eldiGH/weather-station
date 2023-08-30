@@ -1,0 +1,7 @@
+import { ApiErrorCode, HttpStatus, type ApiError } from '../types';
+
+export const SecretIsNotValid = (): ApiError => ({
+  errorCode: ApiErrorCode.SECRET_IS_NOT_VALID,
+  httpStatus: HttpStatus.BAD_REQUEST,
+  message: `Provided secret is not valid`
+});

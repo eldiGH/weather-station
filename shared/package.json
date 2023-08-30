@@ -1,0 +1,26 @@
+{
+  "name": "shared",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "nodemon -w src -e ts --exec pnpm build",
+    "build": "tsc -p tsconfig.json"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@eldigh/tsc-watch2": "^1.0.12",
+    "eslint": "^8.48.0",
+    "eslint-config-prettier": "^8.10.0",
+    "nodemon": "^3.0.1",
+    "prettier": "^2.8.8",
+    "source-map-support": "^0.5.21",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "yup": "^1.2.0"
+  }
+}

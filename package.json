@@ -1,0 +1,25 @@
+{
+  "name": "weather-station",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "prisma": {
+    "schema": "backend/prisma/schema.prisma",
+    "seed": "node backend/prisma/seed.js"
+  },
+  "scripts": {
+    "be:dev": "pnpm --filter backend dev",
+    "be:build": "pnpm --filter backend build",
+    "be:start": "pnpm --filter backend start",
+    "fe:dev": "pnpm --filter frontend dev",
+    "fe:build": "pnpm --filter frontend build",
+    "fe:start": "pnpm --filter frontend start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^5.2.0",
+    "prisma": "^5.2.0"
+  }
+}
