@@ -8,20 +8,35 @@ export interface Controller {
   endpoints: Endpoint[];
 }
 
-export interface EndpointConfig<MySchema extends Schema = never> {
+export interface EndpointConfig<
+  BodySchema extends Schema = never,
+  ParamsSchema extends Schema = never,
+  QuerySchema extends Schema = never
+> {
   name: string;
   path: string;
   method: HttpMethods;
-  validationSchema?: MySchema;
+  bodyValidationSchema?: BodySchema;
+  paramsValidationSchema?: ParamsSchema;
+  queryValidationSchema?: QuerySchema;
 }
 
-export interface AuthEndpointConfig<MySchema extends Schema = never, Auth extends boolean = boolean>
-  extends EndpointConfig<MySchema> {
+export interface AuthEndpointConfig<
+  BodySchema extends Schema = never,
+  ParamsSchema extends Schema = never,
+  QuerySchema extends Schema = never,
+  Auth extends boolean = boolean
+> extends EndpointConfig<BodySchema, ParamsSchema, QuerySchema> {
   auth: Auth;
 }
 
-export type EndpointCallback<ReqBody = never, Auth extends boolean = boolean> = (
-  req: Req<ReqBody>,
+export type EndpointCallback<
+  Body = never,
+  Params = never,
+  Query = never,
+  Auth extends boolean = boolean
+> = (
+  req: Req<Body, Params, Query>,
   res: Res<Auth extends true ? Record<string, unknown> : Record<string, unknown>>
 ) => Promise<void>;
 

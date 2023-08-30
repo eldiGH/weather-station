@@ -2,8 +2,13 @@ import { HttpStatus } from '../types';
 import { controller, endpointFactory } from '../helpers';
 
 import { SensorService } from '../services';
-import { SensorDataNotFound } from '../errors';
-import { createSensorSchema, getLatestBME68XDataEntryMapper, postBME68XDataSchema } from 'shared';
+import {
+  createSensorSchema,
+  getLatestBME68XDataEntryMapper,
+  getSensorDataParamsSchema,
+  getSensorDataQuerySchema,
+  postBME68XDataSchema
+} from 'shared';
 
 export const SensorController = controller('/sensors');
 const endpoint = endpointFactory(SensorController);
@@ -13,7 +18,7 @@ endpoint(
     name: 'Add new sensor',
     method: 'post',
     path: '/',
-    validationSchema: createSensorSchema
+    bodyValidationSchema: createSensorSchema
   },
   async (req, res) => {
     const secret = await SensorService.addNewSensor(req.body);
@@ -27,7 +32,7 @@ endpoint(
     name: 'Post bme68X data',
     path: '/bme68X',
     method: 'post',
-    validationSchema: postBME68XDataSchema
+    bodyValidationSchema: postBME68XDataSchema
   },
   async (req, res) => {
     await SensorService.addBME68XDataEntry(req.body);
@@ -39,24 +44,32 @@ endpoint(
 endpoint(
   {
     name: 'Get latest bme68x data from sensor',
-    path: '/bme68x/:id',
-    method: 'get'
+    path: '/bme68x/:sensorId/last',
+    method: 'get',
+    paramsValidationSchema: getSensorDataParamsSchema
   },
   async (req, res) => {
-    const sensorId = (req.params as { id: number | string }).id;
+    const { sensorId } = req.params;
 
-    if (typeof sensorId !== 'string') {
-      throw SensorDataNotFound();
-    }
-
-    const parsedId = parseInt(sensorId);
-
-    if (isNaN(parsedId)) {
-      throw SensorDataNotFound();
-    }
-
-    const data = await SensorService.getLatestBME68XDataEntry(parsedId);
+    const data = await SensorService.getLatestBME68XDataEntry(sensorId);
 
     res.send(getLatestBME68XDataEntryMapper(data));
+  }
+);
+
+endpoint(
+  {
+    name: 'Get all bme68x data from sensor',
+    path: '/bme68x/:sensorId',
+    method: 'get',
+    paramsValidationSchema: getSensorDataParamsSchema,
+    queryValidationSchema: getSensorDataQuerySchema
+  },
+  async (req, res) => {
+    const { sensorId } = req.params;
+
+    const data = await SensorService.getBME68XData(sensorId, req.query);
+
+    res.send(data.map(getLatestBME68XDataEntryMapper));
   }
 );

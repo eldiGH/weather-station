@@ -8,6 +8,7 @@ import { join } from 'path';
 
 const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 const certLocation = process.env.CERT_LOCATION ?? join(__dirname, '..');
+const useHttp = process.env.HTTP === 'true';
 
 const main = async () => {
   const dbError = await testDBConnection();
@@ -26,9 +27,11 @@ const main = async () => {
       console.log(`HTTPS Server running on port ${port}`);
     });
 
-    http.createServer(app).listen(port + 1, () => {
-      console.log(`HTTP Server running on port ${port + 1}`);
-    });
+    if (useHttp) {
+      http.createServer(app).listen(port + 1, () => {
+        console.log(`HTTP Server running on port ${port + 1}`);
+      });
+    }
   } catch (e) {
     console.error(e);
   }

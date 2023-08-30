@@ -1,8 +1,13 @@
-import { SensorType } from '@prisma/client';
+import { BME68XSensorData, SensorType } from '@prisma/client';
 import { db } from '../db';
-import { SecretIsNotValid, SensorDataNotFound, SensorNameAlreadyUsed } from '../errors';
+import {
+  SecretIsNotValid,
+  SensorDataNotFound,
+  SensorNameAlreadyUsed,
+  SensorNotFound
+} from '../errors';
 import { v4 } from 'uuid';
-import { CreateSensorRequest, PostBME68XDataRequest } from 'shared';
+import { CreateSensorRequest, GetSensorDataQuery, PostBME68XDataRequest } from 'shared';
 
 const addNewSensor = async (data: CreateSensorRequest) => {
   const existingSensor = await db.sensor.findFirst({ where: { name: data.name } });
@@ -34,16 +39,53 @@ const addBME68XDataEntry = async ({ secret, ...data }: PostBME68XDataRequest) =>
 };
 
 const getLatestBME68XDataEntry = async (sensorId: number) => {
-  const data = await db.bME68XSensorData.findFirst({
-    where: { sensorId },
-    orderBy: { createdAt: 'desc' }
+  const sensor = await db.sensor.findFirst({
+    where: { id: sensorId },
+    include: { bme68XData: { orderBy: { createdAt: 'desc' }, take: 1 } }
   });
 
-  if (!data) {
+  if (!sensor) {
+    throw SensorNotFound(sensorId);
+  }
+
+  if (sensor.bme68XData.length === 0) {
     throw SensorDataNotFound();
+  }
+
+  return sensor.bme68XData[0];
+};
+
+const getBME68XData = async (sensorId: number, query: GetSensorDataQuery) => {
+  const { from, to } = query;
+
+  const sensor = await db.sensor.findFirst({
+    where: { id: sensorId }
+  });
+
+  if (!sensor) {
+    throw SensorNotFound(sensorId);
+  }
+
+  let data: BME68XSensorData[];
+
+  if (from && to) {
+    data = await db.bME68XSensorData.findMany({
+      where: { sensorId, AND: [{ createdAt: { gte: from } }, { createdAt: { lte: to } }] }
+    });
+  } else if (from) {
+    data = await db.bME68XSensorData.findMany({ where: { sensorId, createdAt: { gte: from } } });
+  } else if (to) {
+    data = await db.bME68XSensorData.findMany({ where: { sensorId, createdAt: { lte: from } } });
+  } else {
+    data = await db.bME68XSensorData.findMany({ where: { sensorId } });
   }
 
   return data;
 };
 
-export const SensorService = { addNewSensor, addBME68XDataEntry, getLatestBME68XDataEntry };
+export const SensorService = {
+  addNewSensor,
+  addBME68XDataEntry,
+  getLatestBME68XDataEntry,
+  getBME68XData
+};

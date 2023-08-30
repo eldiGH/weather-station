@@ -22,8 +22,16 @@ for (const controller of controllers) {
   for (const endpoint of controller.endpoints) {
     const middlewares: Middleware[] = [];
 
-    if (endpoint.validationSchema) {
-      middlewares.push(validationMiddlewareFactory(endpoint.validationSchema));
+    if (endpoint.paramsValidationSchema) {
+      middlewares.push(validationMiddlewareFactory(endpoint.paramsValidationSchema, 'params'));
+    }
+
+    if (endpoint.queryValidationSchema) {
+      middlewares.push(validationMiddlewareFactory(endpoint.queryValidationSchema, 'query'));
+    }
+
+    if (endpoint.bodyValidationSchema) {
+      middlewares.push(validationMiddlewareFactory(endpoint.bodyValidationSchema, 'body'));
     }
 
     controllerRouter[endpoint.method](
