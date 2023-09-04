@@ -1,21 +1,22 @@
-import type { GetBME68XDataResponse } from 'shared';
 import type { PageLoad } from './$types';
-import { subDays } from 'date-fns';
-import config from '$lib/config.json';
+import type { GetLatestBME68XDataEntryResponse } from 'shared';
+import type { ComponentProps } from 'svelte';
+import type LineChart from '$lib/components/LineChart';
+import { getBME68XData } from '$lib/api/sensors';
 
-export const load: PageLoad = async ({ fetch }): Promise<{ dataSet: GetBME68XDataResponse }> => {
-	const from = subDays(new Date(), 1);
+interface CurrentPageData extends ComponentProps<LineChart> {
+	lastSensorEntry?: GetLatestBME68XDataEntryResponse;
+}
 
-	const response = await fetch(
-		`${config.serverAddress}/sensors/bme68x/1?from=${from.toISOString()}`
-	);
+type FetchType = (input: RequestInfo | URL, init?: RequestInit | undefined) => Promise<Response>;
 
-	const data = (await response.json()) as GetBME68XDataResponse;
+const getTemperatureData = async (fetch: FetchType): Promise<CurrentPageData> => {
+	const data = await getBME68XData(fetch, 1, { fromLastDays: 1 });
 
-	return {
-		dataSet: data.map((data) => ({
-			...data,
-			createdAt: new Date(data.createdAt as unknown as string)
-		}))
-	};
+	const xAxisData = data.map(({ createdAt }) => createdAt);
+	const yAxisData = data.map(({ temperature }) => temperature);
+
+	return { config: { label: 'Temperatura', xAxisData, yAxisData }, lastSensorEntry: data.at(-1) };
 };
+
+export const load: PageLoad = async ({ fetch }) => getTemperatureData(fetch);

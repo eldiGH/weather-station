@@ -1,4 +1,4 @@
-import { BME68XSensorData, SensorType } from '@prisma/client';
+import { SensorType, Prisma } from '@prisma/client';
 import { db } from '../db';
 import {
   SecretIsNotValid,
@@ -8,6 +8,7 @@ import {
 } from '../errors';
 import { v4 } from 'uuid';
 import { CreateSensorRequest, GetSensorDataQuery, PostBME68XDataRequest } from 'shared';
+import { subDays } from 'date-fns';
 
 const addNewSensor = async (data: CreateSensorRequest) => {
   const existingSensor = await db.sensor.findFirst({ where: { name: data.name } });
@@ -56,7 +57,7 @@ const getLatestBME68XDataEntry = async (sensorId: number) => {
 };
 
 const getBME68XData = async (sensorId: number, query: GetSensorDataQuery) => {
-  const { from, to } = query;
+  const { from, to, fromLastDays } = query;
 
   const sensor = await db.sensor.findFirst({
     where: { id: sensorId }
@@ -66,21 +67,24 @@ const getBME68XData = async (sensorId: number, query: GetSensorDataQuery) => {
     throw SensorNotFound(sensorId);
   }
 
-  let data: BME68XSensorData[];
+  let whereDate: Prisma.BME68XSensorDataWhereInput = {};
 
   if (from && to) {
-    data = await db.bME68XSensorData.findMany({
-      where: { sensorId, AND: [{ createdAt: { gte: from } }, { createdAt: { lte: to } }] }
-    });
+    whereDate = { AND: [{ createdAt: { gte: from } }, { createdAt: { lte: to } }] };
   } else if (from) {
-    data = await db.bME68XSensorData.findMany({ where: { sensorId, createdAt: { gte: from } } });
+    whereDate = { createdAt: { gte: from } };
   } else if (to) {
-    data = await db.bME68XSensorData.findMany({ where: { sensorId, createdAt: { lte: from } } });
-  } else {
-    data = await db.bME68XSensorData.findMany({ where: { sensorId } });
+    whereDate = { createdAt: { lte: from } };
+  } else if (fromLastDays) {
+    const date = subDays(new Date(), fromLastDays);
+
+    whereDate = { createdAt: { gte: date } };
   }
 
-  return data;
+  return await db.bME68XSensorData.findMany({
+    where: { ...whereDate, sensorId },
+    orderBy: { createdAt: 'asc' }
+  });
 };
 
 export const SensorService = {

@@ -1,0 +1,14 @@
+@use './lato-font.scss';
+@use './theme.scss';
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	padding: 0;
+	margin: 0;
+	background-color: theme.$background-color;
+	color: theme.$text-color;
+	font-family: Lato;
+}

@@ -13,7 +13,11 @@ export const getSensorDataParamsSchema = object({ sensorId: number().required().
 
 export type GetSensorDataParams = InferType<typeof getSensorDataParamsSchema>;
 
-export const getSensorDataQuerySchema = object({ from: date(), to: date() });
+export const getSensorDataQuerySchema = object({
+  from: date(),
+  to: date(),
+  fromLastDays: number()
+});
 
 export type GetSensorDataQuery = InferType<typeof getSensorDataQuerySchema>;
 
