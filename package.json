@@ -22,7 +22,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^5.2.0",
-    "prisma": "^5.2.0"
+    "@prisma/client": "4.15.0-integration-feat-client-esm.27",
+    "prisma": "4.15.0-integration-feat-client-esm.27"
   }
 }

@@ -1,4 +1,11 @@
 @use './colors.scss';
 
-$background-color: colors.$gunmetal;
-$text-color: colors.$white;
+$background: colors.$gunmetal-gray;
+$text: colors.$white;
+
+$navbar: colors.$deep-saffron;
+
+:root {
+	--agnostic-primary: #{colors.$deep-saffron};
+	--agnostic-light: #{colors.$white};
+}

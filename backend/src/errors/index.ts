@@ -5,3 +5,8 @@ export * from './SecretIsNotValid';
 export * from './SensorNameAlreadyUsed';
 export * from './SensorDataNotFound';
 export * from './SensorNotFound';
+export * from './EmailAlreadyInUse';
+export * from './EmailOrPasswordNotValid';
+export * from './NotAuthorized';
+export * from './RefreshTokenNotValid';
+export * from './RefreshTokenRevoked';

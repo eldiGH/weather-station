@@ -1,4 +1,4 @@
-@use './lato-font.scss';
+@use './font-roboto.scss';
 @use './theme.scss';
 
 * {
@@ -8,7 +8,7 @@
 body {
 	padding: 0;
 	margin: 0;
-	background-color: theme.$background-color;
-	color: theme.$text-color;
-	font-family: Lato;
+	background-color: theme.$background;
+	color: theme.$text;
+	font-family: Roboto;
 }

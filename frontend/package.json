@@ -18,14 +18,18 @@
 		"@playwright/test": "^1.28.1",
 		"@sveltejs/adapter-node": "^1.3.1",
 		"@sveltejs/kit": "^1.20.4",
+		"@types/cookie": "^0.5.2",
 		"@typescript-eslint/eslint-plugin": "^5.45.0",
 		"@typescript-eslint/parser": "^5.45.0",
+		"agnostic-svelte": "^1.1.27",
 		"chart.js": "^4.4.0",
 		"chartjs-adapter-date-fns": "^3.0.0",
+		"cookie": "^0.5.0",
 		"date-fns": "^2.30.0",
 		"eslint": "^8.28.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-svelte": "^2.30.0",
+		"jwt-decode": "^3.1.2",
 		"prettier": "^2.8.0",
 		"prettier-plugin-svelte": "^2.10.1",
 		"sass": "^1.66.1",
@@ -36,7 +40,8 @@
 		"typescript": "^5.0.0",
 		"url-join": "^5.0.0",
 		"vite": "^4.4.2",
-		"vitest": "^0.32.2"
+		"vitest": "^0.32.2",
+		"yup": "^1.2.0"
 	},
 	"type": "module",
 	"dependencies": {

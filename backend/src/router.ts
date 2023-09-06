@@ -1,9 +1,9 @@
 import { Router, type NextFunction } from 'express';
-import { SensorController } from './controllers';
-import { validationMiddlewareFactory } from './middlewares/index';
-import type { Controller, EndpointCallback, Middleware, Req, Res } from './types/index';
+import { AuthController, SensorController } from './controllers';
+import { authMiddleware, validationMiddlewareFactory } from './middlewares';
+import type { Controller, EndpointCallback, Middleware, Req, Res } from './types';
 
-const controllers: Controller[] = [SensorController];
+const controllers: Controller[] = [SensorController, AuthController];
 
 export const router = Router();
 
@@ -21,6 +21,10 @@ for (const controller of controllers) {
 
   for (const endpoint of controller.endpoints) {
     const middlewares: Middleware[] = [];
+
+    if (endpoint.auth) {
+      middlewares.push(authMiddleware);
+    }
 
     if (endpoint.paramsValidationSchema) {
       middlewares.push(validationMiddlewareFactory(endpoint.paramsValidationSchema, 'params'));

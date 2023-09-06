@@ -1,4 +1,5 @@
-import { ApiErrorCode, HttpStatus, type ApiError } from '../types';
+import { ApiErrorCode, HttpStatus } from 'shared';
+import { ApiError } from '../types';
 
 export const UrlNotFound = (url: string): ApiError => ({
   errorCode: ApiErrorCode.URL_NOT_FOUND,

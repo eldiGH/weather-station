@@ -1,4 +1,5 @@
-import { ApiErrorCode, HttpStatus, type ApiError } from '../types';
+import { ApiErrorCode, HttpStatus } from 'shared';
+import { ApiError } from '../types';
 import type { ValidationError as YupValidationError } from 'yup';
 
 interface ValidationResponseError {

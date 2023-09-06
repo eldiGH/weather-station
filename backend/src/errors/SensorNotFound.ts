@@ -1,4 +1,5 @@
-import { ApiErrorCode, HttpStatus, type ApiError } from '../types';
+import { ApiErrorCode, HttpStatus } from 'shared';
+import { ApiError } from '../types';
 
 export const SensorNotFound = (sensorId: number): ApiError => ({
   errorCode: ApiErrorCode.SENSOR_NOT_FOUND,

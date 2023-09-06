@@ -1,6 +1,5 @@
 import express, { json } from 'express';
-import { errorHandlerMiddleware, notFoundMiddleware } from './middlewares';
-import { corsMiddleware } from './middlewares/corsMiddleware';
+import { corsMiddleware, errorHandlerMiddleware, notFoundMiddleware } from './middlewares';
 import { router } from './router';
 
 export const app = express();

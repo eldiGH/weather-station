@@ -1,4 +1,5 @@
-import { ApiErrorCode, HttpStatus, type ApiError } from '../types';
+import { ApiErrorCode, HttpStatus } from 'shared';
+import { type ApiError } from '../types';
 
 export const SensorNameAlreadyUsed = (name: string): ApiError => ({
   errorCode: ApiErrorCode.SENSOR_NAME_ALREADY_USED,

@@ -1,3 +1,4 @@
+import { User } from '@prisma/client';
 import type { HttpMethods } from './HttpMethod';
 import type { Req } from './Req';
 import type { Res } from './Res';
@@ -37,7 +38,7 @@ export type EndpointCallback<
   Auth extends boolean = boolean
 > = (
   req: Req<Body, Params, Query>,
-  res: Res<Auth extends true ? Record<string, unknown> : Record<string, unknown>>
+  res: Res<Auth extends true ? { user: User } : Record<string, unknown>>
 ) => Promise<void>;
 
 export interface Endpoint extends AuthEndpointConfig {

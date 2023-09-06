@@ -1,8 +1,8 @@
-import { HttpStatus } from '../types';
 import { controller, endpointFactory } from '../helpers';
 
 import { SensorService } from '../services';
 import {
+  HttpStatus,
   createSensorSchema,
   getLatestBME68XDataEntryMapper,
   getSensorDataParamsSchema,
@@ -18,7 +18,8 @@ endpoint(
     name: 'Add new sensor',
     method: 'post',
     path: '/',
-    bodyValidationSchema: createSensorSchema
+    bodyValidationSchema: createSensorSchema,
+    auth: true
   },
   async (req, res) => {
     const secret = await SensorService.addNewSensor(req.body);
@@ -46,7 +47,8 @@ endpoint(
     name: 'Get latest bme68x data from sensor',
     path: '/bme68x/:sensorId/last',
     method: 'get',
-    paramsValidationSchema: getSensorDataParamsSchema
+    paramsValidationSchema: getSensorDataParamsSchema,
+    auth: true
   },
   async (req, res) => {
     const { sensorId } = req.params;
@@ -63,7 +65,8 @@ endpoint(
     path: '/bme68x/:sensorId',
     method: 'get',
     paramsValidationSchema: getSensorDataParamsSchema,
-    queryValidationSchema: getSensorDataQuerySchema
+    queryValidationSchema: getSensorDataQuerySchema,
+    auth: true
   },
   async (req, res) => {
     const { sensorId } = req.params;

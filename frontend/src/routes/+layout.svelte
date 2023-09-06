@@ -1,6 +1,7 @@
 <script lang="ts">
-	import 'chartjs-adapter-date-fns';
+	import 'agnostic-svelte/css/common.min.css';
 	import '$lib/styles/global.scss';
+	import 'chartjs-adapter-date-fns';
 </script>
 
 <slot />
