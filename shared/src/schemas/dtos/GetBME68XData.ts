@@ -6,6 +6,7 @@ export interface GetLatestBME68XDataEntryResponse {
   humidity: number;
   pressure: number;
   gasResistance: number;
+  batteryPercentage: number;
   createdAt: Date;
 }
 
@@ -28,5 +29,13 @@ export const getLatestBME68XDataEntryMapper = ({
   pressure,
   humidity,
   gasResistance,
-  createdAt
-}: BME68XSensorData) => ({ temperature, pressure, humidity, gasResistance, createdAt });
+  createdAt,
+  batteryPercentage
+}: BME68XSensorData): GetLatestBME68XDataEntryResponse => ({
+  temperature,
+  pressure,
+  humidity,
+  gasResistance,
+  createdAt,
+  batteryPercentage
+});

@@ -1,19 +1,12 @@
 <script lang="ts">
-	interface $$Props {
-		href: string;
-		class?: string;
-		withoutColor?: boolean;
-	}
+	let className: string | undefined = undefined;
+	export { className as class };
 
+	export let noColor: undefined | boolean = undefined;
 	export let href: string;
 </script>
 
-<a
-	class:color={!$$props.withoutColor}
-	class:without-color={$$props.withoutColor}
-	class={$$props.class}
-	{href}><slot /></a
->
+<a class:color={!noColor} class:without-color={noColor} class={className} {href}><slot /></a>
 
 <style lang="scss">
 	a,

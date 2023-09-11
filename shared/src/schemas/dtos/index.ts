@@ -5,3 +5,7 @@ export * from './Login';
 export * from './Register';
 export * from './Logout';
 export * from './Refresh';
+export * from './GetKioskData';
+export * from './CreateKiosk';
+export * from './GetSensor';
+export * from './GetKioskSensor';

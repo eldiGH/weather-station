@@ -1,14 +1,17 @@
-<script lang="ts">
-	import { Chart } from 'chart.js/auto';
-	import { onDestroy, onMount } from 'svelte';
-
-	interface ChartData {
+<script lang="ts" context="module">
+	export interface ChartData {
 		label: string;
 		xAxisData: (number | Date)[];
 		yAxisData: (number | Date)[];
 	}
+</script>
+
+<script lang="ts">
+	import { Chart } from 'chart.js/auto';
+	import { onDestroy, onMount } from 'svelte';
 
 	export let config: ChartData;
+	export let showTooltip = true;
 
 	let canvas: HTMLCanvasElement;
 	let chart: Chart<'line', (number | Date)[]> | null = null;
@@ -21,7 +24,8 @@
 				datasets: [
 					{
 						label: config.label,
-						data: config.yAxisData
+						data: config.yAxisData,
+						borderColor: '#f39530'
 					}
 				]
 			},
@@ -35,6 +39,11 @@
 								minute: 'HH:mm'
 							}
 						}
+					}
+				},
+				plugins: {
+					tooltip: {
+						enabled: showTooltip
 					}
 				}
 			}

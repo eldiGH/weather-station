@@ -1,9 +1,9 @@
 import { Router, type NextFunction } from 'express';
-import { AuthController, SensorController } from './controllers';
+import { AuthController, KioskController, SensorController } from './controllers';
 import { authMiddleware, validationMiddlewareFactory } from './middlewares';
 import type { Controller, EndpointCallback, Middleware, Req, Res } from './types';
 
-const controllers: Controller[] = [SensorController, AuthController];
+const controllers: Controller[] = [SensorController, AuthController, KioskController];
 
 export const router = Router();
 

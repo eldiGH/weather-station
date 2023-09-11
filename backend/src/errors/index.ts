@@ -10,3 +10,5 @@ export * from './EmailOrPasswordNotValid';
 export * from './NotAuthorized';
 export * from './RefreshTokenNotValid';
 export * from './RefreshTokenRevoked';
+export * from './KioskNotFound';
+export * from './PermissionDenied';

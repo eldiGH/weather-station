@@ -1,4 +1,5 @@
 @use './font-roboto.scss';
+@use './font-material-icons.scss';
 @use './theme.scss';
 
 * {
@@ -11,4 +12,12 @@ body {
 	background-color: theme.$background;
 	color: theme.$text;
 	font-family: Roboto;
+
+	width: 100vw;
+	height: 100vh;
+}
+
+html,
+body {
+	overscroll-behavior-x: none;
 }

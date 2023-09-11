@@ -1,4 +1,4 @@
-import { SensorType, Prisma } from '@prisma/client';
+import { SensorType, User } from '@prisma/client';
 import { db } from '../db';
 import {
   SecretIsNotValid,
@@ -8,9 +8,9 @@ import {
 } from '../errors';
 import { v4 } from 'uuid';
 import { CreateSensorRequest, GetSensorDataQuery, PostBME68XDataRequest } from 'shared';
-import { subDays } from 'date-fns';
+import { getWhereForDates } from '../helpers/dates.';
 
-const addNewSensor = async (data: CreateSensorRequest) => {
+const addNewSensor = async (data: CreateSensorRequest, user: User) => {
   const existingSensor = await db.sensor.findFirst({ where: { name: data.name } });
 
   if (existingSensor) {
@@ -24,7 +24,7 @@ const addNewSensor = async (data: CreateSensorRequest) => {
     secret = v4();
   } while (sensors.some((sensor) => sensor.secret === secret));
 
-  await db.sensor.create({ data: { ...data, secret } });
+  await db.sensor.create({ data: { ...data, secret, ownerId: user.id } });
 
   return secret;
 };
@@ -57,8 +57,6 @@ const getLatestBME68XDataEntry = async (sensorId: number) => {
 };
 
 const getBME68XData = async (sensorId: number, query: GetSensorDataQuery) => {
-  const { from, to, fromLastDays } = query;
-
   const sensor = await db.sensor.findFirst({
     where: { id: sensorId }
   });
@@ -67,22 +65,8 @@ const getBME68XData = async (sensorId: number, query: GetSensorDataQuery) => {
     throw SensorNotFound(sensorId);
   }
 
-  let whereDate: Prisma.BME68XSensorDataWhereInput = {};
-
-  if (from && to) {
-    whereDate = { AND: [{ createdAt: { gte: from } }, { createdAt: { lte: to } }] };
-  } else if (from) {
-    whereDate = { createdAt: { gte: from } };
-  } else if (to) {
-    whereDate = { createdAt: { lte: from } };
-  } else if (fromLastDays) {
-    const date = subDays(new Date(), fromLastDays);
-
-    whereDate = { createdAt: { gte: date } };
-  }
-
   return await db.bME68XSensorData.findMany({
-    where: { ...whereDate, sensorId },
+    where: { ...getWhereForDates('createdAt', query), sensorId },
     orderBy: { createdAt: 'asc' }
   });
 };

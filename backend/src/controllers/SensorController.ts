@@ -22,7 +22,7 @@ endpoint(
     auth: true
   },
   async (req, res) => {
-    const secret = await SensorService.addNewSensor(req.body);
+    const secret = await SensorService.addNewSensor(req.body, res.locals.user);
 
     res.status(HttpStatus.CREATED).send({ secret });
   }

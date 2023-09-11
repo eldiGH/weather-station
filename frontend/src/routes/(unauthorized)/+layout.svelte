@@ -1,13 +1,7 @@
 <script lang="ts">
-	import Container from '$lib/components/Container.svelte';
-	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
-
-	onMount(() => {
-		// goto('/', { replaceState: true });
-	});
+	import ScrollPanel from '$lib/components/ScrollPanel.svelte';
 </script>
 
-<Container>
+<ScrollPanel>
 	<slot />
-</Container>
+</ScrollPanel>

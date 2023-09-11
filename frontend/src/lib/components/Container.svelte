@@ -3,11 +3,14 @@
 <style lang="scss">
 	.container {
 		width: min(1024px, 100%);
+		min-height: 100%;
 		display: flex;
 		justify-content: center;
+		margin-top: 2rem;
 
 		&__root {
-			padding: 4rem 2rem 0;
+			min-height: 100%;
+			padding: 0 2rem;
 			width: 100%;
 			display: flex;
 			justify-content: center;

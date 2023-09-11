@@ -7,7 +7,8 @@ import type { CookieSerializeOptions } from 'cookie';
 import { jwt } from '$lib/helpers/jwt';
 import { ACCESS_TOKEN_ADVANCE_TIME } from '$lib/constants';
 
-const NOT_AUTHED_ROUTES = ['/login', '/register'];
+const NOT_AUTHED_ROUTES = ['/login', '/register', '/kiosk'];
+const AUTHED_NOT_ALLOWED_ROUTES = ['/login', '/register'];
 
 export const handleFetch: HandleFetch = ({ fetch, event, request }) => {
 	const accessToken = event.cookies.get('accessToken');
@@ -21,26 +22,33 @@ export const handleFetch: HandleFetch = ({ fetch, event, request }) => {
 	return fetch(request);
 };
 
-const refreshTokens = async (event: RequestEvent, refreshToken: string): Promise<void> => {
-	const newTokens = await refreshRequest(event.fetch, { refreshToken });
-	const decodedTokens = {
-		access: jwt.decode(newTokens.accessToken),
-		refresh: jwt.decode(newTokens.refreshToken)
-	};
+const refreshTokens = async (event: RequestEvent, refreshToken: string): Promise<boolean> => {
+	try {
+		const newTokens = await refreshRequest(event.fetch, { refreshToken });
+		const decodedTokens = {
+			access: jwt.decode(newTokens.accessToken),
+			refresh: jwt.decode(newTokens.refreshToken)
+		};
 
-	const cookieOptions: CookieSerializeOptions = {
-		sameSite: 'lax',
-		secure: true,
-		httpOnly: false
-	};
-	event.cookies.set('accessToken', newTokens.accessToken, {
-		...cookieOptions,
-		expires: fromUnixTime(decodedTokens.access.exp - ACCESS_TOKEN_ADVANCE_TIME)
-	});
-	event.cookies.set('refreshToken', newTokens.refreshToken, {
-		...cookieOptions,
-		expires: fromUnixTime(decodedTokens.refresh.exp)
-	});
+		const cookieOptions: CookieSerializeOptions = {
+			sameSite: 'lax',
+			secure: true,
+			httpOnly: false,
+			path: '/'
+		};
+		event.cookies.set('accessToken', newTokens.accessToken, {
+			...cookieOptions,
+			expires: fromUnixTime(decodedTokens.access.exp - ACCESS_TOKEN_ADVANCE_TIME)
+		});
+		event.cookies.set('refreshToken', newTokens.refreshToken, {
+			...cookieOptions,
+			expires: fromUnixTime(decodedTokens.refresh.exp)
+		});
+
+		return true;
+	} catch (e) {
+		return false;
+	}
 };
 
 const checkIfAuthed = async (event: RequestEvent): Promise<boolean> => {
@@ -59,7 +67,7 @@ const checkIfAuthed = async (event: RequestEvent): Promise<boolean> => {
 			return false;
 		}
 
-		await refreshTokens(event, refreshToken);
+		return await refreshTokens(event, refreshToken);
 	}
 
 	return true;
@@ -67,9 +75,14 @@ const checkIfAuthed = async (event: RequestEvent): Promise<boolean> => {
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const isAuthed = await checkIfAuthed(event);
-	const isOnAuthedRoute = !NOT_AUTHED_ROUTES.includes(event.url.pathname);
+	const isOnAuthedRoute = !NOT_AUTHED_ROUTES.some((notAuthedRoute) =>
+		event.url.pathname.startsWith(notAuthedRoute)
+	);
+	const isOnNotAllowedAuthedRoute = AUTHED_NOT_ALLOWED_ROUTES.some((authedNotAllowedRoute) =>
+		event.url.pathname.startsWith(authedNotAllowedRoute)
+	);
 
-	if (isAuthed && !isOnAuthedRoute) {
+	if (isAuthed && isOnNotAllowedAuthedRoute) {
 		throw redirect(HttpStatus.FOUND, '/');
 	} else if (!isAuthed && isOnAuthedRoute) {
 		throw redirect(HttpStatus.FOUND, '/login');
