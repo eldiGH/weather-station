@@ -25,7 +25,8 @@
 					{
 						label: config.label,
 						data: config.yAxisData,
-						borderColor: '#f39530'
+						borderColor: '#f39530',
+						backgroundColor: '#f39530'
 					}
 				]
 			},
