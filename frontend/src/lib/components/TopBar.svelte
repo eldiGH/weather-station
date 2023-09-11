@@ -66,7 +66,7 @@
 
 		.content {
 			min-height: 0;
-			flex-grow: 1;
+			display: flex;
 		}
 	}
 </style>

@@ -22,17 +22,19 @@
 		<div slot="center" class="sensor-name">{data.sensor.name}</div>
 		<ScrollPanel>
 			{#if data.sensor.currentData}
-				<IconInfo class="timestamp" gap={1} icon="schedule"
-					>Ostatnia aktualizacja: {formatCreatedAt(data.sensor.currentData.createdAt)}</IconInfo
-				>
-				<div class="gauges">
-					<TemperatureGauge value={data.sensor.currentData.temperature} />
-					<HumidityGauge value={data.sensor.currentData.humidity} />
-					<PressureGauge value={data.sensor.currentData.pressure / 100} />
-				</div>
-				<div class="charts">
-					<IconInfo class="header" gap={1} icon="chart_data">Wykresy z ostatnich 24h:</IconInfo>
-					<ChartTabs data={data.sensor.data} />
+				<div class="scroll-panel-content">
+					<IconInfo class="timestamp" gap={1} icon="schedule"
+						>Ostatnia aktualizacja: {formatCreatedAt(data.sensor.currentData.createdAt)}</IconInfo
+					>
+					<div class="gauges">
+						<TemperatureGauge value={data.sensor.currentData.temperature} />
+						<HumidityGauge value={data.sensor.currentData.humidity} />
+						<PressureGauge value={data.sensor.currentData.pressure / 100} />
+					</div>
+					<div class="charts">
+						<IconInfo class="header" gap={1} icon="chart_data">Wykresy z ostatnich 24h:</IconInfo>
+						<ChartTabs data={data.sensor.data} />
+					</div>
 				</div>
 			{:else}
 				Brak danych
@@ -43,12 +45,12 @@
 
 <style lang="scss">
 	.root {
-		padding-bottom: 5rem;
+		height: 100%;
 
 		:global(.back) {
 			margin-left: 1rem;
 			font-size: 4rem;
-			line-height: 1px;
+			line-height: 3rem;
 			display: flex;
 
 			font-variation-settings: w;
@@ -73,6 +75,10 @@
 			:global(.header) {
 				font-size: 2rem;
 			}
+		}
+
+		.scroll-panel-content {
+			padding-bottom: 5rem;
 		}
 	}
 </style>
