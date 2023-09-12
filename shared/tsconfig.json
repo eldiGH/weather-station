@@ -2,8 +2,9 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "noEmit": false,
-    "outDir": "./dist/cjs",
-    "declaration": true
+    "outDir": "./dist",
+    "composite": true,
+    "rootDir": "src"
   },
   "include": ["src/**/*"]
 }

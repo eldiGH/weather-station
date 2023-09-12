@@ -2,6 +2,9 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "noEmit": false,
-    "outDir": "./dist"
-  }
+    "outDir": "./dist",
+    "composite": true,
+    "rootDir": "src"
+  },
+  "references": [{ "path": "../shared" }]
 }

@@ -9,8 +9,6 @@
 
 	export let data: LayoutData;
 
-	console.log($page);
-
 	const { kioskUuid, sensorId } = $page.params;
 
 	const baseRoute = `/kiosk/${kioskUuid}/sensors/${sensorId}`;

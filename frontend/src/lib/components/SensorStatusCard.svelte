@@ -1,12 +1,11 @@
 <script lang="ts">
 	import { Card } from 'agnostic-svelte';
 	import type { GetLatestBME68XDataEntryResponse, SensorResponseWithCurrentData } from 'shared';
-	import Icon from './Icon.svelte';
 	import IconInfo from './IconInfo.svelte';
 	import Link from './Link.svelte';
 	import { page } from '$app/stores';
-	import { format, isBefore, subDays } from 'date-fns';
 	import { formatCreatedAt } from '$lib/helpers/date';
+	import { formatTemperature } from '$lib/helpers/formatters';
 
 	export let sensor: SensorResponseWithCurrentData;
 
@@ -32,7 +31,7 @@
 		const { temperature, humidity, pressure, batteryPercentage, createdAt } = data;
 
 		return {
-			temperature: `${temperature?.toFixed(1)}°C`,
+			temperature: formatTemperature(temperature),
 			humidity: `${humidity.toFixed(1)}%`,
 			pressure: `${Math.round(pressure / 100)} hPa`,
 			batteryPercentage: `${convertReadingToVoltage(batteryPercentage).toFixed(2)}V`,
@@ -49,7 +48,7 @@
 			<div class="card-content">
 				<div class="header">{sensor.name}</div>
 				<div class="info-wrapper">
-					<div>
+					<div class="info">
 						<IconInfo weight={200} gap={0.5} icon="device_thermostat">
 							{formattedData.temperature}
 						</IconInfo>
@@ -95,6 +94,11 @@
 				width: 100%;
 				height: 100%;
 				justify-content: center;
+
+				.info {
+					display: flex;
+					flex-direction: column;
+				}
 			}
 		}
 	}

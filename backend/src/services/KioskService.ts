@@ -1,9 +1,52 @@
 import { User } from '@prisma/client';
 import { db } from '../db';
-import { KioskNotFound, PermissionDenied, SensorNotFound } from '../errors';
+import {
+  KioskNotFound,
+  KioskWithoutCoordinates,
+  PermissionDenied,
+  SensorNotFound
+} from '../errors';
 import { CreateKioskRequest, CreateKioskResponse, GetSensorDataQuery } from 'shared';
 import { v4 as uuid } from 'uuid';
 import { getWhereForDates } from '../helpers/dates.';
+import { redisClient } from '../redis';
+import axios from 'axios';
+import { RedisCachedEntry, WeatherApiResponse } from '../types';
+import { addMinutes, isAfter } from 'date-fns';
+
+const FORECAST_CACHE_MINUTES = 30;
+
+const { OPEN_WEATHER_API_KEY } = process.env;
+if (!OPEN_WEATHER_API_KEY) {
+  throw new Error('Missing OPEN_WEATHER_API_KEY env variable!');
+}
+
+const getForecast = async (kioskUuid: string): Promise<WeatherApiResponse> => {
+  const kiosk = await db.kiosk.findUnique({ where: { kioskUuid } });
+
+  if (!kiosk) {
+    throw KioskNotFound;
+  }
+
+  const { latitude, longitude } = kiosk;
+
+  if (!latitude || !longitude) {
+    throw KioskWithoutCoordinates();
+  }
+
+  return (
+    await axios.get(`https://api.openweathermap.org/data/3.0/onecall`, {
+      responseType: 'json',
+      params: {
+        lat: latitude,
+        lon: longitude,
+        appid: OPEN_WEATHER_API_KEY,
+        lang: 'pl',
+        units: 'metric'
+      }
+    })
+  ).data;
+};
 
 const createKiosk = async (data: CreateKioskRequest, user: User): Promise<CreateKioskResponse> => {
   const sensors = await db.sensor.findMany({
@@ -79,4 +122,42 @@ const getKioskSensorData = async (
   return sensor;
 };
 
-export const KioskService = { getKioskData, createKiosk, getKioskSensorData };
+const removeForecastPrivateData = (forecast: WeatherApiResponse) => {
+  // sourcery skip: inline-immediately-returned-variable
+  const { alerts, current, daily, hourly, minutely } = forecast;
+
+  return { alerts, current, daily, hourly, minutely };
+};
+
+const getKioskForecast = async (kioskUuid: string) => {
+  const cacheKey = `kiosk-${kioskUuid}`;
+  const redisCachedEntry = await redisClient.get(cacheKey);
+
+  let cacheValid;
+
+  if (!redisCachedEntry) {
+    cacheValid = false;
+  } else {
+    const parsedCacheEntry = JSON.parse(redisCachedEntry) as RedisCachedEntry<WeatherApiResponse>;
+
+    cacheValid = isAfter(
+      addMinutes(new Date(parsedCacheEntry.timestamp), FORECAST_CACHE_MINUTES),
+      new Date()
+    );
+    if (cacheValid) {
+      return removeForecastPrivateData(parsedCacheEntry.data);
+    }
+  }
+
+  const newForecast = await getForecast(kioskUuid);
+  const newCacheEntry: RedisCachedEntry<WeatherApiResponse> = {
+    timestamp: new Date().toISOString(),
+    data: newForecast
+  };
+
+  await redisClient.set(cacheKey, JSON.stringify(newCacheEntry));
+
+  return removeForecastPrivateData(newForecast);
+};
+
+export const KioskService = { getKioskData, createKiosk, getKioskSensorData, getKioskForecast };

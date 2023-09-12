@@ -5,3 +5,5 @@ export * from './Req';
 export * from './Res';
 export * from './ApiError';
 export * from './JwtPayload';
+export * from './RedisCachedEntry';
+export * from './WeatherApiResponse';

@@ -46,6 +46,22 @@ endpoint(
 
 endpoint(
   {
+    name: 'Get forecast for kiosk',
+    method: 'get',
+    path: '/:kioskUuid/forecast',
+    paramsValidationSchema: getKioskDataParamsSchema
+  },
+  async (req, res) => {
+    const { kioskUuid } = req.params;
+
+    const data = await KioskService.getKioskForecast(kioskUuid);
+
+    res.status(HttpStatus.OK).send(data);
+  }
+);
+
+endpoint(
+  {
     name: 'Get kiosk sensor',
     method: 'get',
     path: '/:kioskUuid/:sensorId',

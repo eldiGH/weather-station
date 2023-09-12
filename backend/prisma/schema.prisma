@@ -31,6 +31,9 @@ model Kiosk {
 
   ownerId           Int
   owner             User                  @relation(fields: [ownerId], references: [id])
+
+  latitude          Float?
+  longitude         Float?
 }
 
 model RefreshToken {

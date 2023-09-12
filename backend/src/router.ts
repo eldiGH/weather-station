@@ -5,7 +5,7 @@ import type { Controller, EndpointCallback, Middleware, Req, Res } from './types
 
 const controllers: Controller[] = [SensorController, AuthController, KioskController];
 
-export const router = Router();
+export const router: Router = Router();
 
 const catchErrors =
   (callback: EndpointCallback) => async (req: Req, res: Res, next: NextFunction) => {

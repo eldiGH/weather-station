@@ -12,3 +12,4 @@ export * from './RefreshTokenNotValid';
 export * from './RefreshTokenRevoked';
 export * from './KioskNotFound';
 export * from './PermissionDenied';
+export * from './KioskWithoutCoordinates';

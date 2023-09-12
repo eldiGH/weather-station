@@ -2,7 +2,8 @@ import type {
 	GetBME68XDataResponse,
 	GetSensorDataQuery,
 	KioskDataResponse,
-	SensorResponseWithData
+	SensorResponseWithData,
+	WeatherResponse
 } from 'shared';
 import { getClient, type FetchFunc } from './client';
 
@@ -26,3 +27,6 @@ export const getKioskSensorData = (
 	dateRange?: GetSensorDataQuery
 ): Promise<GetBME68XDataResponse> =>
 	kioskClient.get(fetch, `/${kioskUuid}/${sensorId}/data`, dateRange);
+
+export const getKioskForecast = (fetch: FetchFunc, kioskUuid: string): Promise<WeatherResponse> =>
+	kioskClient.get(fetch, `/${kioskUuid}/forecast`);
