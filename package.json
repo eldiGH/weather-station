@@ -13,8 +13,6 @@
     "fe:dev": "pnpm --filter=frontend dev",
     "fe:build": "pnpm --filter=frontend build",
     "fe:start": "pnpm --filter=frontend start",
-    "sh:dev": "pnpm --filter=shared dev",
-    "sh:build": "pnpm --filter=shared build",
     "build-all": "pnpm --filter=* build"
   },
   "keywords": [],
