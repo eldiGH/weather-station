@@ -23,7 +23,7 @@
 </script>
 
 <script lang="ts">
-	import type { ComponentProps } from 'svelte';
+	import { onMount, type ComponentProps } from 'svelte';
 
 	import CenteredGaugeBar from './CenteredGaugeBar.svelte';
 	import GaugeNeedle from './GaugeNeedle.svelte';
@@ -62,24 +62,29 @@
 			const { color } = breakpoint;
 
 			let from: number;
-			let gap = 0;
+			let fromGap = 0;
+			let toGap = 0;
 
 			if (index === 0) {
 				from = config.minValue;
 			} else {
 				from = breakpoints[index - 1].to;
-				gap = config.gap ?? 0;
+			}
+
+			if (index === 0) {
+				toGap = config.gap ?? 0;
+			} else if (index === breakpoints.length - 1) {
+				fromGap = config.gap ?? 0;
+			} else {
+				toGap = config.gap ?? 0;
+				fromGap = config.gap ?? 0;
 			}
 
 			const fromAngle =
-				getAngleForValue(from, config.angle, normalizationValue, normalizedMax, startAngle) - gap;
-			const toAngle = getAngleForValue(
-				to,
-				config.angle,
-				normalizationValue,
-				normalizedMax,
-				startAngle
-			);
+				getAngleForValue(from, config.angle, normalizationValue, normalizedMax, startAngle) -
+				fromGap;
+			const toAngle =
+				getAngleForValue(to, config.angle, normalizationValue, normalizedMax, startAngle) + toGap;
 
 			return {
 				fromAngle,
@@ -131,6 +136,8 @@
 		return 17 + 9 * lastLabel.length;
 	};
 
+	let delayedValue = config.minValue;
+
 	$: labelsAdditionalWidth = getLabelsAdditionalWidth(config);
 	$: labelsAdditionalHeight = config.labels?.length ? 30 : 0;
 	$: width = config.radius * 2 + 2 * labelsAdditionalWidth;
@@ -149,7 +156,19 @@
 	$: gauges = getGauges(config, center, normalizationValue, normalizedMax, startAngle);
 	$: labels = getLabels(config, center, normalizationValue, normalizedMax, startAngle);
 
-	$: needleAngle = startAngle - ((value + normalizationValue) / normalizedMax) * config.angle;
+	$: needleAngle =
+		startAngle - ((delayedValue + normalizationValue) / normalizedMax) * config.angle;
+
+	let mounted = false;
+	onMount(() => {
+		mounted = true;
+	});
+
+	$: {
+		if (mounted) {
+			delayedValue = value;
+		}
+	}
 </script>
 
 <div class="container">

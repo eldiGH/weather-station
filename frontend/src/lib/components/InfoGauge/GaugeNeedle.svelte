@@ -26,7 +26,7 @@
 <style>
 	path {
 		transform-origin: var(--origin-x) var(--origin-y);
-		transition: transform 200ms ease-in-out;
+		transition: transform 1s ease-in-out;
 		transform: rotate(var(--rotation, 90deg));
 	}
 </style>

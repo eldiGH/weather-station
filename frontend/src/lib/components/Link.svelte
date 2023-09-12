@@ -2,15 +2,20 @@
 	let className: string | undefined = undefined;
 	export { className as class };
 
+	export let ref: HTMLAnchorElement | HTMLElement | undefined = undefined;
+
 	export let noColor: undefined | boolean = undefined;
 	export let href: string;
 </script>
 
-<a class:color={!noColor} class:without-color={noColor} class={className} {href}><slot /></a>
+<a bind:this={ref} class:color={!noColor} class:without-color={noColor} class={className} {href}
+	><slot /></a
+>
 
 <style lang="scss">
 	a,
-	a:visited {
+	a:visited,
+	a:hover {
 		text-decoration: none;
 	}
 

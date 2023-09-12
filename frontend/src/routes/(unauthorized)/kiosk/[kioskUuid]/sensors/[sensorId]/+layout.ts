@@ -1,7 +1,7 @@
 import { getKioskSensorData } from '$lib/api/kiosk';
-import type { PageLoad } from './$types';
+import type { LayoutLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, params, parent }) => {
+export const load: LayoutLoad = async ({ fetch, params, parent }) => {
 	const sensorId = parseInt(params.sensorId);
 	if (isNaN(sensorId)) {
 		throw Error('Sensor id is not a number');

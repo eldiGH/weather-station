@@ -8,7 +8,6 @@
 </script>
 
 <div class="root">
-	<div class="header">Czujniki</div>
 	{#if sensors.length === 0}
 		<div class="header centered">Brak dostępnych czujników</div>
 	{:else}

@@ -12,7 +12,10 @@
 	export let showTooltip = true;
 </script>
 
-<Tabs {tabsStore} tabNames={['Temperatura', 'Wilgotność', 'Ciśnienie']} />
+<Tabs
+	{tabsStore}
+	tabs={[{ label: 'Temperatura' }, { label: 'Wilgotność' }, { label: 'Ciśnienie' }]}
+/>
 {#if $tabsStore === 0}
 	<TemperatureChart {showTooltip} {data} />
 {:else if $tabsStore === 1}

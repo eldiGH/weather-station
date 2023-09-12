@@ -12,7 +12,7 @@
 		radius: 100,
 		width: 15,
 		valueDisplayTransform: (value) => `${roundToPrecision(value, 1)}°C`,
-		gap: 5,
+		gap: 1.5,
 		barBorderColor: 'black',
 		barBorderWidth: 1,
 		breakpoints: [
