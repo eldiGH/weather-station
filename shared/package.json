@@ -7,10 +7,6 @@
     "require": "./dist/index.js",
     "module": "./src/index.ts"
   },
-  "scripts": {
-    "dev": "nodemon -w src -e ts --exec pnpm build",
-    "build": "tsc -p tsconfig.json && tsc -p tsconfig-esm.json"
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",
