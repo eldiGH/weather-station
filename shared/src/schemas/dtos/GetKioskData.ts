@@ -9,6 +9,7 @@ export const getKioskDataParamsSchema = object({
 
 export interface KioskDataResponse {
   sensors: SensorResponseWithCurrentData[];
+  nextRefreshTimestamp: Date;
 }
 
 export const kioskDataResponseMapper = (
@@ -16,6 +17,7 @@ export const kioskDataResponseMapper = (
     sensors: (Sensor & {
       bme68XData: BME68XSensorData[];
     })[];
+    nextRefreshTimestamp: Date;
   }
 ): KioskDataResponse => ({
   sensors: kiosk.sensors.map((sensor) => ({
@@ -23,5 +25,6 @@ export const kioskDataResponseMapper = (
     name: sensor.name,
     type: sensor.type,
     currentData: getLatestBME68XDataEntryMapper(sensor.bme68XData[0])
-  }))
+  })),
+  nextRefreshTimestamp: kiosk.nextRefreshTimestamp
 });

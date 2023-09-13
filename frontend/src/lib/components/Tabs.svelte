@@ -82,28 +82,29 @@
 </script>
 
 <div bind:this={tabsDiv} class="tabs">
-	{#each tabs as tab, i (tab)}
-		<!-- svelte-ignore a11y-click-events-have-key-events -->
-		<!-- svelte-ignore a11y-no-static-element-interactions -->
-		{#if navigation && typeof tab.value === 'string'}
-			<Link
-				noColor
-				href={tab.value}
-				bind:ref={tabItems[i]}
-				class={`tab ${shouldBeActive($page.url.pathname, tab) ? 'active' : ''}`}
-				on:click={() => handleTabChange(i, tab, true)}>{tab.label}</Link
-			>
-		{:else}
-			<div
-				bind:this={tabItems[i]}
-				on:click={() => handleTabChange(i, tab, true)}
-				class="tab"
-				class:active={$tabsStore === i || currentTab === i}
-			>
-				{tab.label}
-			</div>
-		{/if}
-	{/each}
+	<div class="tab-items">
+		{#each tabs as tab, i (tab)}
+			<!-- svelte-ignore a11y-click-events-have-key-events -->
+			<!-- svelte-ignore a11y-no-static-element-interactions -->
+			{#if navigation && typeof tab.value === 'string'}
+				<Link
+					noColor
+					href={tab.value}
+					bind:ref={tabItems[i]}
+					class={`tab ${shouldBeActive($page.url.pathname, tab) ? 'active' : ''}`}
+					on:click={() => handleTabChange(i, tab, true)}>{tab.label}</Link>
+			{:else}
+				<div
+					bind:this={tabItems[i]}
+					on:click={() => handleTabChange(i, tab, true)}
+					class="tab"
+					class:active={$tabsStore === i || currentTab === i}>
+					{tab.label}
+				</div>
+			{/if}
+		{/each}
+	</div>
+	<slot />
 </div>
 
 <style lang="scss">
@@ -112,14 +113,21 @@
 		display: flex;
 		border-bottom: 1px solid gray;
 		position: relative;
+		justify-content: space-between;
+		align-items: center;
+		padding-right: 2rem;
 
-		:global(.tab) {
-			padding: 1rem 2rem;
-			cursor: pointer;
-			user-select: none;
+		.tab-items {
+			display: inline-flex;
 
-			&:hover {
-				background-color: rgba(255, 255, 255, 0.1);
+			:global(.tab) {
+				padding: 1rem 2rem;
+				cursor: pointer;
+				user-select: none;
+
+				&:hover {
+					background-color: rgba(255, 255, 255, 0.1);
+				}
 			}
 		}
 

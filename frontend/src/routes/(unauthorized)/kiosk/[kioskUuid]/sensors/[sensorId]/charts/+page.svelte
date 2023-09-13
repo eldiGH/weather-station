@@ -8,7 +8,7 @@
 
 <div class="charts">
 	<IconInfo class="header" gap={1} icon="chart_data">Wykresy z ostatnich 24h:</IconInfo>
-	<ChartTabs data={data.sensor.data} />
+	<ChartTabs data={data.sensorData} />
 </div>
 
 <style lang="scss">

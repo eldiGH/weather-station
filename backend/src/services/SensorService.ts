@@ -8,7 +8,7 @@ import {
 } from '../errors';
 import { v4 } from 'uuid';
 import { CreateSensorRequest, GetSensorDataQuery, PostBME68XDataRequest } from 'shared';
-import { getWhereForDates } from '../helpers/dates.';
+import { getWhereForDates } from '../helpers/dates';
 
 const addNewSensor = async (data: CreateSensorRequest, user: User) => {
   const existingSensor = await db.sensor.findFirst({ where: { name: data.name } });

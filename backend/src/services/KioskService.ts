@@ -8,13 +8,16 @@ import {
 } from '../errors';
 import { CreateKioskRequest, CreateKioskResponse, GetSensorDataQuery } from 'shared';
 import { v4 as uuid } from 'uuid';
-import { getWhereForDates } from '../helpers/dates.';
 import { redisClient } from '../redis';
 import axios from 'axios';
 import { RedisCachedEntry, WeatherApiResponse } from '../types';
-import { addMinutes, isAfter } from 'date-fns';
+import { addMinutes, addSeconds, differenceInSeconds, isAfter, subMinutes } from 'date-fns';
+import { getWhereForDates } from '../helpers';
 
 const FORECAST_CACHE_MINUTES = 30;
+
+const DATA_REFRESH_PROBE_MINUTES = 30;
+const DEFAULT_DATA_REFRESH_TIME = 1800;
 
 const { OPEN_WEATHER_API_KEY } = process.env;
 if (!OPEN_WEATHER_API_KEY) {
@@ -77,6 +80,59 @@ const createKiosk = async (data: CreateKioskRequest, user: User): Promise<Create
   return { kioskUuid };
 };
 
+const calculateKioskDataRefreshTimestamp = async (sensorIds: number[]): Promise<Date> => {
+  const fromTimestamp = subMinutes(new Date(), DATA_REFRESH_PROBE_MINUTES);
+
+  const dataEntries = await db.bME68XSensorData.findMany({
+    where: {
+      sensorId: { in: sensorIds },
+      createdAt: { gte: fromTimestamp }
+    },
+    orderBy: { createdAt: 'desc' },
+    select: { createdAt: true, sensorId: true },
+    take: 2
+  });
+
+  const sensorsData: Record<number, { lastTimestamp: Date; time: number }> = {};
+  for (const entry of dataEntries) {
+    if (!sensorsData[entry.sensorId]) {
+      sensorsData[entry.sensorId] = { lastTimestamp: entry.createdAt, time: -1 };
+      continue;
+    }
+
+    sensorsData[entry.sensorId].time = differenceInSeconds(
+      sensorsData[entry.sensorId].lastTimestamp,
+      entry.createdAt
+    );
+  }
+
+  let lowestTimeSensorData: { lastTimestamp: Date; time: number } | null = null;
+  for (const sensorId in sensorsData) {
+    if (!lowestTimeSensorData) {
+      lowestTimeSensorData = sensorsData[sensorId];
+      continue;
+    }
+
+    if (sensorsData[sensorId].time > 0 && sensorsData[sensorId].time < lowestTimeSensorData.time) {
+      lowestTimeSensorData = sensorsData[sensorId];
+    }
+  }
+
+  if (!lowestTimeSensorData) {
+    return addSeconds(new Date(), DEFAULT_DATA_REFRESH_TIME);
+  }
+
+  const normalizedLowestTimeSeconds = lowestTimeSensorData.time + lowestTimeSensorData.time * 0.05;
+  const secondsSinceLowestSensorData =
+    (new Date().getTime() - lowestTimeSensorData.lastTimestamp.getTime()) / 1000;
+
+  if (lowestTimeSensorData.time > secondsSinceLowestSensorData) {
+    return addSeconds(lowestTimeSensorData.lastTimestamp, normalizedLowestTimeSeconds);
+  }
+
+  return addSeconds(new Date(), normalizedLowestTimeSeconds);
+};
+
 const getKioskData = async (kioskUuid: string) => {
   const kiosk = await db.kiosk.findUnique({
     where: { kioskUuid },
@@ -87,7 +143,11 @@ const getKioskData = async (kioskUuid: string) => {
     throw KioskNotFound();
   }
 
-  return kiosk;
+  const nextRefreshTimestamp = await calculateKioskDataRefreshTimestamp(
+    kiosk.sensors.map((s) => s.id)
+  );
+
+  return { ...kiosk, nextRefreshTimestamp };
 };
 
 const getKioskSensorData = async (
