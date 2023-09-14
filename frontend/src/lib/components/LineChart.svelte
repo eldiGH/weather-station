@@ -3,6 +3,8 @@
 		label: string;
 		xAxisData: (number | Date)[];
 		yAxisData: (number | Date)[];
+		minY?: number;
+		maxY?: number;
 	}
 </script>
 
@@ -40,6 +42,10 @@
 								minute: 'HH:mm'
 							}
 						}
+					},
+					y: {
+						...(config.minY ? { min: config.minY } : {}),
+						...(config.maxY ? { max: config.maxY } : {})
 					}
 				},
 				plugins: {

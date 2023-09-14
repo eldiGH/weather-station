@@ -2,6 +2,7 @@
 	export interface Tab {
 		label: string;
 		value?: string | number;
+		to?: string;
 		exactRoute?: boolean;
 	}
 
@@ -21,14 +22,22 @@
 	export let tabsStore: TabsStore | undefined = undefined;
 	export let currentTab: number | undefined = undefined;
 	export let navigation: boolean | undefined = undefined;
+	export let vertical: boolean | undefined = undefined;
 
 	let tabsDiv: HTMLDivElement;
 	const tabItems: HTMLElement[] = [];
 	const dispatch = createEventDispatcher<{ click: TabsClickEvent }>();
 
-	const calculateIndicatorForDiv = (div: HTMLElement) => {
-		const width = div.offsetWidth;
-		const offset = div.offsetLeft;
+	const calculateIndicatorForDiv = (div: HTMLElement, vertical?: boolean) => {
+		let width;
+		let offset;
+		if (vertical) {
+			width = div.offsetHeight;
+			offset = div.offsetTop;
+		} else {
+			offset = div.offsetLeft;
+			width = div.offsetWidth;
+		}
 
 		return { width, offset };
 	};
@@ -48,25 +57,29 @@
 		});
 	};
 
-	const moveIndicator = (tabsDiv: HTMLDivElement, toElement: HTMLElement) => {
-		const { width, offset } = calculateIndicatorForDiv(toElement);
+	const moveIndicator = (tabsDiv: HTMLDivElement, toElement: HTMLElement, vertical?: boolean) => {
+		const { width, offset } = calculateIndicatorForDiv(toElement, vertical);
 
 		tabsDiv.style.setProperty('--indicator-width', `${width}`);
 		tabsDiv.style.setProperty('--indicator-offset', `${offset}px`);
 	};
 
-	const shouldBeActive = (url: string, tab: Tab) => {
-		if (tab.exactRoute) {
-			return url === tab.value;
+	const shouldBeActive = (url: string, tab: Tab, index: number, currentTab: number) => {
+		if (navigation) {
+			if (tab.exactRoute) {
+				return url === tab.value;
+			}
+			return url.includes(tab.value as string);
 		}
-		return url.includes(tab.value as string);
+
+		return currentTab === index;
 	};
 
 	$: {
 		if (!navigation) {
 			const element = tabItems[$tabsStore ?? currentTab ?? 0];
 			if (element) {
-				moveIndicator(tabsDiv, element);
+				moveIndicator(tabsDiv, element, vertical);
 			}
 		}
 	}
@@ -75,30 +88,35 @@
 		if (navigation) {
 			const element = tabItems[getIndexFromUrl($page.url.pathname, tabs)];
 			if (element) {
-				moveIndicator(tabsDiv, element);
+				moveIndicator(tabsDiv, element, vertical);
 			}
 		}
 	}
+
+	$: calculatedTabs = tabs.map((tab, i) => ({
+		...tab,
+		active: shouldBeActive($page.url.pathname, tab, i, $tabsStore ?? currentTab ?? 0)
+	}));
 </script>
 
-<div bind:this={tabsDiv} class="tabs">
-	<div class="tab-items">
-		{#each tabs as tab, i (tab)}
+<div bind:this={tabsDiv} class:vertical class="tabs">
+	<div class:vertical class="tab-items">
+		{#each calculatedTabs as tab, i (tab)}
 			<!-- svelte-ignore a11y-click-events-have-key-events -->
 			<!-- svelte-ignore a11y-no-static-element-interactions -->
-			{#if navigation && typeof tab.value === 'string'}
+			{#if navigation && typeof tab.value === 'string' && !tab.active}
 				<Link
 					noColor
-					href={tab.value}
+					href={tab.to ?? tab.value}
 					bind:ref={tabItems[i]}
-					class={`tab ${shouldBeActive($page.url.pathname, tab) ? 'active' : ''}`}
+					class={`tab ${tab.active ? 'active' : ''}`}
 					on:click={() => handleTabChange(i, tab, true)}>{tab.label}</Link>
 			{:else}
 				<div
 					bind:this={tabItems[i]}
 					on:click={() => handleTabChange(i, tab, true)}
 					class="tab"
-					class:active={$tabsStore === i || currentTab === i}>
+					class:active={tab.active}>
 					{tab.label}
 				</div>
 			{/if}
@@ -109,7 +127,6 @@
 
 <style lang="scss">
 	.tabs {
-		width: 100%;
 		display: flex;
 		border-bottom: 1px solid gray;
 		position: relative;
@@ -121,6 +138,7 @@
 			display: inline-flex;
 
 			:global(.tab) {
+				text-align: center;
 				padding: 1rem 2rem;
 				cursor: pointer;
 				user-select: none;
@@ -128,6 +146,10 @@
 				&:hover {
 					background-color: rgba(255, 255, 255, 0.1);
 				}
+			}
+
+			&.vertical {
+				flex-direction: column;
 			}
 		}
 
@@ -147,6 +169,22 @@
 			transform-origin: left;
 			transform: translateX(var(--indicator-offset)) scaleX(var(--indicator-width));
 			transition: transform 200ms ease-in-out;
+		}
+
+		&.vertical {
+			display: inline-flex;
+			padding-right: 0;
+			border-bottom: unset;
+			align-items: unset;
+
+			&::after {
+				width: 2px;
+				height: 1px;
+				transform: translateY(var(--indicator-offset)) scaleY(var(--indicator-width));
+				transform-origin: top;
+				top: 0;
+				bottom: unset;
+			}
 		}
 	}
 </style>

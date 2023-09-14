@@ -190,9 +190,6 @@ export interface WeatherDaily extends BasicWeatherEntry {
   /** Probability of precipitation. The values of the parameter vary between 0 and 1, where 0 is equal to 0%, 1 is equal to 100%*/
   pop: number;
 
-  /** Human-readable description of the weather conditions for the day*/
-  summary: string;
-
   /** Sunrise time, Unix, UTC.*/
   sunrise: number;
 

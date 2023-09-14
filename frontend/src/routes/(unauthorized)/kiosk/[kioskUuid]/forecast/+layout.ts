@@ -1,7 +1,7 @@
 import { getKioskForecast } from '$lib/api/kiosk';
-import type { PageLoad } from './$types';
+import type { LayoutLoad } from './$types';
 
-export const load: PageLoad = ({ fetch, params, depends }) => {
+export const load: LayoutLoad = ({ fetch, params, depends }) => {
 	depends('api:kioskForecast');
 	return getKioskForecast(fetch, params.kioskUuid);
 };
