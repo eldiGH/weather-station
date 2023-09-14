@@ -88,13 +88,17 @@ export const handle: Handle = async ({ event, resolve }) => {
 		throw redirect(HttpStatus.FOUND, '/login');
 	}
 
-	const accessToken = event.cookies.get('accessToken');
-	const headers = {
-		Authorization: `Bearer ${accessToken}`,
-		'Content-Type': 'application/json'
-	};
+	if (isOnAuthedRoute) {
+		const accessToken = event.cookies.get('accessToken');
+		const headers = {
+			Authorization: `Bearer ${accessToken}`,
+			'Content-Type': 'application/json'
+		};
 
-	return resolve(event, {
-		transformPageChunk: replaceHash(headers)
-	});
+		return resolve(event, {
+			transformPageChunk: replaceHash(headers)
+		});
+	}
+
+	return resolve(event);
 };

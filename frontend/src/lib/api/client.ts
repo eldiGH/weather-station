@@ -12,6 +12,15 @@ export type FetchFunc = (
 
 export type QueryParams = Record<string, number | string | Date | undefined>;
 
+interface BaseRequestOptions {
+	query?: QueryParams;
+	authed?: boolean;
+}
+
+interface PostRequestOptions extends BaseRequestOptions {
+	data: Record<string, unknown>;
+}
+
 const parseQueryParams = (url: string, params?: QueryParams): string => {
 	if (!params) {
 		return url;
@@ -76,27 +85,27 @@ const handleClientAuth = () => {
 };
 
 export const getClient = (controllerUrl: string) => {
-	const baseConfig = (): RequestInit => ({
-		headers: { 'Content-Type': 'application/json', ...handleClientAuth() }
+	const baseConfig = (authed?: boolean): RequestInit => ({
+		headers: { 'Content-Type': 'application/json', ...(authed ? handleClientAuth() : {}) }
 	});
 
-	const getConfig = (): RequestInit => ({ ...baseConfig(), method: 'GET' });
-	const postConfig = (data: Record<string, unknown>): RequestInit => ({
-		...baseConfig(),
+	const getConfig = (authed?: boolean): RequestInit => ({ ...baseConfig(authed), method: 'GET' });
+	const postConfig = (authed?: boolean, data?: Record<string, unknown>): RequestInit => ({
+		...baseConfig(authed),
 		method: 'POST',
-		body: JSON.stringify(data)
+		...(data ? { body: JSON.stringify(data) } : {})
 	});
 
 	return {
-		get: (fetch: FetchFunc, url: string, params?: QueryParams) =>
+		get: (fetch: FetchFunc, url: string, options?: BaseRequestOptions) =>
 			fetch(
-				urlJoin(config.serverAddress, controllerUrl, parseQueryParams(url, params)),
-				getConfig()
+				urlJoin(config.serverAddress, controllerUrl, parseQueryParams(url, options?.query)),
+				getConfig(options?.authed)
 			).then(parseBody),
-		post: (fetch: FetchFunc, url: string, data: Record<string, unknown>, params?: QueryParams) =>
+		post: (fetch: FetchFunc, url: string, options?: PostRequestOptions) =>
 			fetch(
-				urlJoin(config.serverAddress, controllerUrl, parseQueryParams(url, params)),
-				postConfig(data)
+				urlJoin(config.serverAddress, controllerUrl, parseQueryParams(url, options?.query)),
+				postConfig(options?.authed, options?.data)
 			).then(parseBody)
 	};
 };

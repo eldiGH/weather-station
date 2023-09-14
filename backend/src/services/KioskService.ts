@@ -182,11 +182,11 @@ const getKioskSensorData = async (
   return sensor;
 };
 
-const removeForecastPrivateData = (forecast: WeatherApiResponse) => {
+const removeForecastPrivateData = (forecast: WeatherApiResponse, nextRefreshTimestamp: Date) => {
   // sourcery skip: inline-immediately-returned-variable
   const { alerts, current, daily, hourly, minutely } = forecast;
 
-  return { alerts, current, daily, hourly, minutely };
+  return { alerts, current, daily, hourly, minutely, nextRefreshTimestamp };
 };
 
 const getKioskForecast = async (kioskUuid: string) => {
@@ -199,25 +199,29 @@ const getKioskForecast = async (kioskUuid: string) => {
     cacheValid = false;
   } else {
     const parsedCacheEntry = JSON.parse(redisCachedEntry) as RedisCachedEntry<WeatherApiResponse>;
+    const timestamp = new Date(parsedCacheEntry.timestamp);
+    const timestampValidTo = addMinutes(timestamp, FORECAST_CACHE_MINUTES);
 
-    cacheValid = isAfter(
-      addMinutes(new Date(parsedCacheEntry.timestamp), FORECAST_CACHE_MINUTES),
-      new Date()
-    );
+    cacheValid = isAfter(timestampValidTo, new Date());
     if (cacheValid) {
-      return removeForecastPrivateData(parsedCacheEntry.data);
+      const nextRefreshTimestamp = addMinutes(timestampValidTo, FORECAST_CACHE_MINUTES * 0.05);
+      return removeForecastPrivateData(parsedCacheEntry.data, nextRefreshTimestamp);
     }
   }
 
+  const timestamp = new Date();
+  const timestampValidTo = addMinutes(timestamp, FORECAST_CACHE_MINUTES);
+
   const newForecast = await getForecast(kioskUuid);
   const newCacheEntry: RedisCachedEntry<WeatherApiResponse> = {
-    timestamp: new Date().toISOString(),
+    timestamp: timestamp.toISOString(),
     data: newForecast
   };
 
   await redisClient.set(cacheKey, JSON.stringify(newCacheEntry));
 
-  return removeForecastPrivateData(newForecast);
+  const nextRefreshTimestamp = addMinutes(timestampValidTo, FORECAST_CACHE_MINUTES * 0.05);
+  return removeForecastPrivateData(newForecast, nextRefreshTimestamp);
 };
 
 export const KioskService = { getKioskData, createKiosk, getKioskSensorData, getKioskForecast };

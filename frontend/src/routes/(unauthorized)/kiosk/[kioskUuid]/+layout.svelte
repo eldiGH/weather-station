@@ -19,9 +19,15 @@
 {/if}
 <slot />
 
-<style>
+<style lang="scss">
 	div {
 		font-size: 1.5rem;
 		margin-bottom: 2rem;
+		z-index: 10;
+
+		position: sticky;
+		top: 0;
+
+		background-color: #313537;
 	}
 </style>

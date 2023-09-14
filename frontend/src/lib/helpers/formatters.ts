@@ -11,10 +11,10 @@ enum UVILevel {
 }
 
 enum UVIColors {
-	NoDanger = '#0f9ff2',
-	Danger = '#0ac947',
-	HighDanger = '#fff700',
-	VeryHighDanger = '#ff7a21',
+	NoDanger = '#0ac947',
+	Danger = '#fff700',
+	HighDanger = '#ff7a21',
+	VeryHighDanger = '',
 	ExtremeDanger = '#ff2424'
 }
 

@@ -8,4 +8,4 @@ export const getBME68XData = (
 	sensorId: number,
 	dateRange?: GetSensorDataQuery
 ): Promise<GetBME68XDataResponse> =>
-	sensorClient.get(fetch, `/bme68x/${sensorId}`, { ...dateRange });
+	sensorClient.get(fetch, `/bme68x/${sensorId}`, { query: { ...dateRange }, authed: true });

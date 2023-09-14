@@ -23,8 +23,7 @@
 
 <TopBar>
 	<Link slot="left" noColor class="back-button" href={baseRoute?.replace(`/${sensorId}`, '') ?? ''}
-		><Icon weight={200} opticalSize={48} icon="arrow_back" /></Link
-	>
+		><Icon weight={200} opticalSize={48} icon="arrow_back" /></Link>
 	<div slot="center" class="sensor-name">{data.sensor.name}</div>
 	<ScrollPanel>
 		<div class="scroll-panel-content">
@@ -47,7 +46,7 @@
 	}
 
 	.scroll-panel-content {
-		padding-bottom: 5rem;
+		padding: 1rem 0 4rem;
 		.tabs-container {
 			margin-bottom: 2rem;
 		}

@@ -6,7 +6,6 @@
 		min-height: 100%;
 		display: flex;
 		justify-content: center;
-		margin-top: 2rem;
 
 		&__root {
 			min-height: 100%;

@@ -18,7 +18,7 @@ export const getKioskSensor = (
 	sensorId: number,
 	dateRange?: GetSensorDataQuery
 ): Promise<SensorResponseWithData> =>
-	kioskClient.get(fetch, `/${kioskUuid}/${sensorId}`, dateRange);
+	kioskClient.get(fetch, `/${kioskUuid}/${sensorId}`, { query: dateRange });
 
 export const getKioskSensorData = (
 	fetch: FetchFunc,
@@ -26,7 +26,7 @@ export const getKioskSensorData = (
 	sensorId: number,
 	dateRange?: GetSensorDataQuery
 ): Promise<GetBME68XDataResponse> =>
-	kioskClient.get(fetch, `/${kioskUuid}/${sensorId}/data`, dateRange);
+	kioskClient.get(fetch, `/${kioskUuid}/${sensorId}/data`, { query: dateRange });
 
 export const getKioskForecast = (fetch: FetchFunc, kioskUuid: string): Promise<WeatherResponse> =>
 	kioskClient.get(fetch, `/${kioskUuid}/forecast`);

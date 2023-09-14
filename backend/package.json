@@ -4,7 +4,7 @@
   "private": true,
   "type": "commonjs",
   "scripts": {
-    "dev": "tsc-watch2 --watch src --watch .env --buildStep 'tsc -b' --start 'node -r source-map-support/register --inspect dist'",
+    "dev": "tsc-watch2 --watch src --watch .env --watch ../shared/src --buildStep 'tsc -b' --start 'node -r source-map-support/register --inspect dist'",
     "build": "tsc -b",
     "start": "node dist",
     "lint": "prettier --plugin-search-dir . --check . && eslint .",

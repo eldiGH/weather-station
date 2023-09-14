@@ -6,8 +6,13 @@
 	import { fromUnixTime } from 'date-fns';
 	import { ACCESS_TOKEN_ADVANCE_TIME } from '$lib/constants';
 	import { intervalDateWatcherFactory } from '$lib/helpers/data';
+	import { browser } from '$app/environment';
 
 	const getDateOfAccessToken = () => {
+		if (!browser) {
+			return;
+		}
+
 		const { refreshToken, accessToken } = cookie.parse(document.cookie);
 
 		if (!refreshToken || !jwt.isValid(refreshToken)) {

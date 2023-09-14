@@ -6,22 +6,27 @@ export const intervalDateWatcherFactory = (callback: () => void) => {
 	let timeout: NodeJS.Timeout | null = null;
 	let lastDate: Date | null = null;
 
-	const startInvalidationTimeout = (when: Date) => {
-		lastDate = when;
-
+	const startDateTimeout = (when: Date) => {
 		if (timeout) {
-			clearInvalidationTimeout();
+			clearDateTimeout();
+		}
+
+		const time = differenceInMilliseconds(when, new Date());
+
+		if (time <= 0) {
+			callback();
+			return;
 		}
 
 		if (!timeout) {
 			timeout = setTimeout(() => {
 				callback();
 				timeout = null;
-			}, differenceInMilliseconds(when, new Date()));
+			}, time);
 		}
 	};
 
-	const clearInvalidationTimeout = () => {
+	const clearDateTimeout = () => {
 		if (timeout) {
 			clearTimeout(timeout);
 			timeout = null;
@@ -30,12 +35,12 @@ export const intervalDateWatcherFactory = (callback: () => void) => {
 
 	const handleVisibilityChange = () => {
 		if (document.hidden) {
-			clearInvalidationTimeout();
+			clearDateTimeout();
 			return;
 		}
 
 		if (lastDate) {
-			startInvalidationTimeout(lastDate);
+			startDateTimeout(lastDate);
 		}
 	};
 
@@ -52,7 +57,7 @@ export const intervalDateWatcherFactory = (callback: () => void) => {
 		}
 
 		document.removeEventListener('visibilitychange', handleVisibilityChange);
-		clearInvalidationTimeout();
+		clearDateTimeout();
 	};
 
 	const onDateUpdate = (when: Date) => {
@@ -62,10 +67,10 @@ export const intervalDateWatcherFactory = (callback: () => void) => {
 		lastDate = when;
 
 		if (timeout) {
-			clearInvalidationTimeout();
+			clearDateTimeout();
 		}
 
-		startInvalidationTimeout(when);
+		startDateTimeout(when);
 	};
 
 	return { onMount, onDestroy, onDateUpdate };

@@ -242,4 +242,5 @@ export interface WeatherResponse {
   daily: WeatherDaily[];
   hourly: WeatherHourly[];
   minutely: WeatherMinutely[];
+  nextRefreshTimestamp: Date;
 }
