@@ -20,7 +20,7 @@
 			xAxisData.push(createdAt);
 		}
 
-		return { label: 'Wilgotność', xAxisData, yAxisData };
+		return { xAxisData, datasets: [{ data: yAxisData, label: 'Wilgotność' }] };
 	};
 
 	let chartData: ChartData;

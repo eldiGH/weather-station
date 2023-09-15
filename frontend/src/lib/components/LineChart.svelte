@@ -1,15 +1,26 @@
 <script lang="ts" context="module">
+	export interface ChartDataset {
+		label?: string;
+		data: number[];
+		borderColor?: string;
+		backgroundColor?: string;
+		borderDash?: [number, number];
+		yAxisID?: string;
+	}
+
 	export interface ChartData {
-		label: string;
-		xAxisData: (number | Date)[];
-		yAxisData: (number | Date)[];
-		minY?: number;
-		maxY?: number;
+		xAxisData: Date[];
+		datasets: ChartDataset[];
+		scales?: _DeepPartialObject<{
+			[key: string]: ScaleOptionsByType<keyof CartesianScaleTypeRegistry>;
+		}>;
+		defaultTooltipFormat?: string;
 	}
 </script>
 
 <script lang="ts">
-	import { Chart } from 'chart.js/auto';
+	import { Chart, type CartesianScaleTypeRegistry, type ScaleOptionsByType } from 'chart.js/auto';
+	import type { _DeepPartialObject } from 'chart.js/dist/types/utils';
 	import { onDestroy, onMount } from 'svelte';
 
 	export let config: ChartData;
@@ -23,16 +34,23 @@
 			type: 'line',
 			data: {
 				labels: config.xAxisData,
-				datasets: [
-					{
-						label: config.label,
-						data: config.yAxisData,
-						borderColor: '#f39530',
-						backgroundColor: '#f39530'
-					}
-				]
+				datasets: config.datasets.map(
+					({ data, backgroundColor, borderColor, label, borderDash, yAxisID }) => ({
+						label,
+						data,
+						borderColor: borderColor ?? '#f39530',
+						backgroundColor: backgroundColor ?? '#f39530',
+						borderDash,
+						yAxisID
+					})
+				)
 			},
 			options: {
+				responsive: true,
+				interaction: {
+					mode: 'index',
+					intersect: false
+				},
 				scales: {
 					x: {
 						type: 'time',
@@ -40,17 +58,23 @@
 							unit: 'minute',
 							displayFormats: {
 								minute: 'HH:mm'
-							}
+							},
+							tooltipFormat: config.defaultTooltipFormat ?? 'HH:mm dd.MM'
 						}
 					},
-					y: {
-						...(config.minY ? { min: config.minY } : {}),
-						...(config.maxY ? { max: config.maxY } : {})
-					}
+					...config.scales
 				},
 				plugins: {
 					tooltip: {
-						enabled: showTooltip
+						enabled: showTooltip,
+						bodyFont: {
+							family: 'Roboto',
+							size: 16
+						},
+						titleFont: {
+							family: 'Roboto',
+							size: 20
+						}
 					}
 				}
 			}

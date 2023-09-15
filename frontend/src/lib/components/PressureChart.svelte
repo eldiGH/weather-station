@@ -22,7 +22,7 @@
 			xAxisData.push(createdAt);
 		}
 
-		return { label: 'Ciśnienie', xAxisData, yAxisData };
+		return { xAxisData, datasets: [{ label: 'Ciśnienie', data: yAxisData }] };
 	};
 
 	let chartData: ChartData;

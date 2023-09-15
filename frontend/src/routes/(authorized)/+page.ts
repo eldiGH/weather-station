@@ -16,7 +16,10 @@ const getTemperatureData = async (fetch: FetchType): Promise<CurrentPageData> =>
 	const xAxisData = data.map(({ createdAt }) => createdAt);
 	const yAxisData = data.map(({ temperature }) => temperature);
 
-	return { config: { label: 'Temperatura', xAxisData, yAxisData }, lastSensorEntry: data.at(-1) };
+	return {
+		config: { xAxisData, datasets: [{ label: 'Temperatura', data: yAxisData }] },
+		lastSensorEntry: data.at(-1)
+	};
 };
 
 export const load: PageLoad = async ({ fetch }) => {

@@ -34,7 +34,7 @@
 </script>
 
 <TopBar>
-	<Link slot="left" noColor class="back-button" href={baseRoute?.replace(`/${sensorId}`, '') ?? ''}
+	<Link slot="left" noColor class="back-button" href={baseRoute.replace(`/${sensorId}`, '')}
 		><Icon weight={200} opticalSize={48} icon="arrow_back" /></Link>
 	<div slot="center" class="sensor-name">{data.sensor.name}</div>
 	<ScrollPanel>

@@ -1,9 +1,11 @@
 <script lang="ts">
 	import type { WeatherMinutely } from 'shared';
-	import LineChart from './LineChart.svelte';
+	import LineChart from '../LineChart.svelte';
 	import { fromUnixTime } from 'date-fns';
 
 	export let minutes: WeatherMinutely[];
+
+	console.log(minutes);
 
 	const getChartData = (minutes: WeatherMinutely[]) => {
 		const xAxisData: Date[] = [];
@@ -23,8 +25,15 @@
 <LineChart
 	config={{
 		xAxisData: chartData.xAxisData,
-		yAxisData: chartData.yAxisData,
-		label: 'Szansa na deszcz',
-		minY: 0,
-		maxY: 100
+		datasets: [
+			{
+				label: 'Szansa na deszcz',
+				data: chartData.yAxisData,
+				backgroundColor: '#315de0',
+				borderColor: '#315de0',
+				borderDash: [5, 5]
+			}
+		],
+		scales: { y: { min: 0, max: 100 } },
+		defaultTooltipFormat: 'HH:mm'
 	}} />

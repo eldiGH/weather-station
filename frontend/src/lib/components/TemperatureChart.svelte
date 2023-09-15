@@ -22,7 +22,7 @@
 			xAxisData.push(createdAt);
 		}
 
-		return { label: 'Temperatura', xAxisData, yAxisData };
+		return { xAxisData, datasets: [{ label: 'Temperatura', data: yAxisData }] };
 	};
 
 	let chartData: ChartData;

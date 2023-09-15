@@ -2,19 +2,23 @@
 	import { capitalize } from '$lib/helpers/string';
 	import { format, fromUnixTime } from 'date-fns';
 	import type { WeatherDaily, WeatherHourly } from 'shared';
-	import IconInfo from './IconInfo.svelte';
+	import IconInfo from '../IconInfo.svelte';
 	import { getWeatherIcon } from '$lib/helpers/weatherHelper';
 	import { formatTemperature } from '$lib/helpers/formatters';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 
 	export let daysOrHours: (WeatherDaily | WeatherHourly)[];
 
 	$: isDaily = typeof daysOrHours[0].temp !== 'number';
+
+	$: baseUrl = `/kiosk/${$page.params.kioskUuid}/forecast/${isDaily ? 'daily' : 'hourly'}`;
 </script>
 
 <div class="root">
 	<table>
 		{#each daysOrHours as dayOrHour, i}
-			<tr>
+			<tr on:click={() => goto(`${baseUrl}/${i}`)}>
 				{#if isDaily}
 					<td>{i === 0 ? 'Dzisiaj' : capitalize(format(fromUnixTime(dayOrHour.dt), 'EEEE'))}</td>
 				{:else}
@@ -55,8 +59,10 @@
 
 				cursor: pointer;
 
-				&:hover {
-					background-color: rgba(255, 255, 255, 0.1);
+				@media only screen and (min-width: 800px) {
+					&:hover {
+						background-color: rgba(255, 255, 255, 0.1);
+					}
 				}
 			}
 

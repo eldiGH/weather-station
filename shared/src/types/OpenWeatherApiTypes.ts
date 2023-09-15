@@ -223,6 +223,9 @@ export interface WeatherHourly extends BasicWeatherEntry {
 
   /** Temperature. Celsius*/
   temp: number;
+
+  /** Temperature. This temperature parameter accounts for the human perception of weather. Celsius*/
+  feels_like: number;
 }
 
 export interface WeatherMinutely {
@@ -238,6 +241,6 @@ export interface WeatherResponse {
   current: WeatherCurrent;
   daily: WeatherDaily[];
   hourly: WeatherHourly[];
-  minutely: WeatherMinutely[];
+  minutely?: WeatherMinutely[];
   nextRefreshTimestamp: Date;
 }

@@ -56,7 +56,6 @@
 		}
 
 		.content {
-			padding-top: 1rem;
 			min-height: 100%;
 			height: 0;
 		}
