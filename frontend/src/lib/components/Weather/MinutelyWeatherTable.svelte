@@ -33,5 +33,6 @@
 			}
 		],
 		defaultTooltipFormat: 'HH:mm',
-		tooltipLabelFormatter: (data) => `${data.formattedValue} mm/h`
+		tooltipLabelFormatter: (data) => `${data.formattedValue} mm/h`,
+		scales: { y: { min: 0 } }
 	}} />
