@@ -15,11 +15,17 @@
 			[key: string]: ScaleOptionsByType<keyof CartesianScaleTypeRegistry>;
 		}>;
 		defaultTooltipFormat?: string;
+		tooltipLabelFormatter?: (data: TooltipItem<'line'>) => string;
 	}
 </script>
 
 <script lang="ts">
-	import { Chart, type CartesianScaleTypeRegistry, type ScaleOptionsByType } from 'chart.js/auto';
+	import {
+		Chart,
+		type CartesianScaleTypeRegistry,
+		type ScaleOptionsByType,
+		type TooltipItem
+	} from 'chart.js/auto';
 	import type { _DeepPartialObject } from 'chart.js/dist/types/utils';
 	import { onDestroy, onMount } from 'svelte';
 
@@ -74,6 +80,9 @@
 						titleFont: {
 							family: 'Roboto',
 							size: 20
+						},
+						callbacks: {
+							label: config.tooltipLabelFormatter
 						}
 					}
 				}

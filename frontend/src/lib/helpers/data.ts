@@ -33,8 +33,12 @@ export const intervalDateWatcherFactory = (callback: () => void) => {
 		}
 	};
 
-	const handleVisibilityChange = () => {
-		if (document.hidden) {
+	const handleRequestPollChange = (e: Event) => {
+		const shouldPoll = (e as CustomEvent<boolean>).detail;
+
+		console.log({ shouldPoll });
+
+		if (!shouldPoll) {
 			clearDateTimeout();
 			return;
 		}
@@ -48,7 +52,7 @@ export const intervalDateWatcherFactory = (callback: () => void) => {
 		if (!browser) {
 			return;
 		}
-		document.addEventListener('visibilitychange', handleVisibilityChange);
+		document.addEventListener('requestPollChange', handleRequestPollChange);
 	};
 
 	const onDestroy = () => {
@@ -56,7 +60,7 @@ export const intervalDateWatcherFactory = (callback: () => void) => {
 			return;
 		}
 
-		document.removeEventListener('visibilitychange', handleVisibilityChange);
+		document.removeEventListener('requestPollChange', handleRequestPollChange);
 		clearDateTimeout();
 	};
 

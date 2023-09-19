@@ -11,7 +11,14 @@ import { v4 as uuid } from 'uuid';
 import { redisClient } from '../redis';
 import axios from 'axios';
 import { RedisCachedEntry, WeatherApiResponse } from '../types';
-import { addMinutes, addSeconds, differenceInSeconds, isAfter, subMinutes } from 'date-fns';
+import {
+  addMinutes,
+  addSeconds,
+  differenceInSeconds,
+  fromUnixTime,
+  isAfter,
+  subMinutes
+} from 'date-fns';
 import { getWhereForDates } from '../helpers';
 
 const FORECAST_CACHE_MINUTES = 30;
@@ -182,11 +189,22 @@ const getKioskSensorData = async (
   return sensor;
 };
 
-const removeForecastPrivateData = (forecast: WeatherApiResponse, nextRefreshTimestamp: Date) => {
-  // sourcery skip: inline-immediately-returned-variable
+const mapForecastResponseData = (forecast: WeatherApiResponse, nextRefreshTimestamp: Date) => {
   const { alerts, current, daily, hourly, minutely } = forecast;
 
-  return { alerts, current, daily, hourly, minutely, nextRefreshTimestamp };
+  const currentDate = new Date();
+
+  const filteredHours = hourly.filter((h) => isAfter(fromUnixTime(h.dt), currentDate));
+  const filteredMinutes = minutely?.filter((m) => isAfter(fromUnixTime(m.dt), currentDate));
+
+  return {
+    alerts,
+    current,
+    daily,
+    hourly: filteredHours,
+    minutely: filteredMinutes,
+    nextRefreshTimestamp
+  };
 };
 
 const getKioskForecast = async (kioskUuid: string) => {
@@ -205,7 +223,7 @@ const getKioskForecast = async (kioskUuid: string) => {
     cacheValid = isAfter(timestampValidTo, new Date());
     if (cacheValid) {
       const nextRefreshTimestamp = addMinutes(timestampValidTo, FORECAST_CACHE_MINUTES * 0.05);
-      return removeForecastPrivateData(parsedCacheEntry.data, nextRefreshTimestamp);
+      return mapForecastResponseData(parsedCacheEntry.data, nextRefreshTimestamp);
     }
   }
 
@@ -221,7 +239,7 @@ const getKioskForecast = async (kioskUuid: string) => {
   await redisClient.set(cacheKey, JSON.stringify(newCacheEntry));
 
   const nextRefreshTimestamp = addMinutes(timestampValidTo, FORECAST_CACHE_MINUTES * 0.05);
-  return removeForecastPrivateData(newForecast, nextRefreshTimestamp);
+  return mapForecastResponseData(newForecast, nextRefreshTimestamp);
 };
 
 export const KioskService = { getKioskData, createKiosk, getKioskSensorData, getKioskForecast };
