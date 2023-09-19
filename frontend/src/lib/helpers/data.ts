@@ -1,6 +1,7 @@
 import { browser } from '$app/environment';
 import { invalidate } from '$app/navigation';
 import { differenceInMilliseconds } from 'date-fns';
+import { requestPollEventName } from './requestPoller';
 
 export const intervalDateWatcherFactory = (callback: () => void) => {
 	let timeout: NodeJS.Timeout | null = null;
@@ -52,7 +53,7 @@ export const intervalDateWatcherFactory = (callback: () => void) => {
 		if (!browser) {
 			return;
 		}
-		document.addEventListener('requestPollChange', handleRequestPollChange);
+		document.addEventListener(requestPollEventName, handleRequestPollChange);
 	};
 
 	const onDestroy = () => {
@@ -60,7 +61,7 @@ export const intervalDateWatcherFactory = (callback: () => void) => {
 			return;
 		}
 
-		document.removeEventListener('requestPollChange', handleRequestPollChange);
+		document.removeEventListener(requestPollEventName, handleRequestPollChange);
 		clearDateTimeout();
 	};
 

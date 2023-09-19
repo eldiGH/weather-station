@@ -2,20 +2,31 @@ import { browser } from '$app/environment';
 import { differenceInMilliseconds } from 'date-fns';
 import { throttle } from './throttle';
 
-const ACTIVITY_TIMEOUT_MS = 10 * 60 * 1000;
+// const ACTIVITY_TIMEOUT_MS = 10 * 60 * 1000;
+const ACTIVITY_TIMEOUT_MS = 5000;
+
+export const requestPollEventName = 'requestPollChange';
 
 export const createRequestPoller = () => {
 	let lastActivity: Date = new Date();
 	let lastActivityTimeout: NodeJS.Timeout | null = null;
 
 	const handleVisibilityChange = () => {
-		handleActivity();
+		if (document.hidden) {
+			if (lastActivityTimeout) {
+				clearTimeout(lastActivityTimeout);
+				lastActivityTimeout = null;
+			}
+		} else {
+			lastActivity = new Date();
+			startInactivityTimeout();
+		}
 
 		dispatchRequestPoll(!document.hidden);
 	};
 
 	const dispatchRequestPoll = (shouldPoll: boolean) => {
-		document.dispatchEvent(new CustomEvent('requestPollChange', { detail: shouldPoll }));
+		document.dispatchEvent(new CustomEvent(requestPollEventName, { detail: shouldPoll }));
 	};
 
 	const handleInactivity = () => {
@@ -62,6 +73,11 @@ export const createRequestPoller = () => {
 		document.removeEventListener('visibilitychange', handleVisibilityChange);
 		document.removeEventListener('mousemove', handleActivity);
 		document.removeEventListener('click', handleActivity);
+
+		if (lastActivityTimeout) {
+			clearTimeout(lastActivityTimeout);
+			lastActivityTimeout = null;
+		}
 	};
 
 	return { onMount, onDestroy };
