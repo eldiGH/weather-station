@@ -2,8 +2,7 @@ import { browser } from '$app/environment';
 import { differenceInMilliseconds } from 'date-fns';
 import { throttle } from './throttle';
 
-// const ACTIVITY_TIMEOUT_MS = 10 * 60 * 1000;
-const ACTIVITY_TIMEOUT_MS = 5000;
+const ACTIVITY_TIMEOUT_MS = 10 * 60 * 1000;
 
 export const requestPollEventName = 'requestPollChange';
 
