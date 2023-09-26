@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy } from 'svelte';
 	import cookie from 'cookie';
 	import { logout, refresh } from '$lib/helpers/auth';
 	import { jwt } from '$lib/helpers/jwt';
 	import { fromUnixTime } from 'date-fns';
 	import { ACCESS_TOKEN_ADVANCE_TIME } from '$lib/constants';
-	import { intervalDateWatcherFactory } from '$lib/helpers/data';
 	import { browser } from '$app/environment';
+	import { subscribeAction } from './ActionPoller.svelte';
 
 	const getDateOfAccessToken = () => {
 		if (!browser) {
@@ -37,20 +37,16 @@
 		date = getDateOfAccessToken();
 	};
 
-	const intervalDateWatcher = intervalDateWatcherFactory(refreshToken);
-
-	onMount(() => {
-		intervalDateWatcher.onMount();
-	});
+	const { setNextPollDate, unsubscribeAction } = subscribeAction(refreshToken);
 
 	onDestroy(() => {
-		intervalDateWatcher.onDestroy();
+		unsubscribeAction();
 	});
 
 	let date = getDateOfAccessToken();
 	$: {
 		if (date) {
-			intervalDateWatcher.onDateUpdate(date);
+			setNextPollDate(date);
 		}
 	}
 </script>

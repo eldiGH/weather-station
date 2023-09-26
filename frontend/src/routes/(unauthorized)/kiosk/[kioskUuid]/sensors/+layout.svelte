@@ -1,22 +1,18 @@
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy } from 'svelte';
 	import type { LayoutData } from './$types';
-	import { invalidateDataWatcherFactory } from '$lib/helpers/data';
+	import { subscribeAction } from '$lib/components/ActionPoller.svelte';
 
 	export let data: LayoutData;
 
-	const invalidateDataWatcher = invalidateDataWatcherFactory('api:kioskData');
-
-	onMount(() => {
-		invalidateDataWatcher.onMount();
-	});
+	const { setNextPollDate, unsubscribeAction } = subscribeAction('api:kioskData');
 
 	onDestroy(() => {
-		invalidateDataWatcher.onDestroy();
+		unsubscribeAction();
 	});
 
 	$: {
-		invalidateDataWatcher.onDateUpdate(data.kioskData.nextRefreshTimestamp);
+		setNextPollDate(data.kioskData.nextRefreshTimestamp);
 	}
 </script>
 

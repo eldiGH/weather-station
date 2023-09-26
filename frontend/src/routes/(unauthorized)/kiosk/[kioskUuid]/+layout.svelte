@@ -3,16 +3,17 @@
 	import { page } from '$app/stores';
 	import Tabs, { type Tab, type TabsClickEvent } from '$lib/components/Tabs.svelte';
 	import Clock from '$lib/components/Clock.svelte';
-	import { onMount, setContext } from 'svelte';
 	import { writable } from 'svelte/store';
 	import { setAppContext } from '$lib/helpers/contextHelper';
 	import ScrollPanel from '$lib/components/ScrollPanel.svelte';
-	import { requestPollEventName } from '$lib/helpers/requestPoller';
+	import { onDestroy } from 'svelte';
+	import { registerActivityChangeHandler } from '$lib/components/ActionPoller.svelte';
 
 	const baseUrl = `/kiosk/${$page.params.kioskUuid}`;
+	const sensorsUrl = `${baseUrl}/sensors`;
 
 	const tabs: Tab[] = [
-		{ label: 'Czujniki', value: `${baseUrl}/sensors` },
+		{ label: 'Czujniki', value: sensorsUrl },
 		{ label: 'Prognoza pogody', value: `${baseUrl}/forecast`, to: `${baseUrl}/forecast/current` }
 	];
 
@@ -20,14 +21,14 @@
 
 	setAppContext('kioskMainNavigationTabs', tabsVisibilityStore);
 
-	onMount(() => {
-		document.addEventListener(requestPollEventName, (e) => {
-			const shouldPoll = (e as CustomEvent<boolean>).detail;
+	const { unregister } = registerActivityChangeHandler((active) => {
+		if (!active) {
+			goto(sensorsUrl, { invalidateAll: false });
+		}
+	});
 
-			if (shouldPoll) {
-				goto(`${baseUrl}/sensors`);
-			}
-		});
+	onDestroy(() => {
+		unregister();
 	});
 </script>
 

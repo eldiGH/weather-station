@@ -1,25 +1,21 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import Tabs, { type Tab } from '$lib/components/Tabs.svelte';
-	import { invalidateDataWatcherFactory } from '$lib/helpers/data';
 	import { onDestroy, onMount } from 'svelte';
 	import type { LayoutData } from './$types';
 	import ScrollPanel from '$lib/components/ScrollPanel.svelte';
+	import { subscribeAction } from '$lib/components/ActionPoller.svelte';
 
 	export let data: LayoutData;
 
-	const invalidateDataWatcher = invalidateDataWatcherFactory('api:kioskForecast');
-
-	onMount(() => {
-		invalidateDataWatcher.onMount();
-	});
+	const { setNextPollDate, unsubscribeAction } = subscribeAction('api:kioskForecast');
 
 	onDestroy(() => {
-		invalidateDataWatcher.onDestroy();
+		unsubscribeAction();
 	});
 
 	$: {
-		invalidateDataWatcher.onDateUpdate(data.nextRefreshTimestamp);
+		setNextPollDate(data.nextRefreshTimestamp);
 	}
 
 	const baseUrl = `/kiosk/${$page.params.kioskUuid}/forecast`;
