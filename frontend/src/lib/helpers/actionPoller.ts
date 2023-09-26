@@ -63,7 +63,6 @@ export const createActionPoller = () => {
 		const timeToNextAction = differenceInMilliseconds(subscribedAction.nextPollDate, new Date());
 
 		if (timeToNextAction <= 0) {
-			console.log('executed action immediately', subscribedActions);
 			executeAction(subscribedAction);
 			return;
 		}
@@ -71,8 +70,6 @@ export const createActionPoller = () => {
 		subscribedAction.timeout = setTimeout(() => {
 			executeAction(subscribedAction);
 		}, timeToNextAction);
-
-		console.log('startedTimeout', subscribedActions);
 	};
 
 	const subscribeAction = (invalidationDependencyOrCallback: string | (() => void)) => {
@@ -108,8 +105,6 @@ export const createActionPoller = () => {
 			}
 
 			subscribedActions.splice(index, 1);
-
-			console.log('unsubscribe', subscribedActions);
 		};
 
 		const setNextPollDate = (date: Date) => {
@@ -119,14 +114,10 @@ export const createActionPoller = () => {
 				clearTimeout(subscribedAction.timeout);
 			}
 
-			console.log('setNextPollDate', subscribedActions);
-
 			if (active) {
 				startActionTimeout(subscribedAction);
 			}
 		};
-
-		console.log('subscribe', subscribedActions);
 
 		return { unsubscribeAction, setNextPollDate };
 	};
@@ -154,14 +145,12 @@ export const createActionPoller = () => {
 			}
 		}
 
-		console.log('deactivate', subscribedActions);
 		fireActivityChangeHandlers();
 	};
 
 	const activate = () => {
 		active = true;
 
-		console.log('activate', subscribedActions);
 		for (const action of subscribedActions) {
 			if (action.nextPollDate && !action.timeout) {
 				startActionTimeout(action);
