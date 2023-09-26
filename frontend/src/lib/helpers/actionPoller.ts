@@ -3,7 +3,7 @@ import { invalidate } from '$app/navigation';
 import { throttle } from '$lib/helpers/throttle';
 import { differenceInMilliseconds } from 'date-fns';
 
-const ACTIVITY_TIMEOUT_MS = 1 * 60 * 1000;
+const ACTIVITY_TIMEOUT_MS = 8 * 60 * 1000;
 
 export type SubscribedAction = {
 	timeout: NodeJS.Timeout | null;
