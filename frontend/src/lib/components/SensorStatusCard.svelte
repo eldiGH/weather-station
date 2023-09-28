@@ -31,7 +31,7 @@
 						<TempAndHumidityGauge
 							temperature={sensor.currentData.temperature}
 							humidity={sensor.currentData.humidity} />
-						<BatteryIndicator batteryPercentage={sensor.currentData.batteryPercentage} />
+						<BatteryIndicator batteryReading={sensor.currentData.batteryPercentage} />
 					{:else}
 						BRAK DANYCH
 					{/if}

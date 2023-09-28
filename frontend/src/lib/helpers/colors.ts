@@ -1,3 +1,5 @@
+import { minMax } from './math';
+
 export interface RGB {
 	r: number;
 	g: number;
@@ -54,9 +56,15 @@ export const calculateGradientNormalized = (percentage: number, thresholds: Thre
 export const calculateGradient = (value: number, thresholds: Threshold[]): RGB => {
 	const sortedThresholds = [...thresholds].sort((a, b) => a.value - b.value);
 
+	const boundedValue = minMax(
+		value,
+		sortedThresholds[0].value,
+		sortedThresholds[sortedThresholds.length - 1].value
+	);
+
 	const normalizationValue = sortedThresholds[0].value;
 	const normalizedMax = sortedThresholds[sortedThresholds.length - 1].value - normalizationValue;
-	const percentage = (value - normalizationValue) / normalizedMax;
+	const percentage = (boundedValue - normalizationValue) / normalizedMax;
 
 	return calculateGradientNormalized(
 		percentage,
