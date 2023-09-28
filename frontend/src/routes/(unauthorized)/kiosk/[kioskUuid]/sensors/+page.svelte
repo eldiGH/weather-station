@@ -14,6 +14,8 @@
 		<div class="sensors">
 			{#each sensors as sensor}
 				<SensorStatusCard {sensor} />
+				<SensorStatusCard {sensor} />
+				<SensorStatusCard {sensor} />
 			{/each}
 		</div>
 	{/if}

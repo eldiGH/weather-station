@@ -25,11 +25,11 @@
 <script lang="ts">
 	import { onMount, type ComponentProps } from 'svelte';
 
-	import CenteredGaugeBar from './CenteredGaugeBar.svelte';
 	import GaugeNeedle from './GaugeNeedle.svelte';
 	import { getRadians, roundToPrecision } from '$lib/helpers/math';
 	import GaugeLabel from './GaugeLabel.svelte';
 	import GaugeValue from './GaugeValue.svelte';
+	import GaugeBar from './GaugeBar.svelte';
 
 	export let config: GaugeConfig;
 	export let value: number;
@@ -52,12 +52,12 @@
 		normalizationValue: number,
 		normalizedMax: number,
 		startAngle: number
-	): ComponentProps<CenteredGaugeBar>[] => {
+	): ComponentProps<GaugeBar>[] => {
 		const getGauge = (
 			breakpoint: GaugeBreakpoint,
 			index: number,
 			breakpoints: GaugeBreakpoint[]
-		): ComponentProps<CenteredGaugeBar> => {
+		): ComponentProps<GaugeBar> => {
 			const to = breakpoint.to ?? config.maxValue;
 			const { color } = breakpoint;
 
@@ -174,11 +174,7 @@
 <div class="container">
 	<svg {width} {height}>
 		{#each gauges as gauge}
-			<CenteredGaugeBar
-				stroke={config.barBorderColor}
-				strokeWidth={config.barBorderWidth}
-				{...gauge}
-			/>
+			<GaugeBar stroke={config.barBorderColor} strokeWidth={config.barBorderWidth} {...gauge} />
 		{/each}
 		{#each labels as label}
 			<GaugeLabel {...label} />
@@ -191,14 +187,12 @@
 			fill={config.needleColor}
 			rotation={needleAngle}
 			stroke="black"
-			strokeWidth={1}
-		/>
+			strokeWidth={1} />
 		{#if config.showValue !== false}
 			<GaugeValue
 				x={center.x}
 				y={center.y}
-				value={config.valueDisplayTransform?.(value) ?? value.toString()}
-			/>
+				value={config.valueDisplayTransform?.(value) ?? value.toString()} />
 		{/if}
 	</svg>
 </div>

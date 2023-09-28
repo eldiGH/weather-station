@@ -1,70 +1,40 @@
 <script lang="ts">
 	import { Card } from 'agnostic-svelte';
-	import type { GetLatestBME68XDataEntryResponse, SensorResponseWithCurrentData } from 'shared';
+	import type { SensorResponseWithCurrentData } from 'shared';
 	import IconInfo from './IconInfo.svelte';
 	import Link from './Link.svelte';
 	import { page } from '$app/stores';
 	import { formatCreatedAt } from '$lib/helpers/date';
-	import { formatTemperature } from '$lib/helpers/formatters';
+	import TempAndHumidityGauge from './TempAndHumidityGauge.svelte';
+	import BatteryIndicator from './BatteryIndicator.svelte';
 
 	export let sensor: SensorResponseWithCurrentData;
-
-	const convertReadingToVoltage = (reading: number) => {
-		const conversionFactor = (3.3 / 4096) * 3;
-
-		return reading * conversionFactor;
-	};
-
-	const formatData = (data?: GetLatestBME68XDataEntryResponse) => {
-		if (!data) {
-			const label = 'Brak danych';
-
-			return {
-				temperature: label,
-				humidity: label,
-				pressure: label,
-				batteryPercentage: label,
-				createdAt: label
-			};
-		}
-
-		const { temperature, humidity, pressure, batteryPercentage, createdAt } = data;
-
-		return {
-			temperature: formatTemperature(temperature),
-			humidity: `${humidity.toFixed(1)}%`,
-			pressure: `${Math.round(pressure / 100)} hPa`,
-			batteryPercentage: `${convertReadingToVoltage(batteryPercentage).toFixed(2)}V`,
-			createdAt: formatCreatedAt(createdAt)
-		};
-	};
-
-	$: formattedData = formatData(sensor.currentData);
 </script>
 
 <Link noColor href={`${$page.url.pathname}/${sensor.id}`}>
 	<div class="root">
 		<Card isBorder isRounded isShadow>
 			<div class="card-content">
-				<div class="header">{sensor.name}</div>
-				<div class="info-wrapper">
-					<div class="info">
-						<IconInfo weight={200} gap={0.5} icon="device_thermostat">
-							{formattedData.temperature}
-						</IconInfo>
-						<IconInfo weight={200} gap={0.5} icon="humidity_percentage">
-							{formattedData.humidity}
-						</IconInfo>
-						<IconInfo weight={200} gap={0.5} icon="compress">
-							{formattedData.pressure}
-						</IconInfo>
-						<IconInfo weight={200} gap={0.5} icon="battery_5_bar">
-							{formattedData.batteryPercentage}
-						</IconInfo>
-						<IconInfo weight={200} gap={0.5} icon="schedule">
-							{formattedData.createdAt}
-						</IconInfo>
+				<div class="header">
+					<div>
+						{sensor.name}
 					</div>
+					{#if sensor.currentData}
+						<div class="time">
+							<IconInfo gap={0.3} icon="schedule"
+								>{formatCreatedAt(sensor.currentData.createdAt)}</IconInfo>
+						</div>
+					{/if}
+				</div>
+				<div class="gauges">
+					{#if sensor.currentData}
+						<TempAndHumidityGauge
+							temperature={sensor.currentData.temperature}
+							humidity={sensor.currentData.humidity} />
+						<BatteryIndicator batteryPercentage={sensor.currentData.batteryPercentage} />
+					{:else}
+						BRAK DANYCH
+					{/if}
 				</div>
 			</div>
 		</Card>
@@ -82,23 +52,19 @@
 
 			.header {
 				font-size: 2rem;
-				display: flex;
-				justify-content: center;
-				margin-bottom: 1.5rem;
-				word-break: break-all;
+				margin-bottom: 0.5rem;
 				text-align: center;
+
+				.time {
+					font-size: 1.3rem;
+					opacity: 0.7;
+				}
 			}
 
-			.info-wrapper {
+			.gauges {
 				display: flex;
-				width: 100%;
-				height: 100%;
-				justify-content: center;
-
-				.info {
-					display: flex;
-					flex-direction: column;
-				}
+				align-items: center;
+				flex-direction: column;
 			}
 		}
 	}
