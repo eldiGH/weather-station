@@ -45,6 +45,7 @@
 	.root {
 		font-size: 1.5rem;
 		width: 20rem;
+		user-select: none;
 
 		.card-content {
 			width: 100%;
