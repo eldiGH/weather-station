@@ -90,6 +90,7 @@
 		class="indicator"
 		stroke-dasharray={`${dashArray.join(' ')}`} />
 	<circle
+		style={`transform-origin: ${centerPoint.x}px ${centerPoint.y}px`}
 		cx={arc.startPoint.x}
 		cy={arc.startPoint.y}
 		r={width}
@@ -119,7 +120,6 @@
 		}
 
 		&__ball {
-			transform-origin: 50% 50%;
 			transition-duration: $animationTime;
 			transition-timing-function: $animationTimingFunc;
 			transition-property: transform, fill;

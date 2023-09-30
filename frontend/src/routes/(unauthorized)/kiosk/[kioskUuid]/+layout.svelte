@@ -1,11 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import Tabs, { type Tab, type TabsClickEvent } from '$lib/components/Tabs.svelte';
+	import Tabs, { type Tab } from '$lib/components/Tabs.svelte';
 	import Clock from '$lib/components/Clock.svelte';
 	import { writable } from 'svelte/store';
 	import { setAppContext } from '$lib/helpers/contextHelper';
-	import ScrollPanel from '$lib/components/ScrollPanel.svelte';
 	import { onDestroy } from 'svelte';
 	import { registerActivityChangeHandler } from '$lib/components/ActionPoller.svelte';
 
@@ -32,38 +31,22 @@
 	});
 </script>
 
-<div class="root">
-	{#if $tabsVisibilityStore}
-		<div class="tabs-container">
-			<Tabs navigation {tabs}><Clock /></Tabs>
-		</div>
-	{/if}
-	<div class="content">
-		<ScrollPanel>
-			<slot />
-		</ScrollPanel>
+{#if $tabsVisibilityStore}
+	<div class="tabs-container">
+		<Tabs navigation {tabs}><Clock /></Tabs>
 	</div>
-</div>
+{/if}
+
+<slot />
 
 <style lang="scss">
-	.root {
-		height: 100%;
-		display: flex;
-		flex-direction: column;
+	.tabs-container {
+		font-size: 1.5rem;
+		z-index: 10;
 
-		.tabs-container {
-			font-size: 1.5rem;
-			z-index: 10;
+		position: sticky;
+		top: 0;
 
-			position: sticky;
-			top: 0;
-
-			background-color: #313537;
-		}
-
-		.content {
-			min-height: 0;
-			flex-grow: 1;
-		}
+		background-color: #313537;
 	}
 </style>

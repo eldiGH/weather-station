@@ -1,13 +1,13 @@
 <script lang="ts">
 	import Icon from '$lib/components/Icon.svelte';
 	import Link from '$lib/components/Link.svelte';
-	import ScrollPanel from '$lib/components/ScrollPanel.svelte';
 	import Tabs, { type Tab } from '$lib/components/Tabs.svelte';
 	import TopBar from '$lib/components/TopBar.svelte';
 	import type { LayoutData } from './$types';
 	import { page } from '$app/stores';
 	import { onDestroy, onMount } from 'svelte';
 	import { getAppContext } from '$lib/helpers/contextHelper';
+	import Container from '$lib/components/Container.svelte';
 
 	export let data: LayoutData;
 
@@ -37,14 +37,12 @@
 	<Link slot="left" noColor class="back-button" href={baseRoute.replace(`/${sensorId}`, '')}
 		><Icon weight={200} opticalSize={48} icon="arrow_back" /></Link>
 	<div slot="center" class="sensor-name">{data.sensor.name}</div>
-	<ScrollPanel>
-		<div class="scroll-panel-content">
-			<div class="tabs-container">
-				<Tabs navigation {tabs} />
-			</div>
-			<slot />
+	<Container pt={2} pb={2}>
+		<div class="tabs-container">
+			<Tabs navigation {tabs} />
 		</div>
-	</ScrollPanel>
+		<slot />
+	</Container>
 </TopBar>
 
 <style lang="scss">
@@ -55,13 +53,6 @@
 		display: flex;
 
 		font-variation-settings: w;
-	}
-
-	.scroll-panel-content {
-		padding: 1rem 0 4rem;
-		.tabs-container {
-			margin-bottom: 2rem;
-		}
 	}
 
 	.sensor-name {

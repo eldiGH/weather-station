@@ -1,6 +1,5 @@
 <script lang="ts">
 	import LineChart, { type ChartDataset } from '$lib/components/LineChart.svelte';
-	import ScrollPanel from '$lib/components/ScrollPanel.svelte';
 	import Tabs from '$lib/components/Tabs.svelte';
 	import DailyOrHourlyWeatherTable from '$lib/components/Weather/DailyOrHourlyWeatherTable.svelte';
 	import { createTabs } from '$lib/stores/tabs';
@@ -53,37 +52,35 @@
 <div class="root">
 	<Tabs {tabsStore} tabs={[{ label: 'Tabela' }, { label: 'Wykres' }]} />
 	<div class="scroll-panel-container">
-		<ScrollPanel>
-			<div class="content">
-				{#if $tabsStore === 0}
-					<DailyOrHourlyWeatherTable daysOrHours={data.daily} />
-				{:else}
-					<LineChart
-						config={{
-							...chartData,
-							scales: {
-								x: {
-									type: 'time',
-									time: {
-										unit: 'day',
-										round: 'day',
-										displayFormats: { day: 'EEEE dd.MM' },
-										tooltipFormat: 'EEEE dd.MM'
-									},
-									display: true
+		<div class="content">
+			{#if $tabsStore === 0}
+				<DailyOrHourlyWeatherTable daysOrHours={data.daily} />
+			{:else}
+				<LineChart
+					config={{
+						...chartData,
+						scales: {
+							x: {
+								type: 'time',
+								time: {
+									unit: 'day',
+									round: 'day',
+									displayFormats: { day: 'EEEE dd.MM' },
+									tooltipFormat: 'EEEE dd.MM'
 								},
-								y1: {
-									type: 'linear',
-									min: 0,
-									max: 100,
-									grid: { drawOnChartArea: false },
-									position: 'right'
-								}
+								display: true
+							},
+							y1: {
+								type: 'linear',
+								min: 0,
+								max: 100,
+								grid: { drawOnChartArea: false },
+								position: 'right'
 							}
-						}} />
-				{/if}
-			</div>
-		</ScrollPanel>
+						}
+					}} />
+			{/if}
+		</div>
 	</div>
 </div>
 

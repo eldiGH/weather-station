@@ -3,7 +3,6 @@
 	import Tabs, { type Tab } from '$lib/components/Tabs.svelte';
 	import { onDestroy, onMount } from 'svelte';
 	import type { LayoutData } from './$types';
-	import ScrollPanel from '$lib/components/ScrollPanel.svelte';
 	import { subscribeAction } from '$lib/components/ActionPoller.svelte';
 
 	export let data: LayoutData;
@@ -32,11 +31,7 @@
 	<div class="tabs">
 		<Tabs vertical navigation {tabs} />
 	</div>
-	<ScrollPanel>
-		<div class="content">
-			<slot />
-		</div>
-	</ScrollPanel>
+	<slot />
 </div>
 
 <style lang="scss">
@@ -49,11 +44,6 @@
 			align-items: center;
 			border-right: 1px solid grey;
 			font-size: 1.2rem;
-		}
-
-		.content {
-			min-height: 100%;
-			height: 0;
 		}
 	}
 </style>

@@ -1,11 +1,3 @@
-<script>
-	import { logout } from '$lib/helpers/auth';
-	import Button from './Button.svelte';
-	import Container from './Container.svelte';
-	import Link from './Link.svelte';
-	import ScrollPanel from './ScrollPanel.svelte';
-</script>
-
 <div class="root">
 	<div class="topbar">
 		<div class="left-slot"><slot name="left" /></div>
@@ -13,11 +5,7 @@
 		<div class="right-slot"><slot name="right" /></div>
 	</div>
 	<div class="content">
-		<ScrollPanel>
-			<Container>
-				<slot />
-			</Container>
-		</ScrollPanel>
+		<slot />
 	</div>
 </div>
 
@@ -25,7 +13,7 @@
 	@use '../styles/colors.scss';
 
 	.root {
-		height: 100%;
+		min-height: 100%;
 		display: flex;
 		flex-direction: column;
 
@@ -67,6 +55,7 @@
 		.content {
 			min-height: 0;
 			display: flex;
+			flex-grow: 1;
 		}
 	}
 </style>

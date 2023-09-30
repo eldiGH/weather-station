@@ -7,6 +7,7 @@
 	import { formatCreatedAt } from '$lib/helpers/date';
 	import TempAndHumidityGauge from './TempAndHumidityGauge.svelte';
 	import BatteryIndicator from './BatteryIndicator.svelte';
+	import PressureCardGauge from './PressureCardGauge.svelte';
 
 	export let sensor: SensorResponseWithCurrentData;
 </script>
@@ -31,6 +32,7 @@
 						<TempAndHumidityGauge
 							temperature={sensor.currentData.temperature}
 							humidity={sensor.currentData.humidity} />
+						<PressureCardGauge pressure={sensor.currentData.pressure / 100} />
 						<BatteryIndicator batteryReading={sensor.currentData.batteryPercentage} />
 					{:else}
 						BRAK DANYCH
