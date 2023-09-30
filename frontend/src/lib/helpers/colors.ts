@@ -6,70 +6,93 @@ export interface RGB {
 	b: number;
 }
 
-export interface Threshold {
+export interface GradientThreshold {
 	value: number;
+	color: string;
+}
+
+export interface NormalizedGradientThreshold {
+	toPercentage: number;
 	color: RGB;
 }
 
-export const calculateGradientNormalized = (percentage: number, thresholds: Threshold[]): RGB => {
-	const sortedThresholds = [...thresholds].sort((a, b) => a.value - b.value);
+export type Gradient = ReturnType<typeof getGradient>;
 
-	if (sortedThresholds.length < 2) {
-		return { r: 0, g: 0, b: 0 };
-	}
+const normalizeGradientThresholds = (
+	gradientThresholds: GradientThreshold[]
+): { normalizedGradientThresholds: NormalizedGradientThreshold[]; min: number; max: number } => {
+	const sortedThresholds = [...gradientThresholds].sort((a, b) => a.value - b.value);
 
-	let startThreshold = sortedThresholds[0];
-	let stopThreshold = sortedThresholds[1];
-
-	if (sortedThresholds.length > 2) {
-		for (let i = 0; i < sortedThresholds.length - 1; i++) {
-			const threshold = sortedThresholds[i];
-			const nextThreshold = sortedThresholds[i + 1];
-
-			if (percentage >= threshold.value && percentage <= nextThreshold.value) {
-				startThreshold = threshold;
-				stopThreshold = nextThreshold;
-				break;
-			}
-		}
-	}
-
-	const thresholdPercentage =
-		(percentage - startThreshold.value) / (stopThreshold.value - startThreshold.value);
+	const min = sortedThresholds[0].value;
+	const max = sortedThresholds[sortedThresholds.length - 1].value;
 
 	return {
-		r: Math.round(
-			startThreshold.color.r +
-				thresholdPercentage * (stopThreshold.color.r - startThreshold.color.r)
-		),
-		g: Math.round(
-			startThreshold.color.g +
-				thresholdPercentage * (stopThreshold.color.g - startThreshold.color.g)
-		),
-		b: Math.round(
-			startThreshold.color.b +
-				thresholdPercentage * (stopThreshold.color.b - startThreshold.color.b)
-		)
+		min,
+		max,
+		normalizedGradientThresholds: sortedThresholds.map((t) => ({
+			toPercentage: (t.value - min) / (max - min),
+			color: toRGB(t.color)
+		}))
 	};
 };
 
-export const calculateGradient = (value: number, thresholds: Threshold[]): RGB => {
-	const sortedThresholds = [...thresholds].sort((a, b) => a.value - b.value);
+export const getGradient = (gradientThresholds: GradientThreshold[]) => {
+	const { min, max, normalizedGradientThresholds } =
+		normalizeGradientThresholds(gradientThresholds);
 
-	const boundedValue = minMax(
-		value,
-		sortedThresholds[0].value,
-		sortedThresholds[sortedThresholds.length - 1].value
-	);
+	const calculate = (value: number): string => {
+		let startThreshold = normalizedGradientThresholds[0];
+		let stopThreshold = normalizedGradientThresholds[1];
 
-	const normalizationValue = sortedThresholds[0].value;
-	const normalizedMax = sortedThresholds[sortedThresholds.length - 1].value - normalizationValue;
-	const percentage = (boundedValue - normalizationValue) / normalizedMax;
+		const boundedValue = minMax(value, min, max);
+		const percentage = minMax((boundedValue - min) / (max - min), 0, 1);
 
-	return calculateGradientNormalized(
-		percentage,
-		sortedThresholds.map((t) => ({ ...t, value: (t.value - normalizationValue) / normalizedMax }))
-	);
+		if (normalizedGradientThresholds.length > 2) {
+			for (let i = 0; i < normalizedGradientThresholds.length - 1; i++) {
+				const threshold = normalizedGradientThresholds[i];
+				const nextThreshold = normalizedGradientThresholds[i + 1];
+
+				if (percentage >= threshold.toPercentage && percentage <= nextThreshold.toPercentage) {
+					startThreshold = threshold;
+					stopThreshold = nextThreshold;
+					break;
+				}
+			}
+		}
+
+		const thresholdPercentage =
+			(percentage - startThreshold.toPercentage) /
+			(stopThreshold.toPercentage - startThreshold.toPercentage);
+
+		const newColor = {
+			r: Math.round(
+				startThreshold.color.r +
+					thresholdPercentage * (stopThreshold.color.r - startThreshold.color.r)
+			),
+			g: Math.round(
+				startThreshold.color.g +
+					thresholdPercentage * (stopThreshold.color.g - startThreshold.color.g)
+			),
+			b: Math.round(
+				startThreshold.color.b +
+					thresholdPercentage * (stopThreshold.color.b - startThreshold.color.b)
+			)
+		};
+
+		return toHex(newColor);
+	};
+
+	const getColor = (index: number): string => {
+		const color = normalizedGradientThresholds.at(index)?.color;
+
+		if (!color) {
+			return '#ffffff';
+		}
+
+		return toHex(color);
+	};
+
+	return { calculate, getColor };
 };
 
 export const toRGB = (hex: string): RGB => {

@@ -1,11 +1,11 @@
 import { getRadians, roundToPrecision } from './math';
 
-interface Point {
+export interface Point {
 	x: number;
 	y: number;
 }
 
-interface Arc {
+export interface Arc {
 	path: string;
 	endPoint: Point;
 	endVector: Point;

@@ -1,194 +1,90 @@
 <script lang="ts">
-	import { calculateGradient, toRGB, type Threshold, toHex } from '$lib/helpers/colors';
-	import { getArcOfCircle } from '$lib/helpers/svg';
-	import type { GetLatestBME68XDataEntryResponse } from 'shared';
-	import { onMount } from 'svelte';
+	import { toRGB, type GradientThreshold, getGradient } from '$lib/helpers/colors';
 	import IconInfo from './IconInfo.svelte';
+	import SvgCircleProgressBar from './SvgCircleProgressBar.svelte';
 
 	export let temperature: number;
 	export let humidity: number;
-
-	let normalizedTemperature: number;
-	$: {
-		if (temperature > maxTemperature) {
-			normalizedTemperature = maxTemperature;
-		} else if (temperature < minTemperature) {
-			normalizedTemperature = minTemperature;
-		} else {
-			normalizedTemperature = temperature;
-		}
-	}
 
 	const minTemperature = -15;
 	const idealTemperature = 23;
 	const maxTemperature = 40;
 
-	const tempGradientThreshold: Threshold[] = [
-		{ value: 15, color: toRGB('#3b41ff') },
-		{ value: 15, color: toRGB('#5293fa') },
-		{ value: idealTemperature, color: toRGB('#0ac947') },
-		{ value: 31, color: toRGB('#fff700') },
-		{ value: 35, color: toRGB('#ff7a21') },
-		{ value: maxTemperature, color: toRGB('#ff2424') }
-	];
+	const tempGradient = getGradient([
+		{ value: 5, color: '#3b41ff' },
+		{ value: 15, color: '#5293fa' },
+		{ value: idealTemperature, color: '#0ac947' },
+		{ value: 31, color: '#fff700' },
+		{ value: 35, color: '#ff7a21' },
+		{ value: maxTemperature, color: '#ff2424' }
+	]);
 
-	const humGradientThreshold: Threshold[] = [
-		{ value: 0, color: toRGB('#ff2424') },
-		{ value: 35, color: toRGB('#fff700') },
-		{ value: 50, color: toRGB('#0ac947') },
-		{ value: 65, color: toRGB('#fff700') },
-		{ value: 100, color: toRGB('#ff2424') }
-	];
+	const humGradient = getGradient([
+		{ value: 0, color: '#ff2424' },
+		{ value: 35, color: '#fff700' },
+		{ value: 50, color: '#0ac947' },
+		{ value: 65, color: '#fff700' },
+		{ value: 100, color: '#ff2424' }
+	]);
 
 	const radius = 120;
 	const width = 10;
-	const tempAngle = 250;
+
+	const tempAngle = -250;
+	const tempFromAngle = 215;
+
 	const humAngle = 90;
+	const humFromAngle = 225;
 
 	$: svgWidth = radius * 2 + width * 2;
 	$: svgHeight = radius * 2 + width * 2;
 
 	$: centerPoint = { x: svgWidth / 2, y: svgHeight / 2 };
 
-	$: tempFromAngle = tempAngle / 2 + 90;
-	$: humFromAngle = 270 - humAngle / 2;
-
-	$: tempArcPath = getArcOfCircle(centerPoint, radius, tempFromAngle, -tempAngle);
-	$: humArcPath = getArcOfCircle(centerPoint, radius, humFromAngle, humAngle);
-
-	$: tempColor = toHex(calculateGradient(normalizedTemperature, tempGradientThreshold));
-	$: humColor = toHex(calculateGradient(humidity, humGradientThreshold));
-
-	let tempPath: SVGPathElement;
-	let humPath: SVGPathElement;
-
-	let tempPathTotalLen: number = 0;
-	let humPathTotalLen: number = 0;
-
-	let temperaturePercentage: number;
-	$: {
-		const normalizedMax = maxTemperature - minTemperature;
-		const normalizedValue = normalizedTemperature - minTemperature;
-
-		temperaturePercentage = normalizedValue / normalizedMax;
-
-		if (temperaturePercentage > 1) {
-			temperaturePercentage = 1;
-		} else if (temperaturePercentage < 0) {
-			temperaturePercentage = 0;
-		}
-	}
-
-	let tempDasharray: [number, number];
-	$: {
-		if (tempPathTotalLen === 0) {
-			tempDasharray = [0, 5000];
-		} else {
-			const dashLength = temperaturePercentage * tempPathTotalLen;
-			const gapLength = tempPathTotalLen - dashLength + 1;
-
-			tempDasharray = [dashLength, gapLength];
-		}
-	}
-
-	$: humPercentage = humidity / 100;
-	let humDasharray: [number, number];
-	$: {
-		if (tempPathTotalLen === 0) {
-			humDasharray = [0, 5000];
-		} else {
-			const dashLength = humPercentage * humPathTotalLen;
-			const gapLength = humPathTotalLen - dashLength + 1;
-
-			humDasharray = [dashLength, gapLength];
-		}
-	}
-
-	let formattedTemp: { integral: number; rest: number };
-	$: {
+	const formatTemperature = (temperature: number) => {
 		const integralPart = Math.floor(temperature);
 
-		formattedTemp = {
+		return {
 			integral: integralPart,
 			rest: Math.floor((temperature - integralPart) * 10)
 		};
-	}
+	};
 
-	let formattedHum: { integral: number; rest: number };
-	$: {
+	const formatHumidity = (humidity: number) => {
 		const integralPart = Math.floor(humidity);
 
-		formattedHum = {
+		return {
 			integral: integralPart,
 			rest: Math.floor((humidity - integralPart) * 10)
 		};
-	}
+	};
 
-	let mounted = false;
-
-	$: tempCircleAngle = mounted ? temperaturePercentage * tempAngle : 0;
-	$: humCircleAngle = mounted ? humPercentage * humAngle : 0;
-
-	onMount(() => {
-		tempPathTotalLen = tempPath.getTotalLength();
-		humPathTotalLen = humPath.getTotalLength();
-
-		mounted = true;
-	});
+	$: formattedTemp = formatTemperature(temperature);
+	$: formattedHum = formatHumidity(humidity);
 </script>
 
 <div class="root">
 	<svg width={svgWidth} height={svgHeight}>
-		<g>
-			<path
-				d={`M ${tempArcPath.startPoint.x} ${tempArcPath.startPoint.y} ${tempArcPath.path}`}
-				stroke-width={width}
-				stroke={tempColor}
-				fill="transparent"
-				class="indicator__background"
-				stroke-linecap="round" />
-			<path
-				bind:this={tempPath}
-				d={`M ${tempArcPath.startPoint.x} ${tempArcPath.startPoint.y} ${tempArcPath.path}`}
-				stroke-width={width}
-				stroke={tempColor}
-				fill="transparent"
-				stroke-linecap="round"
-				class="indicator"
-				stroke-dasharray={`${tempDasharray.join(' ')}`} />
-			<circle
-				cx={tempArcPath.startPoint.x}
-				cy={tempArcPath.startPoint.y}
-				r={width}
-				fill={tempColor}
-				stroke="transparent"
-				transform={`rotate(${tempCircleAngle})`} />
-		</g>
-		<g>
-			<path
-				d={`M ${humArcPath.startPoint.x} ${humArcPath.startPoint.y} ${humArcPath.path}`}
-				stroke-width={width}
-				stroke={humColor}
-				fill="transparent"
-				class="indicator__background"
-				stroke-linecap="round" />
-			<path
-				bind:this={humPath}
-				d={`M ${humArcPath.startPoint.x} ${humArcPath.startPoint.y} ${humArcPath.path}`}
-				stroke-width={width}
-				stroke={humColor}
-				fill="transparent"
-				stroke-linecap="round"
-				class="indicator"
-				stroke-dasharray={`${humDasharray.join(' ')}`} />
-			<circle
-				cx={humArcPath.startPoint.x}
-				cy={humArcPath.startPoint.y}
-				r={width}
-				fill={humColor}
-				stroke="transparent"
-				transform={`rotate(${-humCircleAngle})`} />
-		</g>
+		<SvgCircleProgressBar
+			angle={tempAngle}
+			fromAngle={tempFromAngle}
+			min={minTemperature}
+			max={maxTemperature}
+			value={temperature}
+			gradient={tempGradient}
+			{radius}
+			{centerPoint}
+			{width} />
+		<SvgCircleProgressBar
+			angle={humAngle}
+			fromAngle={humFromAngle}
+			min={0}
+			max={100}
+			value={humidity}
+			gradient={humGradient}
+			{radius}
+			{centerPoint}
+			{width} />
 	</svg>
 	<div class="temperature-text">
 		<div class="reading">
@@ -253,29 +149,5 @@
 				opacity: 0.7;
 			}
 		}
-	}
-
-	$animationTime: 1.5s;
-	$animationTimingFunc: ease-in-out;
-
-	.indicator {
-		filter: drop-shadow(1px 1px 1px 1px rgb(0 0 0 / 0.4));
-
-		transition-duration: $animationTime;
-		transition-timing-function: $animationTimingFunc;
-		transition-property: stroke, stroke-dasharray;
-
-		&__background {
-			filter: drop-shadow(1px 1px 1px 1px rgb(0 0 0 / 0.4));
-
-			opacity: 0.3;
-
-			transition: stroke $animationTime $animationTimingFunc;
-		}
-	}
-
-	circle {
-		transform-origin: 50% 50%;
-		transition: transform $animationTime $animationTimingFunc;
 	}
 </style>

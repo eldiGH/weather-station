@@ -6,7 +6,7 @@
 	import TopBar from '$lib/components/TopBar.svelte';
 	import type { LayoutData } from './$types';
 	import { page } from '$app/stores';
-	import { getContext, onDestroy, onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { getAppContext } from '$lib/helpers/contextHelper';
 
 	export let data: LayoutData;

@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { toRGB, type Threshold, calculateGradient, toHex } from '$lib/helpers/colors';
+	import { toHex, getGradient } from '$lib/helpers/colors';
 	import { minMax, roundToPrecision } from '$lib/helpers/math';
 	import { onMount } from 'svelte';
-	import IconInfo from './IconInfo.svelte';
 
 	export let batteryReading: number;
 
@@ -12,45 +11,60 @@
 		return roundToPrecision(reading * conversionFactor, 2);
 	};
 
-	const gradient: Threshold[] = [
-		{ value: 10, color: toRGB('#ff2424') },
-		{ value: 50, color: toRGB('#fff700') },
-		{ value: 90, color: toRGB('#0ac947') }
-	];
+	const gradient = getGradient([
+		{ value: 10, color: '#ff2424' },
+		{ value: 50, color: '#fff700' },
+		{ value: 90, color: '#0ac947' }
+	]);
+
+	let mounted = false;
+	let batteryPercentage = 0;
 
 	$: voltage = convertReadingToVoltage(batteryReading);
-	$: batteryPercentage = minMax(voltage - 3, 0, 1);
-	$: color = calculateGradient(batteryPercentage * 100, gradient);
-
-	let totalLength = 0;
-	let dasharray = [0, 5000];
+	let color: string;
 
 	$: {
-		if (totalLength > 0) {
-			const filledLen = totalLength * batteryPercentage;
-
-			dasharray = [filledLen, totalLength];
+		if (mounted) {
+			color = gradient.calculate(batteryPercentage * 100);
+		} else {
+			color = gradient.getColor(0);
 		}
 	}
 
-	let lineRef: SVGLineElement;
-
 	onMount(() => {
-		totalLength = lineRef.getTotalLength();
+		mounted = true;
 	});
+
+	$: {
+		if (mounted) {
+			batteryPercentage = minMax(voltage - 3, 0, 1);
+		}
+	}
 </script>
 
 <svg width="150" viewBox="0 0 100 50">
-	<line
-		x1="13"
-		y1="25"
-		x2="87"
-		y2="25"
-		stroke-width="25"
-		fill="transparent"
-		stroke={toHex(color)}
-		stroke-dasharray={dasharray.join(' ')}
-		bind:this={lineRef} />
+	<defs>
+		<clipPath id="clip">
+			<rect
+				id="clip-rect"
+				transform={`scale(${batteryPercentage}, 1)`}
+				x="10"
+				y="10"
+				width="80"
+				height="30" />
+		</clipPath>
+	</defs>
+
+	<rect
+		x="10"
+		y="10"
+		width="80"
+		height="30"
+		fill={color}
+		stroke="transparent"
+		class="filling"
+		rx="5"
+		clip-path="url(#clip)" />
 	<rect x="10" y="10" width="80" height="30" fill="transparent" stroke="white" rx="5" />
 	<rect x="90" y="20" width="5" height="10" fill="transparent" stroke="white" />
 	<text text-anchor="middle" transform="translate(0 8)" stroke-width="1" fill="white" x="50" y="25"
@@ -58,12 +72,20 @@
 </svg>
 
 <style lang="scss">
+	$animationTime: 1.5s;
+	$animationTimingFunc: ease-in-out;
+
 	text {
 		font-weight: 500;
 		stroke: rgba(0, 0, 0, 0.4);
 	}
 
-	line {
-		transition: stroke-dasharray 1.5s ease-in-out;
+	#clip-rect {
+		transition: transform $animationTime $animationTimingFunc;
+		transform-origin: 9.99px 25px;
+	}
+
+	.filling {
+		transition: fill $animationTime $animationTimingFunc;
 	}
 </style>
