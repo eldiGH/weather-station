@@ -1,7 +1,5 @@
 <script lang="ts">
 	import Icon from '$lib/components/Icon.svelte';
-	import ScrollPanel from '$lib/components/ScrollPanel.svelte';
-	import DailyWeatherStatus from '$lib/components/Weather/DailyWeatherStatus.svelte';
 	import { format, fromUnixTime } from 'date-fns';
 	import type { PageData } from './$types';
 	import HourlyWeatherStatus from '$lib/components/Weather/HourlyWeatherStatus.svelte';
@@ -18,9 +16,7 @@
 		<div />
 	</div>
 	<div class="scroll-panel-container">
-		<ScrollPanel>
-			<HourlyWeatherStatus data={data.currentHour} />
-		</ScrollPanel>
+		<HourlyWeatherStatus data={data.currentHour} />
 	</div>
 </div>
 

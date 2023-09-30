@@ -3,7 +3,7 @@
 	import Tabs from '$lib/components/Tabs.svelte';
 	import DailyOrHourlyWeatherTable from '$lib/components/Weather/DailyOrHourlyWeatherTable.svelte';
 	import { createTabs } from '$lib/stores/tabs';
-	import { fromUnixTime, subHours } from 'date-fns';
+	import { fromUnixTime } from 'date-fns';
 	import type { PageData } from './$types';
 
 	export let data: PageData;
