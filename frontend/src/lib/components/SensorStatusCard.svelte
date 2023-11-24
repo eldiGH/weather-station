@@ -17,7 +17,7 @@
 		<Card isBorder isRounded isShadow>
 			<div class="card-content">
 				<div class="header">
-					<div>
+					<div class="sensor-name">
 						{sensor.name}
 					</div>
 					{#if sensor.currentData}
@@ -29,11 +29,15 @@
 				</div>
 				<div class="gauges">
 					{#if sensor.currentData}
-						<TempAndHumidityGauge
-							temperature={sensor.currentData.temperature}
-							humidity={sensor.currentData.humidity} />
-						<PressureCardGauge pressure={sensor.currentData.pressure / 100} />
-						<BatteryIndicator batteryReading={sensor.currentData.batteryPercentage} />
+						<div class="gauges__item">
+							<TempAndHumidityGauge
+								temperature={sensor.currentData.temperature}
+								humidity={sensor.currentData.humidity} />
+						</div>
+						<div class="gauges__item">
+							<PressureCardGauge pressure={sensor.currentData.pressure / 100} />
+							<BatteryIndicator batteryReading={sensor.currentData.batteryPercentage} />
+						</div>
 					{:else}
 						BRAK DANYCH
 					{/if}
@@ -46,7 +50,6 @@
 <style lang="scss">
 	.root {
 		font-size: 1.5rem;
-		width: 20rem;
 		user-select: none;
 
 		.card-content {
@@ -62,12 +65,24 @@
 					font-size: 1.3rem;
 					opacity: 0.7;
 				}
+
+				.sensor-name {
+					white-space: pre-wrap;
+					word-break: break-word;
+				}
 			}
 
 			.gauges {
 				display: flex;
-				align-items: center;
-				flex-direction: column;
+				flex-wrap: wrap;
+				justify-content: space-around;
+
+				&__item {
+					display: flex;
+					align-items: center;
+					flex-direction: column;
+					padding: 0 0.5rem;
+				}
 			}
 		}
 	}

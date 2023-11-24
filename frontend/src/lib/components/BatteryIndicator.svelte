@@ -51,7 +51,8 @@
 				x="10"
 				y="10"
 				width="80"
-				height="30" />
+				height="30"
+				rx="5" />
 		</clipPath>
 	</defs>
 

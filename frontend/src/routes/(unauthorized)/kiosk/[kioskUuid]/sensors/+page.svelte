@@ -21,7 +21,7 @@
 
 <style lang="scss">
 	.root {
-		padding: 1rem;
+		padding: 1rem 0 0.5rem;
 	}
 
 	.sensors {

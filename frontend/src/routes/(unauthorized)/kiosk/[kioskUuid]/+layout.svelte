@@ -20,9 +20,11 @@
 
 	setAppContext('kioskMainNavigationTabs', tabsVisibilityStore);
 
-	const { unregister } = registerActivityChangeHandler((active) => {
+	const { unregister } = registerActivityChangeHandler(async (active) => {
 		if (!active) {
-			goto(sensorsUrl, { invalidateAll: false });
+			await goto(sensorsUrl, { invalidateAll: false });
+
+			window.scrollTo({ behavior: 'smooth', top: 0 });
 		}
 	});
 
