@@ -1,6 +1,6 @@
 import type { Jwt } from '$lib/types/Jwt';
 import { fromUnixTime, isBefore } from 'date-fns';
-import jwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 
 export interface IsValidOptions {
 	// When validating advanceTime is subtracted from exp date defaults to 0

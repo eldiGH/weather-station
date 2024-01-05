@@ -17,7 +17,7 @@ export type GetWhereBetweenDatesResult<T extends string> =
 
 export const getWhereForDates = <T extends string>(
   fieldName: T,
-  { from, to, fromLastDays }: DateRanges
+  { from, to, fromLastDays }: DateRanges = {}
 ): GetWhereBetweenDatesResult<T> => {
   if (from && to) {
     return { AND: [{ [fieldName]: { gte: from } }, { [fieldName]: { lte: to } }] };

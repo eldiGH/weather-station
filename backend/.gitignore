@@ -10,3 +10,4 @@ dist
 *lock.toml
 *.pem
 .npmrc
+dump.rdb

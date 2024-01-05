@@ -1,20 +1,20 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { registerRequest } from '$lib/api/auth';
-	import { handleApiError } from '$lib/api/client';
 	import Button from '$lib/components/Button.svelte';
 	import Link from '$lib/components/Link.svelte';
+	import { register } from '$lib/helpers/auth';
 	import { createForm } from '$lib/stores/form';
 	import { Card, Input } from 'agnostic-svelte';
-	import { type RegisterRequestForm, registerRequestFormSchema, ApiErrorCode } from 'shared';
+	import { registerInputFormSchema, type RegisterInputForm } from 'backend/schemas';
+	import { ApiErrorCode } from 'backend/types';
 
 	const { submit, handleBlur, values, errors, isSubmitting, isValid, touched } = createForm(
 		{ email: '', password: '', passwordRepeat: '' },
-		registerRequestFormSchema
+		registerInputFormSchema
 	);
 
-	const handleSubmit = async (formData: RegisterRequestForm) => {
-		const { data, error } = await handleApiError(registerRequest, fetch, formData);
+	const handleSubmit = async ({ email, password }: RegisterInputForm) => {
+		const error = await register({ email, password });
 
 		if (error) {
 			if (error.errorCode === ApiErrorCode.EMAIL_ALREADY_IN_USE) {
@@ -37,8 +37,7 @@
 			invalidText={$errors.email}
 			label="Email"
 			name="email"
-			disabled={$isSubmitting}
-		/>
+			disabled={$isSubmitting} />
 		<Input
 			bind:value={$values.password}
 			on:blur={handleBlur}
@@ -47,8 +46,7 @@
 			label="Hasło"
 			name="password"
 			type="password"
-			disabled={$isSubmitting}
-		/>
+			disabled={$isSubmitting} />
 		<Input
 			bind:value={$values.passwordRepeat}
 			on:blur={handleBlur}
@@ -57,11 +55,9 @@
 			label="Powtórz hasło"
 			name="passwordRepeat"
 			type="password"
-			disabled={$isSubmitting}
-		/>
+			disabled={$isSubmitting} />
 		<Button isBusy={$isSubmitting} isDisabled={!$isValid} type="submit" mode="primary"
-			>Zarejestruj</Button
-		>
+			>Zarejestruj</Button>
 		<div>Masz już konto? <Link href="/login">Zaloguj się</Link></div>
 	</Card>
 </form>

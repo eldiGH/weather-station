@@ -1,4 +1,5 @@
-import { ApiErrorCode, HttpStatus } from 'shared';
+import { ApiErrorCode } from './enums/ApiErrorCode';
+import { HttpStatus } from './enums/HttpStatus';
 
 export interface ApiError {
   errorCode: ApiErrorCode;

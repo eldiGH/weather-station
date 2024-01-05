@@ -1,14 +1,14 @@
 import { SensorType, User } from '@prisma/client';
-import { db } from '../db';
-import {
-  SecretIsNotValid,
-  SensorDataNotFound,
-  SensorNameAlreadyUsed,
-  SensorNotFound
-} from '../errors';
 import { v4 } from 'uuid';
-import { CreateSensorRequest, GetSensorDataQuery, PostBME68XDataRequest } from 'shared';
+import { db } from '../db/prisma';
+import { SecretIsNotValid } from '../errors/SecretIsNotValid';
+import { SensorDataNotFound } from '../errors/SensorDataNotFound';
+import { SensorNameAlreadyUsed } from '../errors/SensorNameAlreadyUsed';
+import { SensorNotFound } from '../errors/SensorNotFound';
 import { getWhereForDates } from '../helpers/dates';
+import { CreateSensorRequest } from '../schemas/CreateSensor';
+import { PostBME68XDataRequest } from '../schemas/PostBME68XData';
+import { DateRangeQuery } from '../schemas/helpers';
 
 const addNewSensor = async (data: CreateSensorRequest, user: User) => {
   const existingSensor = await db.sensor.findFirst({ where: { name: data.name } });
@@ -56,7 +56,7 @@ const getLatestBME68XDataEntry = async (sensorId: number) => {
   return sensor.bme68XData[0];
 };
 
-const getBME68XData = async (sensorId: number, query: GetSensorDataQuery) => {
+const getBME68XData = async (sensorId: number, query: DateRangeQuery) => {
   const sensor = await db.sensor.findFirst({
     where: { id: sensorId }
   });

@@ -1,17 +1,14 @@
 import { Prisma, RefreshToken } from '@prisma/client';
 import bcryptjs from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { db } from '../db';
-import {
-  EmailAlreadyInUse,
-  EmailOrPasswordNotValid,
-  RefreshTokenNotValid,
-  RefreshTokenRevoked
-} from '../errors';
-import { LoginRequest, LoginResponse, RefreshResponse, RegisterResponse } from 'shared';
-import { JwtPayload } from '../types';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { v4 as uuid } from 'uuid';
 import { fromUnixTime } from 'date-fns';
+import { db } from '../db/prisma';
+import { EmailAlreadyInUse } from '../errors/EmailAlreadyInUse';
+import { EmailOrPasswordNotValid } from '../errors/EmailOrPasswordNotValid';
+import { RefreshTokenNotValid } from '../errors/RefreshTokenNotValid';
+import { RefreshTokenRevoked } from '../errors/RefreshTokenRevoked';
+import { LoginInput } from '../schemas';
 
 const jwtSecret = process.env.JWT_SECRET;
 if (!jwtSecret) {
@@ -28,7 +25,7 @@ const validateEmail = async (email: string) => {
   }
 };
 
-const register = async (playerData: Prisma.UserCreateInput): Promise<RegisterResponse> => {
+const register = async (playerData: Prisma.UserCreateInput) => {
   await validateEmail(playerData.email);
 
   const password = await bcryptjs.hash(playerData.password, 10);
@@ -59,7 +56,7 @@ const generateNewTokens = async (userId: number, sessionId: string) => {
   return { accessToken, refreshToken };
 };
 
-const login = async (data: LoginRequest): Promise<LoginResponse> => {
+const login = async (data: LoginInput) => {
   const user = await db.user.findFirst({ where: { email: data.email } });
 
   if (!user) {
@@ -104,7 +101,7 @@ const logout = async (refreshToken: string): Promise<void> => {
   await db.refreshToken.deleteMany({ where: { sessionId: dbToken.sessionId } });
 };
 
-const refresh = async (refreshToken: string): Promise<RefreshResponse> => {
+const refresh = async (refreshToken: string) => {
   const dbToken = await validateRefreshToken(refreshToken);
 
   await db.refreshToken.update({ data: { revoked: true }, where: { id: dbToken.id } });

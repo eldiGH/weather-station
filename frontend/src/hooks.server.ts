@@ -1,9 +1,5 @@
-import { redirect, type Handle, type HandleFetch, type RequestEvent } from '@sveltejs/kit';
-import { HttpStatus } from 'shared';
-import { fromUnixTime } from 'date-fns';
+import { type Handle, type HandleFetch, type RequestEvent } from '@sveltejs/kit';
 import { replaceHash } from '$lib/server/helpers/hashReplacer';
-import { refreshRequest } from '$lib/api/auth';
-import type { CookieSerializeOptions } from 'cookie';
 import { jwt } from '$lib/helpers/jwt';
 import { ACCESS_TOKEN_ADVANCE_TIME } from '$lib/constants';
 
@@ -24,26 +20,26 @@ export const handleFetch: HandleFetch = ({ fetch, event, request }) => {
 
 const refreshTokens = async (event: RequestEvent, refreshToken: string): Promise<boolean> => {
 	try {
-		const newTokens = await refreshRequest(event.fetch, { refreshToken });
-		const decodedTokens = {
-			access: jwt.decode(newTokens.accessToken),
-			refresh: jwt.decode(newTokens.refreshToken)
-		};
+		// const newTokens = await refreshRequest(event.fetch, { refreshToken });
+		// const decodedTokens = {
+		// 	access: jwt.decode(newTokens.accessToken),
+		// 	refresh: jwt.decode(newTokens.refreshToken)
+		// };
 
-		const cookieOptions: CookieSerializeOptions = {
-			sameSite: 'lax',
-			secure: true,
-			httpOnly: false,
-			path: '/'
-		};
-		event.cookies.set('accessToken', newTokens.accessToken, {
-			...cookieOptions,
-			expires: fromUnixTime(decodedTokens.access.exp - ACCESS_TOKEN_ADVANCE_TIME)
-		});
-		event.cookies.set('refreshToken', newTokens.refreshToken, {
-			...cookieOptions,
-			expires: fromUnixTime(decodedTokens.refresh.exp)
-		});
+		// const cookieOptions: CookieSerializeOptions = {
+		// 	sameSite: 'lax',
+		// 	secure: true,
+		// 	httpOnly: false,
+		// 	path: '/'
+		// };
+		// event.cookies.set('accessToken', newTokens.accessToken, {
+		// 	...cookieOptions,
+		// 	expires: fromUnixTime(decodedTokens.access.exp - ACCESS_TOKEN_ADVANCE_TIME)
+		// });
+		// event.cookies.set('refreshToken', newTokens.refreshToken, {
+		// 	...cookieOptions,
+		// 	expires: fromUnixTime(decodedTokens.refresh.exp)
+		// });
 
 		return true;
 	} catch (e) {
@@ -62,8 +58,8 @@ const checkIfAuthed = async (event: RequestEvent): Promise<boolean> => {
 
 		const decodedRefreshToken = jwt.isValid(refreshToken);
 		if (!decodedRefreshToken) {
-			event.cookies.delete('accessToken');
-			event.cookies.delete('refreshToken');
+			// event.cookies.delete('accessToken');
+			// event.cookies.delete('refreshToken');
 			return false;
 		}
 
@@ -83,9 +79,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 	);
 
 	if (isAuthed && isOnNotAllowedAuthedRoute) {
-		throw redirect(HttpStatus.FOUND, '/');
+		// throw redirect(HttpStatus.FOUND, '/');
 	} else if (!isAuthed && isOnAuthedRoute) {
-		throw redirect(HttpStatus.FOUND, '/login');
+		// throw redirect(HttpStatus.FOUND, '/login');
 	}
 
 	if (isOnAuthedRoute) {

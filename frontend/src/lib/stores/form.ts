@@ -1,11 +1,14 @@
 import { derived, get, writable, type Readable, type Writable } from 'svelte/store';
-import { ValidationError, type InferType, type Schema } from 'yup';
+import { type z, type Schema } from 'zod';
 
 type ChangePropsType<T extends Record<string, unknown>, NewType> = {
 	[key in keyof T]: NewType;
 };
 
-export type FormReturn<Values extends Record<string, unknown>, MySchema> = {
+export type FormReturn<
+	Values extends Record<string, unknown>,
+	MySchema extends Schema | undefined
+> = {
 	values: Writable<Values>;
 	errors: Writable<ChangePropsType<Values, string>>;
 	touched: Readable<ChangePropsType<Values, boolean>>;
@@ -41,7 +44,7 @@ const getInitialTouched = <T extends Record<string, unknown>>(
 };
 
 export const createForm = <
-	T extends MySchema extends Schema ? InferType<MySchema> : Record<string, unknown>,
+	T extends MySchema extends Schema ? z.infer<MySchema> : Record<string, unknown>,
 	MySchema extends Schema | undefined = undefined
 >(
 	initialValues: T,
@@ -69,26 +72,25 @@ export const createForm = <
 	const validate = (
 		schema
 			? async () => {
-					try {
-						const parsedData = await schema.validate(get(values), { abortEarly: false });
+					const validationResponse = await schema.spa(get(values));
+
+					if (validationResponse.success) {
 						clearErrors();
-						return parsedData;
-					} catch (e) {
-						if (!(e instanceof ValidationError)) {
-							throw e;
-						}
-
-						const finalErrors: Record<string, unknown> = {};
-
-						for (const error of e.inner) {
-							if (error.path) {
-								finalErrors[error.path] = error.errors[0];
-							}
-						}
-
-						errors.set(finalErrors as ChangePropsType<T, string>);
+						return validationResponse.data;
 					}
-			  }
+
+					const schemaErrors = validationResponse.error.errors;
+
+					const finalErrors: Record<string, unknown> = {};
+
+					for (const error of schemaErrors) {
+						if (error.path) {
+							finalErrors[error.path[0]] = error.message;
+						}
+					}
+
+					errors.set(finalErrors as ChangePropsType<T, string>);
+				}
 			: undefined
 	) as MySchema extends Schema ? () => Promise<T> : undefined;
 

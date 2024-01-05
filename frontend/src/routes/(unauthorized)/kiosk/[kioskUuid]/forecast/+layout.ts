@@ -1,7 +1,7 @@
-import { getKioskForecast } from '$lib/api/kiosk';
+import { trcp } from '$lib/api/trcp';
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = ({ fetch, params, depends }) => {
 	depends('api:kioskForecast');
-	return getKioskForecast(fetch, params.kioskUuid);
+	return trcp(fetch).kiosk.getForecastForKiosk.query({ kioskUuid: params.kioskUuid });
 };

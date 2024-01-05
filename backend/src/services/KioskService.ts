@@ -1,16 +1,13 @@
-import { User } from '@prisma/client';
-import { db } from '../db';
-import {
-  KioskNotFound,
-  KioskWithoutCoordinates,
-  PermissionDenied,
-  SensorNotFound
-} from '../errors';
-import { CreateKioskRequest, CreateKioskResponse, GetSensorDataQuery } from 'shared';
-import { v4 as uuid } from 'uuid';
-import { redisClient } from '../redis';
+import { db } from '../db/prisma';
+import { redisClient } from '../db/redis';
+import { KioskNotFound } from '../errors/KioskNotFound';
+import { KioskWithoutCoordinates } from '../errors/KioskWithoutCoordinates';
+import { SensorNotFound } from '../errors/SensorNotFound';
+import { getWhereForDates } from '../helpers/dates';
+import { DateRangeQuery } from '../schemas';
+import { RedisCachedEntry } from '../types/RedisCachedEntry';
+import { WeatherApiResponse } from '../types/WeatherApiResponse';
 import axios from 'axios';
-import { RedisCachedEntry, WeatherApiResponse } from '../types';
 import {
   addMinutes,
   addSeconds,
@@ -19,7 +16,6 @@ import {
   isAfter,
   subMinutes
 } from 'date-fns';
-import { getWhereForDates } from '../helpers';
 
 const FORECAST_CACHE_MINUTES = 30;
 
@@ -58,34 +54,34 @@ const getForecast = async (kioskUuid: string): Promise<WeatherApiResponse> => {
   ).data;
 };
 
-const createKiosk = async (data: CreateKioskRequest, user: User): Promise<CreateKioskResponse> => {
-  const sensors = await db.sensor.findMany({
-    where: { id: { in: Array.from(new Set(data.sensors)) } }
-  });
+// const createKiosk = async (data: CreateKioskRequest, user: User): Promise<CreateKioskResponse> => {
+//   const sensors = await db.sensor.findMany({
+//     where: { id: { in: Array.from(new Set(data.sensors)) } }
+//   });
 
-  const foundSensorsIds = sensors.map((sensor) => sensor.id);
-  const missingSensor = data.sensors.find((id) => !foundSensorsIds.includes(id));
+//   const foundSensorsIds = sensors.map((sensor) => sensor.id);
+//   const missingSensor = data.sensors.find((id) => !foundSensorsIds.includes(id));
 
-  if (missingSensor) {
-    throw SensorNotFound(missingSensor);
-  }
+//   if (missingSensor) {
+//     throw SensorNotFound(missingSensor);
+//   }
 
-  if (!sensors.every((sensor) => sensor.ownerId === user.id)) {
-    throw PermissionDenied();
-  }
+//   if (!sensors.every((sensor) => sensor.ownerId === user.id)) {
+//     throw PermissionDenied();
+//   }
 
-  const kioskUuid = uuid();
+//   const kioskUuid = uuid();
 
-  await db.kiosk.create({
-    data: {
-      kioskUuid,
-      ownerId: user.id,
-      sensors: { connect: sensors.map(({ id }) => ({ id })) }
-    }
-  });
+//   await db.kiosk.create({
+//     data: {
+//       kioskUuid,
+//       ownerId: user.id,
+//       sensors: { connect: sensors.map(({ id }) => ({ id })) }
+//     }
+//   });
 
-  return { kioskUuid };
-};
+//   return { kioskUuid };
+// };
 
 const calculateKioskDataRefreshTimestamp = async (sensorIds: number[]): Promise<Date> => {
   const fromTimestamp = subMinutes(new Date(), DATA_REFRESH_PROBE_MINUTES);
@@ -154,14 +150,15 @@ const getKioskData = async (kioskUuid: string) => {
     kiosk.sensors.map((s) => s.id)
   );
 
-  return { ...kiosk, nextRefreshTimestamp };
+  const parsedKiosk = {
+    ...kiosk,
+    sensors: kiosk.sensors.map((sensor) => ({ ...sensor, currentData: sensor.bme68XData[0] }))
+  };
+
+  return { ...parsedKiosk, nextRefreshTimestamp };
 };
 
-const getKioskSensorData = async (
-  kioskUuid: string,
-  sensorId: number,
-  query: GetSensorDataQuery
-) => {
+const getKioskSensorData = async (kioskUuid: string, sensorId: number, query?: DateRangeQuery) => {
   const kiosk = await db.kiosk.findUnique({
     where: { kioskUuid },
     include: {
@@ -242,4 +239,4 @@ const getKioskForecast = async (kioskUuid: string) => {
   return mapForecastResponseData(newForecast, nextRefreshTimestamp);
 };
 
-export const KioskService = { getKioskData, createKiosk, getKioskSensorData, getKioskForecast };
+export const KioskService = { getKioskData, getKioskForecast, getKioskSensorData };

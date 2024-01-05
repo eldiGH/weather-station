@@ -6,6 +6,5 @@
     "composite": true,
     "rootDir": "src"
   },
-  "references": [{ "path": "../shared/tsconfig.json" }],
   "include": ["./src"]
 }
