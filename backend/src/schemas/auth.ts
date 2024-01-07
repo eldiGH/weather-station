@@ -21,13 +21,3 @@ export const registerInputFormSchema = registerInputSchema
   .refine(({ password, passwordRepeat }) => password == passwordRepeat, "Passwords don't match");
 
 export type RegisterInputForm = z.infer<typeof registerInputFormSchema>;
-
-export const refreshInputSchema = z.object({
-  refreshToken: z.string()
-});
-
-export type RefreshInput = z.infer<typeof refreshInputSchema>;
-
-export const logoutInputSchema = z.object({
-  refreshToken: z.string()
-});

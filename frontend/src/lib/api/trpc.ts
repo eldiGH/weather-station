@@ -1,8 +1,18 @@
 import config from '@config';
-import { TRPCClientError, createTRPCProxyClient, httpBatchLink } from '@trpc/client';
+import {
+	TRPCClientError,
+	createTRPCProxyClient,
+	createWSClient,
+	httpBatchLink,
+	loggerLink,
+	wsLink,
+	type CreateTRPCProxyClient
+} from '@trpc/client';
 import { transformer, type AppRouter } from 'backend/trpc';
 import { isApiError } from '../../../../backend/src/types/ApiError';
 import type { ApiError } from 'backend/types';
+import { isDevelopment } from '$lib/helpers/environment';
+import { browser } from '$app/environment';
 
 export type FetchFunc = (
 	input: RequestInfo | URL,
@@ -12,11 +22,35 @@ export type FetchFunc = (
 export const isTrpcClientError = (error: unknown): error is TRPCClientError<AppRouter> =>
 	error instanceof TRPCClientError;
 
-export const trcp = (fetch: FetchFunc) =>
+const logger = loggerLink({ enabled: () => isDevelopment });
+
+export const trpc = (fetch: FetchFunc) =>
 	createTRPCProxyClient<AppRouter>({
-		links: [httpBatchLink({ url: config.serverAddress, fetch })],
+		links: [logger, httpBatchLink({ url: config.serverAddress, fetch })],
 		transformer
 	});
+
+let trpcWsClient: CreateTRPCProxyClient<AppRouter> | null = null;
+export const trpcWs = () => {
+	if (!browser) {
+		throw new Error(
+			'TRPC ws client used outside of browser! Use normal http client on server, as it handles cache'
+		);
+	}
+
+	if (!trpcWsClient) {
+		const wsClient = createWSClient({
+			url: config.serverAddress.replace('http', 'ws') //'ws://localhost:3000/trpc'
+		});
+
+		trpcWsClient = createTRPCProxyClient({
+			links: [logger, wsLink<AppRouter>({ client: wsClient })],
+			transformer
+		}) as unknown as CreateTRPCProxyClient<AppRouter>;
+	}
+
+	return trpcWsClient;
+};
 
 type HandledError<Data> =
 	| { success: true; data: Data; error: null }

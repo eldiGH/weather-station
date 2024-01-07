@@ -1,10 +1,10 @@
 import type { PageLoad } from './$types';
-import { trcp } from '$lib/api/trcp';
+import { trpc } from '$lib/api/trpc';
 
 type FetchType = (input: RequestInfo | URL, init?: RequestInit | undefined) => Promise<Response>;
 
 const getTemperatureData = async (fetch: FetchType) => {
-	const data = await trcp(fetch).sensor.getSensorData.query({
+	const data = await trpc(fetch).sensor.getSensorData.query({
 		sensorId: 1,
 		dateRangeQuery: { fromLastDays: 1 }
 	}); //, 1, { fromLastDays: 1 });

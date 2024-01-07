@@ -1,19 +1,29 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import type { LayoutData } from './$types';
-	import { subscribeAction } from '$lib/components/ActionPoller.svelte';
+	import { resolveRoute } from '$app/paths';
+	import { trpcWs } from '$lib/api/trpc';
 
 	export let data: LayoutData;
 
-	const { setNextPollDate, unsubscribeAction } = subscribeAction('api:kioskData');
+	let unsubscribe: undefined | (() => void) = undefined;
 
-	onDestroy(() => {
-		unsubscribeAction();
+	// const { setNextPollDate, unsubscribeAction } = subscribeAction('api:kioskData');
+
+	// $: {
+	// 	setNextPollDate(data.kioskData.nextRefreshTimestamp);
+	// }
+
+	onMount(() => {
+		unsubscribe = trpcWs().kiosk.subscribeKiosk.subscribe(
+			{ kioskUuid: data.kioskUuid },
+			{ onData: () => {} }
+		).unsubscribe;
 	});
 
-	$: {
-		setNextPollDate(data.kioskData.nextRefreshTimestamp);
-	}
+	onDestroy(() => {
+		unsubscribe?.();
+	});
 </script>
 
 <slot />

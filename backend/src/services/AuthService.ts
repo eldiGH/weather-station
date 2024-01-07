@@ -2,18 +2,22 @@ import { Prisma, RefreshToken } from '@prisma/client';
 import bcryptjs from 'bcryptjs';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { v4 as uuid } from 'uuid';
-import { fromUnixTime } from 'date-fns';
+import { addDays, addMinutes } from 'date-fns';
 import { db } from '../db/prisma';
 import { EmailAlreadyInUse } from '../errors/EmailAlreadyInUse';
 import { EmailOrPasswordNotValid } from '../errors/EmailOrPasswordNotValid';
 import { RefreshTokenNotValid } from '../errors/RefreshTokenNotValid';
 import { RefreshTokenRevoked } from '../errors/RefreshTokenRevoked';
 import { LoginInput } from '../schemas';
+import { NotAuthorized } from '../errors/NotAuthorized';
 
 const jwtSecret = process.env.JWT_SECRET;
 if (!jwtSecret) {
   throw new Error('JWT_SECRET NOT FOUND');
 }
+
+const ACCESS_TOKEN_EXPIRES_IN_MINUTES = 5;
+const REFRESH_TOKEN_EXPIRES_IN_DAYS = 30;
 
 const validateEmail = async (email: string) => {
   const existingUser = await db.user.findFirst({
@@ -38,22 +42,22 @@ const register = async (playerData: Prisma.UserCreateInput) => {
 const generateNewTokens = async (userId: number, sessionId: string) => {
   const payload: JwtPayload = { id: userId };
 
-  const accessToken = jwt.sign(payload, jwtSecret, { expiresIn: '5m' });
-  const refreshToken = jwt.sign({}, jwtSecret, { expiresIn: '90d' });
+  const accessToken = jwt.sign(payload, jwtSecret, {
+    expiresIn: `${ACCESS_TOKEN_EXPIRES_IN_MINUTES}m`
+  });
+  const accessTokenExpDate = addMinutes(new Date(), ACCESS_TOKEN_EXPIRES_IN_MINUTES);
 
-  const { exp } = jwt.verify(refreshToken, jwtSecret) as jwt.JwtPayload;
-
-  if (!exp) {
-    throw Error('No expiration date!');
-  }
-
-  const expDate = fromUnixTime(exp);
+  const refreshToken = uuid();
+  const refreshTokenExpDate = addDays(new Date(), REFRESH_TOKEN_EXPIRES_IN_DAYS);
 
   await db.refreshToken.create({
-    data: { token: refreshToken, userId: userId, sessionId, expirationDate: expDate }
+    data: { token: refreshToken, userId: userId, sessionId, expirationDate: refreshTokenExpDate }
   });
 
-  return { accessToken, refreshToken };
+  return {
+    accessToken: { token: accessToken, expires: accessTokenExpDate },
+    refreshToken: { token: refreshToken, expires: refreshTokenExpDate }
+  };
 };
 
 const login = async (data: LoginInput) => {
@@ -71,7 +75,11 @@ const login = async (data: LoginInput) => {
   return generateNewTokens(user.id, uuid());
 };
 
-const validateRefreshToken = async (refreshToken: string): Promise<RefreshToken> => {
+const validateRefreshToken = async (refreshToken?: string): Promise<RefreshToken> => {
+  if (!refreshToken) {
+    throw RefreshTokenNotValid();
+  }
+
   try {
     jwt.verify(refreshToken, jwtSecret);
   } catch (e) {
@@ -95,13 +103,13 @@ const validateRefreshToken = async (refreshToken: string): Promise<RefreshToken>
   return dbToken;
 };
 
-const logout = async (refreshToken: string): Promise<void> => {
+const logout = async (refreshToken?: string): Promise<void> => {
   const dbToken = await validateRefreshToken(refreshToken);
 
   await db.refreshToken.deleteMany({ where: { sessionId: dbToken.sessionId } });
 };
 
-const refresh = async (refreshToken: string) => {
+const refresh = async (refreshToken?: string) => {
   const dbToken = await validateRefreshToken(refreshToken);
 
   await db.refreshToken.update({ data: { revoked: true }, where: { id: dbToken.id } });
@@ -109,6 +117,27 @@ const refresh = async (refreshToken: string) => {
   return generateNewTokens(dbToken.userId, dbToken.sessionId);
 };
 
+const authorize = async (authHeader?: string) => {
+  if (!authHeader) {
+    throw NotAuthorized();
+  }
+
+  const [bearer, token] = authHeader.split(' ');
+
+  if (!bearer || !token || bearer !== 'Bearer') {
+    throw NotAuthorized();
+  }
+
+  const decodedJwt = jwt.verify(token, jwtSecret) as JwtPayload;
+
+  const user = await getUserById(decodedJwt.id);
+  if (!user) {
+    throw NotAuthorized();
+  }
+
+  return user;
+};
+
 const getUserById = async (id: number) => db.user.findUnique({ where: { id } });
 
-export const AuthService = { register, login, getUserById, refresh, logout };
+export const AuthService = { register, login, getUserById, refresh, logout, authorize };

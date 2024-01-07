@@ -1,9 +1,7 @@
 import 'dotenv/config';
-import { createHTTPServer } from '@trpc/server/adapters/standalone';
 import { testDBConnection } from './db/prisma';
 import { connectToRedis } from './db/redis';
-import { corsMiddleware } from './middlewares/corsMiddleware';
-import { appRouter } from './trpc/routers/app';
+import { server } from './server';
 
 const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
@@ -18,16 +16,7 @@ const main = async () => {
 
   await connectToRedis();
 
-  const app = createHTTPServer({
-    router: appRouter,
-    middleware: corsMiddleware
-  });
-
-  app.server.on('listening', () => {
-    console.log(`Server listening on port ${port}`);
-  });
-
-  app.listen(port);
+  server.listen({ port });
 };
 
 main();

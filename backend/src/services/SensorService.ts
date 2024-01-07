@@ -9,6 +9,7 @@ import { getWhereForDates } from '../helpers/dates';
 import { CreateSensorRequest } from '../schemas/CreateSensor';
 import { PostBME68XDataRequest } from '../schemas/PostBME68XData';
 import { DateRangeQuery } from '../schemas/helpers';
+import { emitNewSensorData } from '../helpers/eventEmitter';
 
 const addNewSensor = async (data: CreateSensorRequest, user: User) => {
   const existingSensor = await db.sensor.findFirst({ where: { name: data.name } });
@@ -36,7 +37,9 @@ const addBME68XDataEntry = async ({ secret, ...data }: PostBME68XDataRequest) =>
     throw SecretIsNotValid();
   }
 
-  await db.bME68XSensorData.create({ data: { ...data, sensorId: sensor.id } });
+  const newData = await db.bME68XSensorData.create({ data: { ...data, sensorId: sensor.id } });
+
+  emitNewSensorData(sensor.id, newData);
 };
 
 const getLatestBME68XDataEntry = async (sensorId: number) => {

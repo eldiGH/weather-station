@@ -9,4 +9,6 @@ export const getBME68xDataSchema = z.object({
   createdAt: z.date()
 });
 
-export type GetLatestBME68xDataEntryOutput = z.infer<typeof getBME68xDataSchema>;
+export type GetBME68xData = z.infer<typeof getBME68xDataSchema>;
+
+export type SubscribeBME68xData = GetBME68xData & { sensorId: number };
