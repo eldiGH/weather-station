@@ -10,7 +10,6 @@
   },
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc -b",
     "start": "node dist",
     "lint": "prettier --plugin-search-dir . --check . && eslint .",
     "format": "prettier --plugin-search-dir . --write .",
