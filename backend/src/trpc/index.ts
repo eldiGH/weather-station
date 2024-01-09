@@ -93,7 +93,11 @@ export const {
 export const authedProcedure = publicProcedure.use(async ({ ctx, next }) => {
   const { req } = ctx;
 
-  const accessToken = req.headers.authorization;
+  let accessToken = req.headers.authorization;
+
+  if (!accessToken && req.headers.cookie) {
+    accessToken = `Bearer ${cookie.parse(req.headers.cookie).accessToken}`;
+  }
 
   const user = await AuthServiceTRPC.authorize(accessToken);
 
