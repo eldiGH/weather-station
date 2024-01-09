@@ -2,6 +2,7 @@
   "name": "backend",
   "version": "0.0.1",
   "private": true,
+  "type": "module",
   "exports": {
     "./schemas": "./src/schemas/index.ts",
     "./trpc": "./src/clientExports.ts",
@@ -15,7 +16,7 @@
     "typecheck": "tsc",
     "format": "prettier --plugin-search-dir . --write .",
     "prisma": "prisma",
-    "build": "tsc --project tsconfig-prod.json"
+    "build": "esbuild src/index.ts --bundle --outfile=dist/index.js --platform=node --target=node16 --packages=external --format=esm"
   },
   "devDependencies": {
     "@eldigh/tsc-watch2": "^1.0.12",
@@ -31,6 +32,7 @@
     "@types/ws": "^8.5.10",
     "@typescript-eslint/eslint-plugin": "^6.17.0",
     "@typescript-eslint/parser": "^6.17.0",
+    "esbuild": "^0.19.11",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "prettier": "^3.1.1",

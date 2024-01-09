@@ -9,8 +9,8 @@
     "strict": true,
     "isolatedModules": true,
     "lib": ["esnext"],
-    "moduleResolution": "node",
-    "module": "CommonJS",
+    "moduleResolution": "Node10",
+    "module": "ES2020",
     "target": "ESNext",
     "noEmit": true,
     "rootDir": "src"
