@@ -5,19 +5,28 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch via NPM",
+      "name": "Launch backend",
       "request": "launch",
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["be:dev"],
       "skipFiles": ["<node_internals>/**"],
+      "outputCapture": "std",
       "type": "node"
     },
     {
-      "name": "Attach",
-      "port": 9229,
-      "request": "attach",
+      "name": "Launch ssr",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["fe:dev"],
       "skipFiles": ["<node_internals>/**"],
       "type": "node"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Backend/SSR",
+      "configurations": ["Launch backend", "Launch ssr"],
+      "stopAll": true
     }
   ]
 }

@@ -21,6 +21,7 @@
 		"@sveltejs/vite-plugin-svelte": "^3.0.1",
 		"@trpc/client": "^10.45.0",
 		"@types/cookie": "^0.6.0",
+		"@types/http-proxy": "^1.17.14",
 		"@typescript-eslint/eslint-plugin": "^6.17.0",
 		"@typescript-eslint/parser": "^6.17.0",
 		"agnostic-svelte": "^1.1.27",
@@ -32,7 +33,6 @@
 		"eslint": "^8.56.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-svelte": "^2.35.1",
-		"jwt-decode": "^4.0.0",
 		"material-icons": "^1.13.12",
 		"overlayscrollbars": "^2.4.6",
 		"overlayscrollbars-svelte": "^0.5.2",
@@ -50,6 +50,8 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"dotenv": "^16.3.1"
+		"devalue": "^4.3.2",
+		"dotenv": "^16.3.1",
+		"jwt-decode": "^4.0.0"
 	}
 }

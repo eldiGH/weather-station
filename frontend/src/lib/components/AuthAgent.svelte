@@ -2,11 +2,11 @@
 	import { onDestroy } from 'svelte';
 	import cookie from 'cookie';
 	import { logout, refresh } from '$lib/helpers/auth';
-	import { jwt } from '$lib/helpers/jwt';
 	import { fromUnixTime } from 'date-fns';
 	import { ACCESS_TOKEN_ADVANCE_TIME } from '$lib/constants';
 	import { browser } from '$app/environment';
 	import { subscribeAction } from './ActionPoller.svelte';
+	import { jwt } from '$lib/helpers/jwt';
 
 	const getDateOfAccessToken = () => {
 		if (!browser) {
@@ -27,12 +27,12 @@
 
 	const refreshToken = async () => {
 		const { refreshToken } = cookie.parse(document.cookie);
-		const error = await refresh({ refreshToken });
+		// const error = await refresh({ refreshToken });
 
-		if (error) {
-			logout();
-			return;
-		}
+		// if (error) {
+		// 	logout();
+		// 	return;
+		// }
 
 		date = getDateOfAccessToken();
 	};

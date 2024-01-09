@@ -80,12 +80,6 @@ const validateRefreshToken = async (refreshToken?: string): Promise<RefreshToken
     throw RefreshTokenNotValid();
   }
 
-  try {
-    jwt.verify(refreshToken, jwtSecret);
-  } catch (e) {
-    throw RefreshTokenNotValid();
-  }
-
   const dbToken = await db.refreshToken.findUnique({ where: { token: refreshToken } });
   if (!dbToken) {
     throw RefreshTokenNotValid();

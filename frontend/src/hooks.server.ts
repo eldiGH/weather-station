@@ -1,46 +1,85 @@
-import { type Handle, type HandleFetch, type RequestEvent } from '@sveltejs/kit';
-import { replaceHash } from '$lib/server/helpers/hashReplacer';
-import { jwt } from '$lib/helpers/jwt';
+import { redirect, type Handle, type RequestEvent } from '@sveltejs/kit';
 import { ACCESS_TOKEN_ADVANCE_TIME } from '$lib/constants';
+import urljoin from 'url-join';
+import config from './config.json';
+import { jwt } from '$lib/helpers/jwt';
+import { HttpStatus } from 'backend/types';
+import { parse } from 'devalue';
+import type { CookieSerializeOptions } from 'cookie';
 
 const NOT_AUTHED_ROUTES = ['/login', '/register', '/kiosk'];
 const AUTHED_NOT_ALLOWED_ROUTES = ['/login', '/register'];
 
-export const handleFetch: HandleFetch = ({ fetch, event, request }) => {
-	const accessToken = event.cookies.get('accessToken');
+const parseCookieOptions = (
+	setCookieString: string
+): [string, string, CookieSerializeOptions & { path: string }] => {
+	const splitted = setCookieString.split(';');
 
-	if (!accessToken) {
-		return fetch(request);
+	const [name, value] = splitted.shift()?.split('=') ?? [];
+
+	const options: CookieSerializeOptions & { path: string } = { path: '/' };
+
+	for (const property of splitted) {
+		const trimmedProp = property.trim();
+
+		switch (trimmedProp) {
+			case 'HttpOnly': {
+				options.httpOnly = true;
+				continue;
+			}
+			case 'Secure': {
+				options.secure = true;
+				continue;
+			}
+		}
+
+		const [key, val] = trimmedProp.split('=');
+
+		switch (key) {
+			case 'Expires': {
+				options.expires = new Date(val);
+				continue;
+			}
+			case 'Path': {
+				options.path = val;
+				continue;
+			}
+			case 'SameSite': {
+				options.sameSite = val as CookieSerializeOptions['sameSite'];
+				continue;
+			}
+		}
 	}
 
-	request.headers.set('Authorization', `Bearer ${accessToken}`);
-
-	return fetch(request);
+	return [name, value, options];
 };
 
 const refreshTokens = async (event: RequestEvent, refreshToken: string): Promise<boolean> => {
 	try {
-		// const newTokens = await refreshRequest(event.fetch, { refreshToken });
-		// const decodedTokens = {
-		// 	access: jwt.decode(newTokens.accessToken),
-		// 	refresh: jwt.decode(newTokens.refreshToken)
-		// };
+		const resp = await event.fetch(urljoin(config.serverAddress, '/auth.refresh'), {
+			headers: { cookie: `refreshToken=${refreshToken}`, 'Content-Type': 'application/json' },
+			method: 'POST'
+		});
 
-		// const cookieOptions: CookieSerializeOptions = {
-		// 	sameSite: 'lax',
-		// 	secure: true,
-		// 	httpOnly: false,
-		// 	path: '/'
-		// };
-		// event.cookies.set('accessToken', newTokens.accessToken, {
-		// 	...cookieOptions,
-		// 	expires: fromUnixTime(decodedTokens.access.exp - ACCESS_TOKEN_ADVANCE_TIME)
-		// });
-		// event.cookies.set('refreshToken', newTokens.refreshToken, {
-		// 	...cookieOptions,
-		// 	expires: fromUnixTime(decodedTokens.refresh.exp)
-		// });
+		if (!resp.ok) {
+			return false;
+		}
 
+		for (const setCookieString of resp.headers.getSetCookie()) {
+			event.cookies.set(...parseCookieOptions(setCookieString));
+		}
+
+		const accessToken: { token: string; expires: Date } = parse((await resp.json()).result.data);
+
+		const cookieOptions = {
+			sameSite: 'lax',
+			secure: true,
+			httpOnly: false,
+			path: '/',
+			expires: accessToken.expires
+		} satisfies CookieSerializeOptions;
+
+		event.cookies.set('accessToken', accessToken.token, cookieOptions);
 		return true;
 	} catch (e) {
 		return false;
@@ -53,13 +92,7 @@ const checkIfAuthed = async (event: RequestEvent): Promise<boolean> => {
 
 	if (!accessToken || !jwt.isValid(accessToken, { advanceTime: ACCESS_TOKEN_ADVANCE_TIME })) {
 		if (!refreshToken) {
-			return false;
-		}
-
-		const decodedRefreshToken = jwt.isValid(refreshToken);
-		if (!decodedRefreshToken) {
-			// event.cookies.delete('accessToken');
-			// event.cookies.delete('refreshToken');
+			event.cookies.delete('accessToken', { path: '/' });
 			return false;
 		}
 
@@ -70,6 +103,10 @@ const checkIfAuthed = async (event: RequestEvent): Promise<boolean> => {
 };
 
 export const handle: Handle = async ({ event, resolve }) => {
+	if (event.url.pathname.startsWith('/trpc')) {
+		return resolve(event);
+	}
+
 	const isAuthed = await checkIfAuthed(event);
 	const isOnAuthedRoute = !NOT_AUTHED_ROUTES.some((notAuthedRoute) =>
 		event.url.pathname.startsWith(notAuthedRoute)
@@ -79,21 +116,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 	);
 
 	if (isAuthed && isOnNotAllowedAuthedRoute) {
-		// throw redirect(HttpStatus.FOUND, '/');
+		throw redirect(HttpStatus.FOUND, '/');
 	} else if (!isAuthed && isOnAuthedRoute) {
-		// throw redirect(HttpStatus.FOUND, '/login');
-	}
-
-	if (isOnAuthedRoute) {
-		const accessToken = event.cookies.get('accessToken');
-		const headers = {
-			Authorization: `Bearer ${accessToken}`,
-			'Content-Type': 'application/json'
-		};
-
-		return resolve(event, {
-			transformPageChunk: replaceHash(headers)
-		});
+		throw redirect(HttpStatus.FOUND, '/login');
 	}
 
 	return resolve(event);

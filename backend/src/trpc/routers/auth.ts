@@ -1,4 +1,4 @@
-import { router, publicProcedure, authedProcedure } from '..';
+import { router, publicProcedure } from '..';
 import { loginInputSchema, registerInputSchema } from '../../schemas';
 import { AuthServiceTRPC } from '../services';
 
@@ -10,16 +10,23 @@ export const authRouter = router({
     return tokens.accessToken;
   }),
 
-  register: publicProcedure
-    .input(registerInputSchema)
-    .mutation(({ input }) => AuthServiceTRPC.register(input)),
+  register: publicProcedure.input(registerInputSchema).mutation(async ({ input, ctx }) => {
+    const tokens = await AuthServiceTRPC.register(input);
 
-  refresh: authedProcedure.mutation(async ({ ctx }) => {
+    ctx.setRefreshToken(tokens.refreshToken);
+    return tokens.accessToken;
+  }),
+
+  refresh: publicProcedure.mutation(async ({ ctx }) => {
     const tokens = await AuthServiceTRPC.refresh(ctx.getRefreshToken());
 
     ctx.setRefreshToken(tokens.refreshToken);
     return tokens.accessToken;
   }),
 
-  logout: publicProcedure.mutation(({ ctx }) => AuthServiceTRPC.logout(ctx.getRefreshToken()))
+  logout: publicProcedure.mutation(({ ctx }) => {
+    AuthServiceTRPC.logout(ctx.getRefreshToken());
+
+    ctx.deleteRefreshToken();
+  })
 });
