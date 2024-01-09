@@ -6,6 +6,8 @@ import cookie from 'cookie';
 import { CreateWSSContextFnOptions } from '@trpc/server/adapters/ws';
 import { WebSocket } from 'ws';
 import { fromUnixTime } from 'date-fns';
+import { ZodError } from 'zod';
+import { isApiError } from '../types';
 
 const REFRESH_TOKEN_COOKIE_NAME = 'refreshToken';
 
@@ -74,7 +76,17 @@ export const {
 } = initTRPC.context<typeof createContext>().create({
   transformer,
   errorFormatter: (err) => {
-    return { ...err.shape, data: { ...err.error.cause } };
+    let data = {};
+
+    if (isApiError(err.error.cause)) {
+      data = { ...err.error.cause };
+    } else if (err.error.cause instanceof ZodError) {
+      data = { issues: [...err.error.cause.issues] };
+    } else if (err.error.cause instanceof Error) {
+      data = { ...err.error.cause };
+    }
+
+    return { ...err.shape, data };
   }
 });
 

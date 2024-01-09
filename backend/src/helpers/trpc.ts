@@ -5,7 +5,13 @@ import { HttpStatus } from '../types';
 
 const devalueTransformer: DataTransformer = {
   serialize: (object) => stringify(object),
-  deserialize: (object) => parse(object)
+  deserialize: (object) => {
+    if (typeof object === 'string') {
+      return parse(object);
+    }
+
+    return object;
+  }
 };
 
 export const transformer = {
