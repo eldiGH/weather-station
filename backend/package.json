@@ -12,8 +12,10 @@
     "dev": "tsx watch src/index.ts",
     "start": "tsx src/index.ts",
     "lint": "prettier --plugin-search-dir . --check . && eslint .",
+    "typecheck": "tsc",
     "format": "prettier --plugin-search-dir . --write .",
-    "prisma": "prisma"
+    "prisma": "prisma",
+    "build": "tsc --project tsconfig-prod.json"
   },
   "devDependencies": {
     "@eldigh/tsc-watch2": "^1.0.12",

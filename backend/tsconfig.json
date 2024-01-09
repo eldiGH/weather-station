@@ -1,10 +1,20 @@
 {
-  "extends": "../tsconfig.json",
   "compilerOptions": {
-    "noEmit": false,
-    "outDir": "./dist",
-    "composite": true,
+    "allowJs": false,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": false,
+    "sourceMap": true,
+    "strict": true,
+    "isolatedModules": true,
+    "lib": ["esnext"],
+    "moduleResolution": "node",
+    "module": "CommonJS",
+    "target": "ESNext",
+    "noEmit": true,
     "rootDir": "src"
   },
-  "include": ["./src"]
+  "include": ["./src"],
+  "exclude": ["../node_modules/**"]
 }

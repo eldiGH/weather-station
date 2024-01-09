@@ -1,6 +1,6 @@
 import { router, authedProcedure, publicProcedure } from '..';
 import { getSensorDataInputSchema, getSensorDataOutputSchema } from '../../schemas';
-import { postBME68XDataSchema } from '../../schemas/bme68x';
+import { postBME68XDataInputSchema } from '../../schemas/bme68x';
 import { SensorServiceTRPC } from '../services';
 
 export const sensorRouter = router({
@@ -9,7 +9,7 @@ export const sensorRouter = router({
     .output(getSensorDataOutputSchema)
     .query(({ input }) => SensorServiceTRPC.getBME68XData(input.sensorId, input.dateRangeQuery)),
 
-  postBME68xData: publicProcedure.input(postBME68XDataSchema).mutation(({ input }) => {
+  postBME68xData: publicProcedure.input(postBME68XDataInputSchema).mutation(({ input }) => {
     SensorServiceTRPC.addBME68XDataEntry(input);
   })
 });

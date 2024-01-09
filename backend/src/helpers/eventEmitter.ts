@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import { GetBME68xData, getBME68xDataSchema } from '../schemas/bme68x';
+import { GetBME68xData, getBME68xDataInputSchema } from '../schemas/bme68x';
 import { BME68XSensorData } from '@prisma/client';
 
 const ee = new EventEmitter();
@@ -17,7 +17,7 @@ export const emitNewSensorData = (id: number, data: BME68XSensorData) => {
 
 export const addNewSensorDataListener = (id: number, callback: (data: GetBME68xData) => void) => {
   const eventCallback = (data: BME68XSensorData) => {
-    const parsedData = getBME68xDataSchema.parse(data);
+    const parsedData = getBME68xDataInputSchema.parse(data);
     callback(parsedData);
   };
 

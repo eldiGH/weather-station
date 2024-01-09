@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const getBME68xDataSchema = z.object({
+export const getBME68xDataInputSchema = z.object({
   temperature: z.number(),
   humidity: z.number(),
   pressure: z.number(),
@@ -9,11 +9,11 @@ export const getBME68xDataSchema = z.object({
   createdAt: z.date()
 });
 
-export type GetBME68xData = z.infer<typeof getBME68xDataSchema>;
+export type GetBME68xData = z.infer<typeof getBME68xDataInputSchema>;
 
 export type SubscribeBME68xData = GetBME68xData & { sensorId: number };
 
-export const postBME68XDataSchema = z.object({
+export const postBME68XDataInputSchema = z.object({
   secret: z.string().uuid(),
   temperature: z.number(),
   humidity: z.number().min(0),
@@ -21,3 +21,5 @@ export const postBME68XDataSchema = z.object({
   gasResistance: z.number().min(0),
   batteryPercentage: z.number().min(0)
 });
+
+export type PostBME68XDataInput = z.infer<typeof postBME68XDataInputSchema>;

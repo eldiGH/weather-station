@@ -1,6 +1,6 @@
 import { SensorType } from '@prisma/client';
 import { z } from 'zod';
-import { getBME68xDataSchema } from './bme68x';
+import { getBME68xDataInputSchema } from './bme68x';
 import { dateRangeQuerySchema } from './helpers';
 
 export const getSensorOutputSchema = z.object({
@@ -10,7 +10,7 @@ export const getSensorOutputSchema = z.object({
 });
 
 export const getSensorWithCurrentDataSchema = getSensorOutputSchema.extend({
-  currentData: getBME68xDataSchema.optional()
+  currentData: getBME68xDataInputSchema.optional()
 });
 
 export const getSensorDataInputSchema = z.object({
@@ -18,4 +18,4 @@ export const getSensorDataInputSchema = z.object({
   dateRangeQuery: dateRangeQuerySchema
 });
 
-export const getSensorDataOutputSchema = z.array(getBME68xDataSchema);
+export const getSensorDataOutputSchema = z.array(getBME68xDataInputSchema);
