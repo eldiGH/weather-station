@@ -46,7 +46,7 @@
 
 		return {
 			integral: integralPart,
-			rest: Math.floor((temperature - integralPart) * 10)
+			rest: Math.round((temperature - integralPart) * 10)
 		};
 	};
 
@@ -55,7 +55,7 @@
 
 		return {
 			integral: integralPart,
-			rest: Math.floor((humidity - integralPart) * 10)
+			rest: Math.round((humidity - integralPart) * 10)
 		};
 	};
 

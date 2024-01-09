@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Card } from 'agnostic-svelte';
-	import type { SensorResponseWithCurrentData } from 'shared';
 	import IconInfo from './IconInfo.svelte';
 	import Link from './Link.svelte';
 	import { page } from '$app/stores';

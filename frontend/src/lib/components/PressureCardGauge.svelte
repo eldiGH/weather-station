@@ -31,7 +31,7 @@
 
 		return {
 			integral: integralPart,
-			rest: Math.floor((pressure - integralPart) * 10)
+			rest: Math.round((pressure - integralPart) * 10)
 		};
 	};
 

@@ -8,15 +8,14 @@
 	import { subscribeAction } from './ActionPoller.svelte';
 	import { jwt } from '$lib/helpers/jwt';
 
-	const getDateOfAccessToken = () => {
+	const getExpirationDateOfAccessToken = () => {
 		if (!browser) {
 			return;
 		}
 
-		const { refreshToken, accessToken } = cookie.parse(document.cookie);
+		const { accessToken } = cookie.parse(document.cookie);
 
-		if (!refreshToken || !jwt.isValid(refreshToken)) {
-			logout();
+		if (!accessToken) {
 			return;
 		}
 
@@ -25,28 +24,27 @@
 		return fromUnixTime(decodedAccessToken.exp - ACCESS_TOKEN_ADVANCE_TIME);
 	};
 
-	const refreshToken = async () => {
-		const { refreshToken } = cookie.parse(document.cookie);
-		// const error = await refresh({ refreshToken });
+	const handleRefresh = async () => {
+		const error = await refresh();
 
-		// if (error) {
-		// 	logout();
-		// 	return;
-		// }
+		if (error) {
+			logout();
+			return;
+		}
 
-		date = getDateOfAccessToken();
+		date = getExpirationDateOfAccessToken();
 	};
 
-	const { setNextPollDate, unsubscribeAction } = subscribeAction(refreshToken);
+	const { setNextPollDate, unsubscribeAction } = subscribeAction(handleRefresh);
 
 	onDestroy(() => {
 		unsubscribeAction();
 	});
 
-	let date = getDateOfAccessToken();
+	let date = getExpirationDateOfAccessToken();
 	$: {
 		if (date) {
-			setNextPollDate(date);
+			setNextPollDate(date ?? new Date());
 		}
 	}
 </script>
