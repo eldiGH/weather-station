@@ -104,7 +104,14 @@ const checkIfAuthed = async (event: RequestEvent): Promise<boolean> => {
 
 export const handle: Handle = async ({ event, resolve }) => {
 	if (event.url.pathname.startsWith('/trpc')) {
-		return resolve(event);
+		const pathname = event.url.pathname.replace(/\/trpc(?:ws)?\//, '');
+		const url = `${urljoin(config.serverAddress, pathname)}${event.url.search}`;
+
+		return event.fetch(url, {
+			body: event.request.body,
+			headers: event.request.headers,
+			method: event.request.method
+		});
 	}
 
 	const isAuthed = await checkIfAuthed(event);
