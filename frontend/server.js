@@ -1,6 +1,5 @@
 import { handler } from './dist//handler.js';
 import httpProxy from 'http-proxy';
-import 'dotenv/config.js';
 import config from './src/config.json' with { type: 'json' };
 import { createServer } from 'http';
 

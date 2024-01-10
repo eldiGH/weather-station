@@ -13,7 +13,7 @@
 		"format": "prettier --plugin-search-dir . --write .",
 		"test:integration": "playwright test",
 		"test:unit": "vitest",
-		"start": "node server.js"
+		"start": "node -r dotenv/config server.js"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.40.1",
