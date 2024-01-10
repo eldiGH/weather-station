@@ -42,20 +42,22 @@
 	$: centerPoint = { x: svgWidth / 2, y: svgHeight / 2 };
 
 	const formatTemperature = (temperature: number) => {
-		const integralPart = Math.floor(temperature);
+		const roundedTemp = Math.round(temperature * 10) / 10;
+		const integralPart = Math.floor(roundedTemp);
 
 		return {
 			integral: integralPart,
-			rest: Math.round((temperature - integralPart) * 10)
+			rest: Math.round((roundedTemp - integralPart) * 10)
 		};
 	};
 
 	const formatHumidity = (humidity: number) => {
-		const integralPart = Math.floor(humidity);
+		const roundedHum = Math.round(humidity * 10) / 10;
+		const integralPart = Math.floor(roundedHum);
 
 		return {
 			integral: integralPart,
-			rest: Math.round((humidity - integralPart) * 10)
+			rest: Math.round((roundedHum - integralPart) * 10)
 		};
 	};
 

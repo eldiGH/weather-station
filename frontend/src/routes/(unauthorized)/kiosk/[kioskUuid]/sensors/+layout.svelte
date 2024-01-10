@@ -10,7 +10,20 @@
 	onMount(() => {
 		unsubscribe = trpcWs().kiosk.subscribeKiosk.subscribe(
 			{ kioskUuid: data.kioskUuid },
-			{ onData: () => {} }
+			{
+				onData: ({ sensorId, ...sensorData }) => {
+					data.kioskDataStore.update((kioskData) => {
+						const sensor = kioskData.sensors.find(({ id }) => sensorId === id);
+
+						if (!sensor) {
+							return kioskData;
+						}
+
+						sensor.currentData = sensorData;
+						return { ...kioskData };
+					});
+				}
+			}
 		).unsubscribe;
 	});
 

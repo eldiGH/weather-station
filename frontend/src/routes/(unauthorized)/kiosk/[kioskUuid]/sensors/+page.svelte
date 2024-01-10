@@ -4,7 +4,8 @@
 
 	export let data: PageData;
 
-	$: sensors = data.kioskData.sensors;
+	$: kioskDataStore = data.kioskDataStore;
+	$: sensors = $kioskDataStore.sensors;
 </script>
 
 <div class="root">

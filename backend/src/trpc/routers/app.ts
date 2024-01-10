@@ -1,3 +1,4 @@
+import { inferRouterOutputs } from '@trpc/server';
 import { router } from '..';
 import { authRouter } from './auth';
 import { kioskRouter } from './kiosk';
@@ -10,3 +11,6 @@ export const appRouter = router({
 });
 
 export type AppRouter = typeof appRouter;
+export type AppRouterOutputs = inferRouterOutputs<AppRouter>;
+export type { inferObservableValue } from '@trpc/server/observable';
+export type { inferProcedureOutput } from '@trpc/server';

@@ -1,3 +1,4 @@
+import { get } from 'svelte/store';
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async ({ params, parent }) => {
@@ -6,9 +7,9 @@ export const load: LayoutLoad = async ({ params, parent }) => {
 		throw Error('Sensor id is not a number');
 	}
 
-	const { kioskData } = await parent();
+	const { kioskDataStore } = await parent();
 
-	const currentSensor = kioskData.sensors.find(({ id }) => id === sensorId);
+	const currentSensor = get(kioskDataStore).sensors.find(({ id }) => id === sensorId);
 
 	if (!currentSensor) {
 		throw Error('Sensor not found');

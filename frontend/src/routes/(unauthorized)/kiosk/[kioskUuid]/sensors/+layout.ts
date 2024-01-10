@@ -1,11 +1,12 @@
 import { trpc } from '$lib/api/trpc';
+import { writable } from 'svelte/store';
 import type { LayoutLoad } from './$types';
 
-export const load: LayoutLoad = async ({ fetch, params, depends }) => {
-	depends('api:kioskData');
-
+export const load: LayoutLoad = async ({ fetch, params }) => {
 	return {
-		kioskData: await trpc(fetch).kiosk.getKioskData.query({ kioskUuid: params.kioskUuid }),
+		kioskDataStore: writable(
+			await trpc(fetch).kiosk.getKioskData.query({ kioskUuid: params.kioskUuid })
+		),
 		kioskUuid: params.kioskUuid
 	};
 };

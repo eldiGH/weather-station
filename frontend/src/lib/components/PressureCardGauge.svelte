@@ -27,11 +27,12 @@
 	const centerPoint = { x: svgWidth / 2, y: svgHeight - width };
 
 	const formatPressure = (pressure: number) => {
-		const integralPart = Math.floor(pressure);
+		const roundedPres = Math.round(pressure * 10) / 10;
+		const integralPart = Math.floor(roundedPres);
 
 		return {
 			integral: integralPart,
-			rest: Math.round((pressure - integralPart) * 10)
+			rest: Math.round((roundedPres - integralPart) * 10)
 		};
 	};
 
