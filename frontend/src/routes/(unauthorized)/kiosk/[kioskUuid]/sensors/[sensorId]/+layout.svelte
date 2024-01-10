@@ -5,8 +5,6 @@
 	import TopBar from '$lib/components/TopBar.svelte';
 	import type { LayoutData } from './$types';
 	import { page } from '$app/stores';
-	import { onDestroy, onMount } from 'svelte';
-	import { getAppContext } from '$lib/helpers/contextHelper';
 	import Container from '$lib/components/Container.svelte';
 
 	export let data: LayoutData;
@@ -21,16 +19,6 @@
 		{ label: 'Szczegóły', value: urls[0], exactRoute: true },
 		{ label: 'Wykresy', value: urls[1], exactRoute: true }
 	];
-
-	const kioskTabsVisibilityStore = getAppContext('kioskMainNavigationTabs');
-
-	onMount(() => {
-		$kioskTabsVisibilityStore = false;
-	});
-
-	onDestroy(() => {
-		$kioskTabsVisibilityStore = true;
-	});
 </script>
 
 <TopBar>
