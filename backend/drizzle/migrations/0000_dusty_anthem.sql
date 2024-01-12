@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS "bme68x_data" (
 	"gas_resistance" double precision NOT NULL,
 	"battery_percentage" double precision NOT NULL,
 	"sensor_id" integer NOT NULL,
-	"created_at" timestamp DEFAULT now() NOT NULL,
+	"created_at" timestamp without time zone DEFAULT (now() at time zone 'utc') NOT NULL,
 	CONSTRAINT "bme68x_data_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
@@ -38,8 +38,8 @@ CREATE TABLE IF NOT EXISTS "refresh_token" (
 	"revoked" boolean DEFAULT false NOT NULL,
 	"user_id" integer NOT NULL,
 	"session_id" char(36) NOT NULL,
-	"expiration_date" timestamp NOT NULL,
-	"created_at" timestamp DEFAULT now() NOT NULL,
+	"expiration_date" timestamp without time zone NOT NULL,
+	"created_at" timestamp without time zone DEFAULT (now() at time zone 'utc') NOT NULL,
 	CONSTRAINT "refresh_token_id_unique" UNIQUE("id"),
 	CONSTRAINT "refresh_token_token_unique" UNIQUE("token")
 );
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS "sensor" (
 	"name" text NOT NULL,
 	"type" "sensor_type" NOT NULL,
 	"secret" char(36) NOT NULL,
-	"created_at" timestamp DEFAULT now() NOT NULL,
+	"created_at" timestamp without time zone DEFAULT (now() at time zone 'utc') NOT NULL,
 	"owner_id" integer NOT NULL,
 	CONSTRAINT "sensor_id_unique" UNIQUE("id"),
 	CONSTRAINT "sensor_secret_unique" UNIQUE("secret")
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS "user" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"email" text NOT NULL,
 	"password" text NOT NULL,
-	"created_at" timestamp DEFAULT now() NOT NULL,
+	"created_at" timestamp without time zone DEFAULT (now() at time zone 'utc') NOT NULL,
 	CONSTRAINT "user_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint

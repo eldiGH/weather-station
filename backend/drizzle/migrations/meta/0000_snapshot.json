@@ -1,5 +1,5 @@
 {
-  "id": "ec0ac008-5c9f-4a6e-baf9-ad188ab8be74",
+  "id": "6d2ecefe-cc6c-4989-a07f-7fc57f96f2c3",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -52,10 +52,10 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp without time zone",
           "primaryKey": false,
           "notNull": true,
-          "default": "now()"
+          "default": "(now() at time zone 'utc')"
         }
       },
       "indexes": {},
@@ -252,16 +252,16 @@
         },
         "expiration_date": {
           "name": "expiration_date",
-          "type": "timestamp",
+          "type": "timestamp without time zone",
           "primaryKey": false,
           "notNull": true
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp without time zone",
           "primaryKey": false,
           "notNull": true,
-          "default": "now()"
+          "default": "(now() at time zone 'utc')"
         }
       },
       "indexes": {},
@@ -329,10 +329,10 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp without time zone",
           "primaryKey": false,
           "notNull": true,
-          "default": "now()"
+          "default": "(now() at time zone 'utc')"
         },
         "owner_id": {
           "name": "owner_id",
@@ -400,10 +400,10 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp without time zone",
           "primaryKey": false,
           "notNull": true,
-          "default": "now()"
+          "default": "(now() at time zone 'utc')"
         }
       },
       "indexes": {},
