@@ -1,4 +1,4 @@
-import { DateRangeQuery } from '../schemas';
+import type { DateRangeQuery } from '../schemas';
 
 export type QueryDates = {
   dates?: DateRangeQuery;

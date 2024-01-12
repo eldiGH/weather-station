@@ -1,6 +1,6 @@
 import EventEmitter from 'events';
-import { GetBME68xData, getBME68xDataInputSchema } from '../schemas/bme68x';
-import { BME68XSensorData } from '@prisma/client';
+import { type GetBME68xData, getBME68xDataInputSchema } from '../schemas/bme68x';
+import type { BME68XSensorData } from '@prisma/client';
 
 const ee = new EventEmitter();
 

@@ -1,4 +1,4 @@
-import { inferRouterOutputs } from '@trpc/server';
+import type { inferRouterOutputs } from '@trpc/server';
 import { router } from '..';
 import { authRouter } from './auth';
 import { kioskRouter } from './kiosk';

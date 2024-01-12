@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { bme68xDataSchema, db, kioskSchema, kioskToSensorSchema } from '../db/drizzle';
-import { QueryDates, QueryLimit, QueryOrder } from '../types/QueryOptions';
+import type { QueryDates, QueryLimit, QueryOrder } from '../types/QueryOptions';
 import { getSQLForDates, getSQLForOrder } from '../helpers/db';
 
 export const getKioskByUuid = async (kioskUuid: string) =>

@@ -11,22 +11,14 @@
 	export interface ChartData {
 		xAxisData: Date[];
 		datasets: ChartDataset[];
-		scales?: _DeepPartialObject<{
-			[key: string]: ScaleOptionsByType<keyof CartesianScaleTypeRegistry>;
-		}>;
+		scales?: { [key: string]: ScaleOptions<'linear' | 'time'> };
 		defaultTooltipFormat?: string;
 		tooltipLabelFormatter?: (data: TooltipItem<'line'>) => string;
 	}
 </script>
 
 <script lang="ts">
-	import {
-		Chart,
-		type CartesianScaleTypeRegistry,
-		type ScaleOptionsByType,
-		type TooltipItem
-	} from 'chart.js/auto';
-	import type { _DeepPartialObject } from 'chart.js/dist/types/utils';
+	import { Chart, type TooltipItem, type ScaleOptions } from 'chart.js';
 	import { onDestroy, onMount } from 'svelte';
 
 	export let config: ChartData;

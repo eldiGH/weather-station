@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { WeatherMinutely } from 'shared';
+	import type { WeatherMinutely } from 'backend/types';
 	import LineChart from '../LineChart.svelte';
 	import { fromUnixTime } from 'date-fns';
 

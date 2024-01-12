@@ -2,10 +2,10 @@
 	import { formatTemperature } from '$lib/helpers/formatters';
 	import { capitalize } from '$lib/helpers/string';
 	import { getWeatherIcon } from '$lib/helpers/weatherHelper';
-	import type { WeatherDescription } from 'shared';
 	import IconInfo from '../IconInfo.svelte';
 	import { format, fromUnixTime } from 'date-fns';
 	import type { IconType } from '$lib/types/IconType';
+	import type { WeatherDescription } from 'backend/types';
 
 	export let weather: WeatherDescription | undefined;
 	export let temperature: number;

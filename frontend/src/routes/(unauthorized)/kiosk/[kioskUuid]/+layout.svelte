@@ -22,7 +22,6 @@
 		}
 	});
 
-	$: console.log($page);
 	$: areTabsVisible = !/\/kiosk\/.*?\/sensors\/\d/.test($page.url.pathname);
 
 	onDestroy(() => {

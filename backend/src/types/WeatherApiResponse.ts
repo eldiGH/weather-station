@@ -1,4 +1,4 @@
-import { WeatherResponse } from './OpenWeatherApiTypes';
+import type { WeatherResponse } from './OpenWeatherApiTypes';
 
 export interface WeatherApiResponse extends WeatherResponse {
   lon: number;

@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import type { Timer } from '$lib/types/Timer';
 	import { format } from 'date-fns';
 	import { onDestroy, onMount } from 'svelte';
 
-	let clockInterval: NodeJS.Timer | null = null;
+	let clockInterval: Timer | null = null;
 
 	const getCurrentTimeString = () => format(new Date(), 'HH:mm:ss');
 

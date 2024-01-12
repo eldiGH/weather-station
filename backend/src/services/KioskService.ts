@@ -1,11 +1,11 @@
-import { User } from '@prisma/client';
+import type { User } from '@prisma/client';
 import { redisClient } from '../db/redis';
 import { KioskNotFound } from '../errors/KioskNotFound';
 import { KioskWithoutCoordinates } from '../errors/KioskWithoutCoordinates';
 import { SensorNotFound } from '../errors/SensorNotFound';
-import { CreateKioskInput, DateRangeQuery } from '../schemas';
-import { RedisCachedEntry } from '../types/RedisCachedEntry';
-import { WeatherApiResponse } from '../types/WeatherApiResponse';
+import type { CreateKioskInput, DateRangeQuery } from '../schemas';
+import type { RedisCachedEntry } from '../types/RedisCachedEntry';
+import type { WeatherApiResponse } from '../types/WeatherApiResponse';
 import axios from 'axios';
 import { addMinutes, fromUnixTime, isAfter } from 'date-fns';
 import { PermissionDenied } from '../errors/PermissionDenied';

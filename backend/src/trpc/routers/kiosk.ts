@@ -8,7 +8,7 @@ import {
   subscribeKioskInputSchema,
   createKioskInputSchema
 } from '../../schemas';
-import { SubscribeBME68xData } from '../../schemas/bme68x';
+import type { SubscribeBME68xData } from '../../schemas/bme68x';
 import { KioskServiceTRPC } from '../services';
 import { observable } from '@trpc/server/observable';
 

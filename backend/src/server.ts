@@ -1,9 +1,9 @@
 import fastify from 'fastify';
 import cors from '@fastify/cors';
 import ws from '@fastify/websocket';
-import { fastifyTRPCPlugin, FastifyTRPCPluginOptions } from '@trpc/server/adapters/fastify';
+import { fastifyTRPCPlugin, type FastifyTRPCPluginOptions } from '@trpc/server/adapters/fastify';
 import { createContext } from './trpc';
-import { appRouter, AppRouter } from './trpc/routers/app';
+import { appRouter, type AppRouter } from './trpc/routers/app';
 import { isDevelopment } from './helpers/environment';
 
 export const server = fastify({ logger: isDevelopment, maxParamLength: 5000 });

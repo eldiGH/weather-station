@@ -6,7 +6,7 @@ import { EmailAlreadyInUse } from '../errors/EmailAlreadyInUse';
 import { EmailOrPasswordNotValid } from '../errors/EmailOrPasswordNotValid';
 import { RefreshTokenNotValid } from '../errors/RefreshTokenNotValid';
 import { RefreshTokenRevoked } from '../errors/RefreshTokenRevoked';
-import { LoginInput } from '../schemas';
+import type { LoginInput } from '../schemas';
 import { NotAuthorized } from '../errors/NotAuthorized';
 import { createUserReturning, getUserByEmail, getUserById } from '../repositories/user';
 import { userSchema } from '../db/drizzle';
@@ -17,7 +17,7 @@ import {
   updateRevokedInTokenSession,
   updateRevokedOnToken
 } from '../repositories/refreshToken';
-import { JwtPayload } from '../types/JwtPayload';
+import type { JwtPayload } from '../types/JwtPayload';
 
 const jwtSecret = process.env.JWT_SECRET;
 if (!jwtSecret) {

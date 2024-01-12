@@ -13,7 +13,8 @@
     "module": "ESNext",
     "target": "ESNext",
     "noEmit": true,
-    "rootDir": "src"
+    "rootDir": "src",
+    "verbatimModuleSyntax": true
   },
   "include": ["./src"],
   "exclude": ["../node_modules/**"]

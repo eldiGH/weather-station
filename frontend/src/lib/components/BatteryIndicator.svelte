@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { toHex, getGradient } from '$lib/helpers/colors';
+	import { getGradient } from '$lib/helpers/colors';
 	import { minMax, roundToPrecision } from '$lib/helpers/math';
 	import { onMount } from 'svelte';
 

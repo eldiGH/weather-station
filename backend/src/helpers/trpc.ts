@@ -1,6 +1,6 @@
-import { DataTransformer, TRPCError } from '@trpc/server';
+import { type DataTransformer, TRPCError } from '@trpc/server';
 import { stringify, parse } from 'devalue';
-import { ApiError, isApiError } from '../types/ApiError';
+import { type ApiError, isApiError } from '../types/ApiError';
 import { HttpStatus } from '../types';
 
 const devalueTransformer: DataTransformer = {

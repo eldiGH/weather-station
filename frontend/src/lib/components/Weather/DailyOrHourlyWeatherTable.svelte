@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { capitalize } from '$lib/helpers/string';
 	import { format, fromUnixTime } from 'date-fns';
-	import type { WeatherDaily, WeatherHourly } from 'shared';
 	import IconInfo from '../IconInfo.svelte';
 	import { getWeatherIcon } from '$lib/helpers/weatherHelper';
 	import { formatTemperature } from '$lib/helpers/formatters';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import type { WeatherDaily, WeatherHourly } from 'backend/types';
 
 	export let daysOrHours: (WeatherDaily | WeatherHourly)[];
 

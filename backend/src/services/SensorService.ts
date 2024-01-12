@@ -1,9 +1,9 @@
 import { SecretIsNotValid } from '../errors/SecretIsNotValid';
 import { SensorDataNotFound } from '../errors/SensorDataNotFound';
 import { SensorNotFound } from '../errors/SensorNotFound';
-import { DateRangeQuery } from '../schemas/helpers';
+import type { DateRangeQuery } from '../schemas/helpers';
 import { emitNewSensorData } from '../helpers/eventEmitter';
-import { PostBME68XDataInput } from '../schemas/bme68x';
+import type { PostBME68XDataInput } from '../schemas/bme68x';
 import { bme68xDataSchema, db } from '../db/drizzle';
 import { getSensorBySecret, getSensorWithBme68xData } from '../repositories/sensor';
 

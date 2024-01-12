@@ -1,4 +1,4 @@
-import { ApiError } from '../types/ApiError';
+import type { ApiError } from '../types/ApiError';
 import { ApiErrorCode } from '../types/enums/ApiErrorCode';
 import { HttpStatus } from '../types/enums/HttpStatus';
 

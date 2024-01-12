@@ -1,7 +1,7 @@
 import { eq, inArray } from 'drizzle-orm';
 import { bme68xDataSchema, db, sensorSchema } from '../db/drizzle';
 import { getSQLForDates } from '../helpers/db';
-import { QueryDates, QueryLimit } from '../types/QueryOptions';
+import type { QueryDates, QueryLimit } from '../types/QueryOptions';
 
 export const getSensorBySecret = async (secret: string) =>
   (await db.select().from(sensorSchema).where(eq(sensorSchema.secret, secret))).shift();

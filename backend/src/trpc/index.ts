@@ -1,9 +1,9 @@
 import { TRPCError, initTRPC } from '@trpc/server';
 import { transformer } from '../helpers/trpc';
 import { AuthServiceTRPC } from './services';
-import { CreateFastifyContextOptions } from '@trpc/server/adapters/fastify';
+import type { CreateFastifyContextOptions } from '@trpc/server/adapters/fastify';
 import cookie from 'cookie';
-import { CreateWSSContextFnOptions } from '@trpc/server/adapters/ws';
+import type { CreateWSSContextFnOptions } from '@trpc/server/adapters/ws';
 import { WebSocket } from 'ws';
 import { fromUnixTime } from 'date-fns';
 import { ZodError } from 'zod';

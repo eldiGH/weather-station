@@ -6,7 +6,7 @@
 	import { Chart } from 'chart.js';
 	import NavigationLoader from '$lib/components/NavigationLoader.svelte';
 	import { setDefaultOptions } from 'date-fns';
-	import pl from 'date-fns/locale/pl';
+	import { pl } from 'date-fns/locale';
 	import ActionPoller from '$lib/components/ActionPoller.svelte';
 
 	Chart.defaults.borderColor = '#545454';

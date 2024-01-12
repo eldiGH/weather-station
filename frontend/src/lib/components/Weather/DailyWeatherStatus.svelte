@@ -3,10 +3,10 @@
 	import type IconInfo from '../IconInfo.svelte';
 	import Container from '../Container.svelte';
 	import WindCard from './WindCard.svelte';
-	import type { WeatherDaily } from 'shared';
 	import WeatherBasicInfo from './WeatherBasicInfo.svelte';
 	import InfoCard from '../InfoCard.svelte';
 	import type { ComponentProps } from 'svelte';
+	import type { WeatherDaily } from 'backend/types';
 
 	export let data: WeatherDaily;
 
