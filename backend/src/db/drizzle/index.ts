@@ -12,5 +12,3 @@ if (!dbUrl) {
 
 const queryClient = postgres(dbUrl);
 export const db = drizzle(queryClient, { schema, logger: isDevelopment });
-
-export * from './schema';

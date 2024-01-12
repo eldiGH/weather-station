@@ -17,7 +17,7 @@ import {
   getKioskWithSensors
 } from '../repositories/kiosk';
 import { getSensorsWithIds } from '../repositories/sensor';
-import type { userSchema } from '../db/drizzle';
+import type { userSchema } from '../db/drizzle/schema';
 
 const FORECAST_CACHE_MINUTES = 30;
 

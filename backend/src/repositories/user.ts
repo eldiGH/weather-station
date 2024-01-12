@@ -1,5 +1,6 @@
 import { eq } from 'drizzle-orm';
-import { db, userSchema } from '../db/drizzle';
+import { db } from '../db/drizzle';
+import { userSchema } from '../db/drizzle/schema';
 
 export const getUserByEmail = async (email: string) =>
   (await db.select().from(userSchema).where(eq(userSchema.email, email))).shift();

@@ -9,7 +9,6 @@ import { RefreshTokenRevoked } from '../errors/RefreshTokenRevoked';
 import type { LoginInput } from '../schemas';
 import { NotAuthorized } from '../errors/NotAuthorized';
 import { createUserReturning, getUserByEmail, getUserById } from '../repositories/user';
-import { userSchema } from '../db/drizzle';
 import {
   createRefreshToken,
   deleteTokenSession,
@@ -18,6 +17,7 @@ import {
   updateRevokedOnToken
 } from '../repositories/refreshToken';
 import type { JwtPayload } from '../types/JwtPayload';
+import type { userSchema } from '../db/drizzle/schema';
 
 const jwtSecret = process.env.JWT_SECRET;
 if (!jwtSecret) {

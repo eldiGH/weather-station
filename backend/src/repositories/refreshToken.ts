@@ -1,5 +1,6 @@
 import { and, eq } from 'drizzle-orm';
-import { db, refreshTokenSchema } from '../db/drizzle';
+import { db } from '../db/drizzle';
+import { refreshTokenSchema } from '../db/drizzle/schema';
 
 export const createRefreshToken = (data: typeof refreshTokenSchema.$inferInsert) =>
   db.insert(refreshTokenSchema).values(data);

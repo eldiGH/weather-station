@@ -1,6 +1,6 @@
 import EventEmitter from 'events';
 import { type GetBME68xData, getBME68xDataInputSchema } from '../schemas/bme68x';
-import type { bme68xDataSchema } from '../db/drizzle';
+import type { bme68xDataSchema } from '../db/drizzle/schema';
 
 const ee = new EventEmitter();
 

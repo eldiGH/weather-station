@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { getBME68xDataInputSchema } from './bme68x';
 import { dateRangeQuerySchema } from './helpers';
 import { createInsertSchema } from 'drizzle-zod';
-import { sensorSchema } from '../db/drizzle';
+import { sensorSchema } from '../db/drizzle/schema';
 
 export const insertSensorSchema = createInsertSchema(sensorSchema);
 
