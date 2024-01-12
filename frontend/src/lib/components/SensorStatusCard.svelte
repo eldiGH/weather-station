@@ -7,8 +7,9 @@
 	import TempAndHumidityGauge from './TempAndHumidityGauge.svelte';
 	import BatteryIndicator from './BatteryIndicator.svelte';
 	import PressureCardGauge from './PressureCardGauge.svelte';
+	import type { AppRouterOutputs } from 'backend/trpc';
 
-	export let sensor: SensorResponseWithCurrentData;
+	export let sensor: AppRouterOutputs['kiosk']['getKioskData']['sensors'][0];
 </script>
 
 <Link noColor href={`${$page.url.pathname}/${sensor.id}`}>

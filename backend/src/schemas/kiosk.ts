@@ -11,8 +11,7 @@ export const subscribeKioskInputSchema = z.object({
 });
 
 export const getKioskDataOutputSchema = z.object({
-  sensors: z.array(getSensorWithCurrentDataSchema),
-  nextRefreshTimestamp: z.date()
+  sensors: z.array(getSensorWithCurrentDataSchema)
 });
 
 export const getForecastForKioskInputSchema = z.object({

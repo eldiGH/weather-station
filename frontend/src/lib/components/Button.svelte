@@ -16,8 +16,7 @@
 				<Spinner />
 			</div>
 		{/if}
-	</div></Button
->
+	</div></Button>
 
 <style lang="scss">
 	div {

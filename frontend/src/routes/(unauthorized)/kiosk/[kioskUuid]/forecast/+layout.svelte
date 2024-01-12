@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import Tabs, { type Tab } from '$lib/components/Tabs.svelte';
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy } from 'svelte';
 	import type { LayoutData } from './$types';
 	import { subscribeAction } from '$lib/components/ActionPoller.svelte';
 

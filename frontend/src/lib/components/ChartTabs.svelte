@@ -4,11 +4,11 @@
 	import TemperatureChart from './TemperatureChart.svelte';
 	import HumidityChart from './HumidityChart.svelte';
 	import PressureChart from './PressureChart.svelte';
-	import type { GetLatestBME68xDataEntryOutput } from 'backend/schemas';
+	import type { AppRouterOutputs } from 'backend/trpc';
 
 	const tabsStore = createTabs(3);
 
-	export let data: GetLatestBME68xDataEntryOutput[];
+	export let data: AppRouterOutputs['kiosk']['getKioskSensorDetails']['bme68xData'];
 	export let showTooltip = true;
 </script>
 

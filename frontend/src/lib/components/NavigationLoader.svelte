@@ -2,7 +2,6 @@
 	import { navigating } from '$app/stores';
 	import Loader from './Loader.svelte';
 
-	let interval: NodeJS.Timer | null = null;
 	let show = false;
 
 	const navigatingDebounceMs = 100;

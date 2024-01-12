@@ -5,11 +5,14 @@
 </script>
 
 <text transform="translate(0, 16)" text-anchor="middle" fill="white" font-size="32px" {x} {y}
-	>{value}</text
->
+	>{value}</text>
 
 <style lang="scss">
 	text {
-		text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+		text-shadow:
+			-1px -1px 0 #000,
+			1px -1px 0 #000,
+			-1px 1px 0 #000,
+			1px 1px 0 #000;
 	}
 </style>

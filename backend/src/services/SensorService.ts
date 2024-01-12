@@ -1,12 +1,11 @@
-import { SensorType } from '@prisma/client';
-import { db } from '../db/prisma';
 import { SecretIsNotValid } from '../errors/SecretIsNotValid';
 import { SensorDataNotFound } from '../errors/SensorDataNotFound';
 import { SensorNotFound } from '../errors/SensorNotFound';
-import { getWhereForDates } from '../helpers/dates';
 import { DateRangeQuery } from '../schemas/helpers';
 import { emitNewSensorData } from '../helpers/eventEmitter';
 import { PostBME68XDataInput } from '../schemas/bme68x';
+import { bme68xDataSchema, db } from '../db/drizzle';
+import { getSensorBySecret, getSensorWithBme68xData } from '../repositories/sensor';
 
 // const addNewSensor = async (data: CreateSensorRequest, user: User) => {
 //   const existingSensor = await db.sensor.findFirst({ where: { name: data.name } });
@@ -28,47 +27,39 @@ import { PostBME68XDataInput } from '../schemas/bme68x';
 // };
 
 const addBME68XDataEntry = async ({ secret, ...data }: PostBME68XDataInput) => {
-  const sensor = await db.sensor.findFirst({ where: { secret } });
+  const sensor = await getSensorBySecret(secret);
 
-  if (!sensor || sensor.type !== SensorType.BME68X) {
+  if (!sensor || sensor.type !== 'BME68X') {
     throw SecretIsNotValid();
   }
 
-  const newData = await db.bME68XSensorData.create({ data: { ...data, sensorId: sensor.id } });
+  const newData = (await db.insert(bme68xDataSchema).values({ ...data, sensorId: sensor.id }))[0];
 
   emitNewSensorData(sensor.id, newData);
 };
 
 const getLatestBME68XDataEntry = async (sensorId: number) => {
-  const sensor = await db.sensor.findFirst({
-    where: { id: sensorId },
-    include: { bme68XData: { orderBy: { createdAt: 'desc' }, take: 1 } }
-  });
+  const sensor = await getSensorWithBme68xData(sensorId, { limit: 1 });
 
   if (!sensor) {
     throw SensorNotFound(sensorId);
   }
 
-  if (sensor.bme68XData.length === 0) {
+  if (sensor.bme68xData.length === 0) {
     throw SensorDataNotFound();
   }
 
-  return sensor.bme68XData[0];
+  return sensor.bme68xData[0];
 };
 
 const getBME68XData = async (sensorId: number, query: DateRangeQuery) => {
-  const sensor = await db.sensor.findFirst({
-    where: { id: sensorId }
-  });
+  const sensor = await getSensorWithBme68xData(sensorId, { dates: query });
 
   if (!sensor) {
     throw SensorNotFound(sensorId);
   }
 
-  return await db.bME68XSensorData.findMany({
-    where: { ...getWhereForDates('createdAt', query), sensorId },
-    orderBy: { createdAt: 'asc' }
-  });
+  return sensor.bme68xData;
 };
 
 export const SensorService = {

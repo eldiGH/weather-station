@@ -20,8 +20,7 @@
 	{fill}
 	{stroke}
 	stroke-width={strokeWidth}
-	d={path}
-/>
+	d={path} />
 
 <style>
 	path {

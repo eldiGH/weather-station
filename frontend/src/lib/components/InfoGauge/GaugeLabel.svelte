@@ -38,12 +38,15 @@
 		transform={textTransform}
 		text-anchor={getTextAnchor(angle)}
 		font-size="0.8rem"
-		fill="white">{label}</text
-	>
+		fill="white">{label}</text>
 </g>
 
 <style lang="scss">
 	.label {
-		text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+		text-shadow:
+			-1px -1px 0 #000,
+			1px -1px 0 #000,
+			-1px 1px 0 #000,
+			1px 1px 0 #000;
 	}
 </style>

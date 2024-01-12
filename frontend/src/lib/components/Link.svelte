@@ -9,8 +9,7 @@
 </script>
 
 <a bind:this={ref} class:color={!noColor} class:without-color={noColor} class={className} {href}
-	><slot /></a
->
+	><slot /></a>
 
 <style lang="scss">
 	a,

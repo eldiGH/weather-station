@@ -18,5 +18,4 @@
 	style={`font-variation-settings:'FILL' ${
 		filled ? 1 : 0
 	}, 'wght' ${weight}, 'GRAD' ${grade}, 'opsz' ${opticalSize}`}
-	class={`material-symbols-${variant}`}>{icon}</i
->
+	class={`material-symbols-${variant}`}>{icon}</i>

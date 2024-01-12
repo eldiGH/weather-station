@@ -1,15 +1,23 @@
-import { Prisma, RefreshToken } from '@prisma/client';
 import bcryptjs from 'bcryptjs';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { v4 as uuid } from 'uuid';
 import { addDays, addMinutes } from 'date-fns';
-import { db } from '../db/prisma';
 import { EmailAlreadyInUse } from '../errors/EmailAlreadyInUse';
 import { EmailOrPasswordNotValid } from '../errors/EmailOrPasswordNotValid';
 import { RefreshTokenNotValid } from '../errors/RefreshTokenNotValid';
 import { RefreshTokenRevoked } from '../errors/RefreshTokenRevoked';
 import { LoginInput } from '../schemas';
 import { NotAuthorized } from '../errors/NotAuthorized';
+import { createUserReturning, getUserByEmail, getUserById } from '../repositories/user';
+import { userSchema } from '../db/drizzle';
+import {
+  createRefreshToken,
+  deleteTokenSession,
+  getRefreshTokenByToken,
+  updateRevokedInTokenSession,
+  updateRevokedOnToken
+} from '../repositories/refreshToken';
+import { JwtPayload } from '../types/JwtPayload';
 
 const jwtSecret = process.env.JWT_SECRET;
 if (!jwtSecret) {
@@ -20,23 +28,11 @@ const ACCESS_TOKEN_EXPIRES_IN_MINUTES = 5;
 const REFRESH_TOKEN_EXPIRES_IN_DAYS = 30;
 
 const validateEmail = async (email: string) => {
-  const existingUser = await db.user.findFirst({
-    where: { email }
-  });
+  const existingUser = await getUserByEmail(email);
 
   if (existingUser) {
     throw EmailAlreadyInUse(email);
   }
-};
-
-const register = async (playerData: Prisma.UserCreateInput) => {
-  await validateEmail(playerData.email);
-
-  const password = await bcryptjs.hash(playerData.password, 10);
-
-  const user = await db.user.create({ data: { ...playerData, password } });
-
-  return await generateNewTokens(user.id, uuid());
 };
 
 const generateNewTokens = async (userId: number, sessionId: string) => {
@@ -50,8 +46,11 @@ const generateNewTokens = async (userId: number, sessionId: string) => {
   const refreshToken = uuid();
   const refreshTokenExpDate = addDays(new Date(), REFRESH_TOKEN_EXPIRES_IN_DAYS);
 
-  await db.refreshToken.create({
-    data: { token: refreshToken, userId: userId, sessionId, expirationDate: refreshTokenExpDate }
+  await createRefreshToken({
+    token: refreshToken,
+    userId,
+    sessionId,
+    expirationDate: refreshTokenExpDate
   });
 
   return {
@@ -60,36 +59,19 @@ const generateNewTokens = async (userId: number, sessionId: string) => {
   };
 };
 
-const login = async (data: LoginInput) => {
-  const user = await db.user.findFirst({ where: { email: data.email } });
-
-  if (!user) {
-    throw EmailOrPasswordNotValid();
-  }
-
-  const isPasswordValid = await bcryptjs.compare(data.password, user.password);
-  if (!isPasswordValid) {
-    throw EmailOrPasswordNotValid();
-  }
-
-  return generateNewTokens(user.id, uuid());
-};
-
-const validateRefreshToken = async (refreshToken?: string): Promise<RefreshToken> => {
+const validateRefreshToken = async (refreshToken?: string) => {
   if (!refreshToken) {
     throw RefreshTokenNotValid();
   }
 
-  const dbToken = await db.refreshToken.findUnique({ where: { token: refreshToken } });
+  const dbToken = await getRefreshTokenByToken(refreshToken);
+
   if (!dbToken) {
     throw RefreshTokenNotValid();
   }
 
   if (dbToken.revoked) {
-    await db.refreshToken.updateMany({
-      data: { revoked: true },
-      where: { sessionId: dbToken.sessionId, revoked: false }
-    });
+    await updateRevokedInTokenSession(true, dbToken.sessionId);
 
     throw RefreshTokenRevoked();
   }
@@ -97,41 +79,66 @@ const validateRefreshToken = async (refreshToken?: string): Promise<RefreshToken
   return dbToken;
 };
 
-const logout = async (refreshToken?: string): Promise<void> => {
-  const dbToken = await validateRefreshToken(refreshToken);
+export const AuthService = {
+  register: async ({ email, password }: typeof userSchema.$inferInsert) => {
+    await validateEmail(email);
 
-  await db.refreshToken.deleteMany({ where: { sessionId: dbToken.sessionId } });
-};
+    const hashedPassword = await bcryptjs.hash(password, 10);
 
-const refresh = async (refreshToken?: string) => {
-  const dbToken = await validateRefreshToken(refreshToken);
+    const finalUser = { email, password: hashedPassword };
 
-  await db.refreshToken.update({ data: { revoked: true }, where: { id: dbToken.id } });
+    const createdUser = await createUserReturning(finalUser);
 
-  return generateNewTokens(dbToken.userId, dbToken.sessionId);
-};
+    return await generateNewTokens(createdUser.id, uuid());
+  },
 
-const authorize = async (authHeader?: string) => {
-  if (!authHeader) {
-    throw NotAuthorized();
+  login: async (data: LoginInput) => {
+    const user = await getUserByEmail(data.email);
+
+    if (!user) {
+      throw EmailOrPasswordNotValid();
+    }
+
+    const isPasswordValid = await bcryptjs.compare(data.password, user.password);
+    if (!isPasswordValid) {
+      throw EmailOrPasswordNotValid();
+    }
+
+    return generateNewTokens(user.id, uuid());
+  },
+
+  logout: async (refreshToken?: string) => {
+    const dbToken = await validateRefreshToken(refreshToken);
+
+    await deleteTokenSession(dbToken.sessionId);
+  },
+
+  refresh: async (refreshToken?: string) => {
+    const dbToken = await validateRefreshToken(refreshToken);
+
+    await updateRevokedOnToken(true, dbToken.id);
+
+    return generateNewTokens(dbToken.userId, dbToken.sessionId);
+  },
+
+  authorize: async (authHeader?: string) => {
+    if (!authHeader) {
+      throw NotAuthorized();
+    }
+
+    const [bearer, token] = authHeader.split(' ');
+
+    if (!bearer || !token || bearer !== 'Bearer') {
+      throw NotAuthorized();
+    }
+
+    const decodedJwt = jwt.verify(token, jwtSecret) as JwtPayload;
+
+    const user = await getUserById(decodedJwt.id);
+    if (!user) {
+      throw NotAuthorized();
+    }
+
+    return user;
   }
-
-  const [bearer, token] = authHeader.split(' ');
-
-  if (!bearer || !token || bearer !== 'Bearer') {
-    throw NotAuthorized();
-  }
-
-  const decodedJwt = jwt.verify(token, jwtSecret) as JwtPayload;
-
-  const user = await getUserById(decodedJwt.id);
-  if (!user) {
-    throw NotAuthorized();
-  }
-
-  return user;
 };
-
-const getUserById = async (id: number) => db.user.findUnique({ where: { id } });
-
-export const AuthService = { register, login, getUserById, refresh, logout, authorize };

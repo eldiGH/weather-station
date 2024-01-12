@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { toRGB, type GradientThreshold, getGradient } from '$lib/helpers/colors';
+	import { getGradient } from '$lib/helpers/colors';
 	import IconInfo from './IconInfo.svelte';
 	import SvgCircleProgressBar from './SvgCircleProgressBar.svelte';
 
