@@ -4,8 +4,8 @@ import { SensorNotFound } from '../errors/SensorNotFound';
 import type { DateRangeQuery } from '../schemas/helpers';
 import { emitNewSensorData } from '../helpers/eventEmitter';
 import type { PostBME68XDataInput } from '../schemas/bme68x';
-import { bme68xDataSchema, db } from '../db/drizzle';
 import { getSensorBySecret, getSensorWithBme68xData } from '../repositories/sensor';
+import { createBme68xDataEntry } from '../repositories/bme68x';
 
 // const addNewSensor = async (data: CreateSensorRequest, user: User) => {
 //   const existingSensor = await db.sensor.findFirst({ where: { name: data.name } });
@@ -33,7 +33,7 @@ const addBME68XDataEntry = async ({ secret, ...data }: PostBME68XDataInput) => {
     throw SecretIsNotValid();
   }
 
-  const newData = (await db.insert(bme68xDataSchema).values({ ...data, sensorId: sensor.id }))[0];
+  const newData = (await createBme68xDataEntry({ ...data, sensorId: sensor.id }).returning())[0];
 
   emitNewSensorData(sensor.id, newData);
 };
