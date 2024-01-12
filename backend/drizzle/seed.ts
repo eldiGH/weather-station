@@ -17,11 +17,8 @@ if (!dbUrl) {
   throw new Error('DATABASE_URL env variable missing!');
 }
 
-const sql = postgres(dbUrl, { max: 1 });
-const db = drizzle(sql);
-
 const userData: (typeof userSchema.$inferInsert)[] = [
-  { email: 'admin@gmail.com', password: '6Gfdn7x2VKBwOn9', id: 1 }
+  { email: 'admin@gmail.com', password: '6Gfdn7x2VKBwOn9' }
 ];
 const hashedUserData = await Promise.all(
   userData.map(async ({ password, ...rest }) => ({
@@ -34,7 +31,6 @@ const sensorData: (typeof sensorSchema.$inferInsert)[] = [
   {
     name: 'Sypialka',
     secret: '6eda0536-c423-4c9b-bd62-ba43ad65223e',
-    id: 1,
     type: 'BME68X',
     ownerId: 1
   }
@@ -43,7 +39,6 @@ const sensorData: (typeof sensorSchema.$inferInsert)[] = [
 const kioskData: (typeof kioskSchema.$inferInsert)[] = [
   {
     kioskUuid: 'f12b96a3-42ee-4397-a1d8-f0d3eb7c6e47',
-    id: 1,
     ownerId: 1,
     latitude: 50.81062763793182,
     longitude: 19.10899356897146
@@ -59,7 +54,6 @@ const kioskToSensorData: (typeof kioskToSensorSchema.$inferInsert)[] = [
 
 const bme68xData = [
   {
-    id: 1,
     temperature: 21.281,
     humidity: 33.6446,
     pressure: 100791.8125,
@@ -69,7 +63,6 @@ const bme68xData = [
     batteryPercentage: 1597
   },
   {
-    id: 3,
     temperature: 21.3039,
     humidity: 33.4857,
     pressure: 100795.6484,
@@ -79,7 +72,6 @@ const bme68xData = [
     batteryPercentage: 1599
   },
   {
-    id: 4,
     temperature: 21.3295,
     humidity: 34.1718,
     pressure: 100788.9531,
@@ -89,7 +81,6 @@ const bme68xData = [
     batteryPercentage: 1600
   },
   {
-    id: 5,
     temperature: 21.3244,
     humidity: 33.7818,
     pressure: 100779.8984,
@@ -99,7 +90,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 6,
     temperature: 21.3244,
     humidity: 33.7485,
     pressure: 100788.1016,
@@ -109,7 +99,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 7,
     temperature: 21.3167,
     humidity: 34.8296,
     pressure: 100778.625,
@@ -119,7 +108,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 8,
     temperature: 21.2912,
     humidity: 34.4639,
     pressure: 100768.8984,
@@ -129,7 +117,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 9,
     temperature: 21.3116,
     humidity: 34.5607,
     pressure: 100758.625,
@@ -139,7 +126,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 10,
     temperature: 21.3295,
     humidity: 34.4618,
     pressure: 100767.0703,
@@ -149,7 +135,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 11,
     temperature: 21.3167,
     humidity: 34.3658,
     pressure: 100759.4766,
@@ -159,7 +144,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 12,
     temperature: 21.2861,
     humidity: 34.6757,
     pressure: 100743.4219,
@@ -169,7 +153,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 13,
     temperature: 21.2555,
     humidity: 34.6338,
     pressure: 100738.3359,
@@ -179,7 +162,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 14,
     temperature: 21.2504,
     humidity: 34.3652,
     pressure: 100740.2188,
@@ -189,7 +171,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 15,
     temperature: 21.2453,
     humidity: 34.2923,
     pressure: 100728.4453,
@@ -199,7 +180,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 16,
     temperature: 21.2606,
     humidity: 34.1432,
     pressure: 100720.0391,
@@ -209,7 +189,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 17,
     temperature: 21.2299,
     humidity: 34.1738,
     pressure: 100695.8125,
@@ -219,7 +198,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 18,
     temperature: 21.2478,
     humidity: 33.8638,
     pressure: 100698.7734,
@@ -229,7 +207,6 @@ const bme68xData = [
     batteryPercentage: 1543
   },
   {
-    id: 19,
     temperature: 21.2631,
     humidity: 33.854,
     pressure: 100687.6562,
@@ -239,7 +216,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 20,
     temperature: 21.2555,
     humidity: 33.6811,
     pressure: 100689.1094,
@@ -249,7 +225,6 @@ const bme68xData = [
     batteryPercentage: 1601
   },
   {
-    id: 21,
     temperature: 21.2504,
     humidity: 33.5863,
     pressure: 100691,
@@ -259,7 +234,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 22,
     temperature: 21.2504,
     humidity: 33.5863,
     pressure: 100685.5312,
@@ -269,7 +243,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 23,
     temperature: 21.2606,
     humidity: 33.4208,
     pressure: 100673.5547,
@@ -279,7 +252,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 24,
     temperature: 21.281,
     humidity: 33.6557,
     pressure: 100687.8906,
@@ -289,7 +261,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 25,
     temperature: 21.3141,
     humidity: 33.842,
     pressure: 100674.2734,
@@ -299,7 +270,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 26,
     temperature: 21.3448,
     humidity: 34.3628,
     pressure: 100684.8438,
@@ -309,7 +279,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 27,
     temperature: 21.3575,
     humidity: 34.3193,
     pressure: 100684.2344,
@@ -319,7 +288,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 28,
     temperature: 21.3728,
     humidity: 34.1925,
     pressure: 100692.25,
@@ -329,7 +297,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 29,
     temperature: 21.3881,
     humidity: 34.2329,
     pressure: 100683.8516,
@@ -339,7 +306,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 30,
     temperature: 21.3907,
     humidity: 34.5401,
     pressure: 100684.2734,
@@ -349,7 +315,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 31,
     temperature: 21.3856,
     humidity: 34.2773,
     pressure: 100688.8984,
@@ -359,7 +324,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 32,
     temperature: 21.406,
     humidity: 34.3461,
     pressure: 100708.7109,
@@ -369,7 +333,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 33,
     temperature: 21.3856,
     humidity: 33.8263,
     pressure: 100694.375,
@@ -379,7 +342,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 34,
     temperature: 21.3881,
     humidity: 33.8654,
     pressure: 100700.2656,
@@ -389,7 +351,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 35,
     temperature: 21.3805,
     humidity: 33.6258,
     pressure: 100698.9766,
@@ -399,7 +360,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 36,
     temperature: 21.3626,
     humidity: 33.5631,
     pressure: 100690.5391,
@@ -409,7 +369,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 37,
     temperature: 21.355,
     humidity: 33.5569,
     pressure: 100675.6016,
@@ -419,7 +378,6 @@ const bme68xData = [
     batteryPercentage: 1600
   },
   {
-    id: 38,
     temperature: 21.3677,
     humidity: 33.6246,
     pressure: 100680.4453,
@@ -429,7 +387,6 @@ const bme68xData = [
     batteryPercentage: 1601
   },
   {
-    id: 39,
     temperature: 21.3626,
     humidity: 33.5576,
     pressure: 100668.6562,
@@ -439,7 +396,6 @@ const bme68xData = [
     batteryPercentage: 1601
   },
   {
-    id: 40,
     temperature: 21.3958,
     humidity: 33.8995,
     pressure: 100663.25,
@@ -449,7 +405,6 @@ const bme68xData = [
     batteryPercentage: 1601
   },
   {
-    id: 41,
     temperature: 21.4035,
     humidity: 33.878,
     pressure: 100664.5156,
@@ -459,7 +414,6 @@ const bme68xData = [
     batteryPercentage: 1601
   },
   {
-    id: 42,
     temperature: 21.4086,
     humidity: 34.0676,
     pressure: 100654.4375,
@@ -469,7 +423,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 43,
     temperature: 21.4188,
     humidity: 33.7848,
     pressure: 100645.1719,
@@ -479,7 +432,6 @@ const bme68xData = [
     batteryPercentage: 1601
   },
   {
-    id: 44,
     temperature: 21.4443,
     humidity: 33.5317,
     pressure: 100635.75,
@@ -489,7 +441,6 @@ const bme68xData = [
     batteryPercentage: 1601
   },
   {
-    id: 45,
     temperature: 21.4417,
     humidity: 33.5869,
     pressure: 100629.8516,
@@ -499,7 +450,6 @@ const bme68xData = [
     batteryPercentage: 1601
   },
   {
-    id: 46,
     temperature: 21.4417,
     humidity: 33.6202,
     pressure: 100632.5938,
@@ -509,7 +459,6 @@ const bme68xData = [
     batteryPercentage: 1601
   },
   {
-    id: 47,
     temperature: 21.457,
     humidity: 33.5051,
     pressure: 100624.1953,
@@ -519,7 +468,6 @@ const bme68xData = [
     batteryPercentage: 1601
   },
   {
-    id: 48,
     temperature: 21.4621,
     humidity: 33.2561,
     pressure: 100630.5234,
@@ -529,7 +477,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 49,
     temperature: 21.4315,
     humidity: 33.2866,
     pressure: 100636.3672,
@@ -539,7 +486,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 50,
     temperature: 21.4392,
     humidity: 33.171,
     pressure: 100613.0234,
@@ -549,7 +495,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 51,
     temperature: 21.4443,
     humidity: 33.2212,
     pressure: 100611.1328,
@@ -559,7 +504,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 52,
     temperature: 21.457,
     humidity: 33.2667,
     pressure: 100621.4609,
@@ -569,7 +513,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 53,
     temperature: 21.4775,
     humidity: 33.2242,
     pressure: 100605.7109,
@@ -579,7 +522,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 54,
     temperature: 21.4775,
     humidity: 33.1965,
     pressure: 100605.7109,
@@ -589,7 +531,6 @@ const bme68xData = [
     batteryPercentage: 1519
   },
   {
-    id: 55,
     temperature: 21.4213,
     humidity: 33.269,
     pressure: 100604.5781,
@@ -599,7 +540,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 56,
     temperature: 21.3907,
     humidity: 33.2663,
     pressure: 100615.8984,
@@ -609,7 +549,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 57,
     temperature: 21.4035,
     humidity: 33.2951,
     pressure: 100618.0078,
@@ -619,7 +558,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 58,
     temperature: 21.3984,
     humidity: 33.2947,
     pressure: 100608.9688,
@@ -629,7 +567,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 59,
     temperature: 21.3754,
     humidity: 33.4589,
     pressure: 100605.1484,
@@ -639,7 +576,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 60,
     temperature: 21.3397,
     humidity: 33.1953,
     pressure: 100612.8828,
@@ -649,7 +585,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 61,
     temperature: 21.355,
     humidity: 33.2354,
     pressure: 100607.2266,
@@ -659,7 +594,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 62,
     temperature: 21.3269,
     humidity: 33.8321,
     pressure: 100599.8125,
@@ -669,7 +603,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 63,
     temperature: 21.3626,
     humidity: 34.5319,
     pressure: 100603.0234,
@@ -679,7 +612,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 64,
     temperature: 21.4188,
     humidity: 34.4087,
     pressure: 100604.1562,
@@ -689,7 +621,6 @@ const bme68xData = [
     batteryPercentage: 1582
   },
   {
-    id: 65,
     temperature: 21.3933,
     humidity: 33.9048,
     pressure: 100619.0625,
@@ -699,7 +630,6 @@ const bme68xData = [
     batteryPercentage: 1601
   },
   {
-    id: 66,
     temperature: 21.3933,
     humidity: 33.7047,
     pressure: 100627.2734,
@@ -709,7 +639,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 67,
     temperature: 21.4188,
     humidity: 33.6904,
     pressure: 100623.2891,
@@ -719,7 +648,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 68,
     temperature: 21.4086,
     humidity: 33.3233,
     pressure: 100616.1406,
@@ -729,7 +657,6 @@ const bme68xData = [
     batteryPercentage: 1585
   },
   {
-    id: 69,
     temperature: 21.3601,
     humidity: 33.009,
     pressure: 100619,
@@ -739,7 +666,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 70,
     temperature: 21.3371,
     humidity: 33.4499,
     pressure: 100623.4062,
@@ -749,7 +675,6 @@ const bme68xData = [
     batteryPercentage: 1542
   },
   {
-    id: 71,
     temperature: 21.3397,
     humidity: 33.306,
     pressure: 100623.8203,
@@ -759,7 +684,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 72,
     temperature: 21.3218,
     humidity: 33.3266,
     pressure: 100631.7969,
@@ -769,7 +693,6 @@ const bme68xData = [
     batteryPercentage: 1601
   },
   {
-    id: 73,
     temperature: 21.2733,
     humidity: 33.5107,
     pressure: 100620.9844,
@@ -779,7 +702,6 @@ const bme68xData = [
     batteryPercentage: 1601
   },
   {
-    id: 74,
     temperature: 21.2682,
     humidity: 32.9842,
     pressure: 100614.6641,
@@ -789,7 +711,6 @@ const bme68xData = [
     batteryPercentage: 1601
   },
   {
-    id: 75,
     temperature: 21.2886,
     humidity: 32.8645,
     pressure: 100615.3281,
@@ -799,7 +720,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 76,
     temperature: 21.2631,
     humidity: 33.7151,
     pressure: 100608.3594,
@@ -809,7 +729,6 @@ const bme68xData = [
     batteryPercentage: 1600
   },
   {
-    id: 77,
     temperature: 21.2631,
     humidity: 35.4134,
     pressure: 100600.1562,
@@ -819,7 +738,6 @@ const bme68xData = [
     batteryPercentage: 1600
   },
   {
-    id: 78,
     temperature: 21.2197,
     humidity: 34.9717,
     pressure: 100601.1328,
@@ -829,7 +747,6 @@ const bme68xData = [
     batteryPercentage: 1599
   },
   {
-    id: 79,
     temperature: 21.2019,
     humidity: 34.5617,
     pressure: 100598.1641,
@@ -839,7 +756,6 @@ const bme68xData = [
     batteryPercentage: 1600
   },
   {
-    id: 80,
     temperature: 21.133,
     humidity: 34.1482,
     pressure: 100592.1641,
@@ -849,7 +765,6 @@ const bme68xData = [
     batteryPercentage: 1600
   },
   {
-    id: 81,
     temperature: 21.1279,
     humidity: 33.764,
     pressure: 100583.1328,
@@ -859,7 +774,6 @@ const bme68xData = [
     batteryPercentage: 1600
   },
   {
-    id: 82,
     temperature: 21.1585,
     humidity: 32.489,
     pressure: 100585.4766,
@@ -869,7 +783,6 @@ const bme68xData = [
     batteryPercentage: 1538
   },
   {
-    id: 83,
     temperature: 21.2121,
     humidity: 31.9111,
     pressure: 100588.9141,
@@ -879,7 +792,6 @@ const bme68xData = [
     batteryPercentage: 1599
   },
   {
-    id: 84,
     temperature: 21.2121,
     humidity: 31.977,
     pressure: 100588.9141,
@@ -889,7 +801,6 @@ const bme68xData = [
     batteryPercentage: 1598
   },
   {
-    id: 85,
     temperature: 21.2453,
     humidity: 31.4212,
     pressure: 100578.0469,
@@ -899,7 +810,6 @@ const bme68xData = [
     batteryPercentage: 1599
   },
   {
-    id: 86,
     temperature: 21.2402,
     humidity: 30.7445,
     pressure: 100574.4531,
@@ -909,7 +819,6 @@ const bme68xData = [
     batteryPercentage: 1537
   },
   {
-    id: 87,
     temperature: 21.2733,
     humidity: 30.8017,
     pressure: 100571.7656,
@@ -919,7 +828,6 @@ const bme68xData = [
     batteryPercentage: 1599
   },
   {
-    id: 88,
     temperature: 21.332,
     humidity: 32.5814,
     pressure: 100576.0625,
@@ -929,7 +837,6 @@ const bme68xData = [
     batteryPercentage: 1597
   },
   {
-    id: 89,
     temperature: 21.3295,
     humidity: 31.5596,
     pressure: 100572.8984,
@@ -939,7 +846,6 @@ const bme68xData = [
     batteryPercentage: 1599
   },
   {
-    id: 90,
     temperature: 21.2733,
     humidity: 30.9106,
     pressure: 100582.6953,
@@ -949,7 +855,6 @@ const bme68xData = [
     batteryPercentage: 1597
   },
   {
-    id: 91,
     temperature: 21.2759,
     humidity: 30.7964,
     pressure: 100594.0625,
@@ -959,7 +864,6 @@ const bme68xData = [
     batteryPercentage: 1597
   },
   {
-    id: 92,
     temperature: 21.2835,
     humidity: 33.1792,
     pressure: 100584.4062,
@@ -969,7 +873,6 @@ const bme68xData = [
     batteryPercentage: 1598
   },
   {
-    id: 93,
     temperature: 21.2682,
     humidity: 32.0038,
     pressure: 100590.0547,
@@ -979,7 +882,6 @@ const bme68xData = [
     batteryPercentage: 1596
   },
   {
-    id: 94,
     temperature: 21.3039,
     humidity: 31.3223,
     pressure: 100598.75,
@@ -989,7 +891,6 @@ const bme68xData = [
     batteryPercentage: 1596
   },
   {
-    id: 95,
     temperature: 21.2988,
     humidity: 30.9018,
     pressure: 100603.3516,
@@ -999,7 +900,6 @@ const bme68xData = [
     batteryPercentage: 1596
   },
   {
-    id: 96,
     temperature: 21.2325,
     humidity: 30.4015,
     pressure: 100611.4531,
@@ -1009,7 +909,6 @@ const bme68xData = [
     batteryPercentage: 1596
   },
   {
-    id: 97,
     temperature: 21.2197,
     humidity: 30.1131,
     pressure: 100598.3984,
@@ -1019,7 +918,6 @@ const bme68xData = [
     batteryPercentage: 1595
   },
   {
-    id: 98,
     temperature: 21.2325,
     humidity: 29.7679,
     pressure: 100600.5156,
@@ -1029,7 +927,6 @@ const bme68xData = [
     batteryPercentage: 1595
   },
   {
-    id: 99,
     temperature: 21.2427,
     humidity: 29.8066,
     pressure: 100602.2266,
@@ -1039,7 +936,6 @@ const bme68xData = [
     batteryPercentage: 1595
   },
   {
-    id: 100,
     temperature: 22.3833,
     humidity: 31.1578,
     pressure: 100561.8828,
@@ -1049,7 +945,6 @@ const bme68xData = [
     batteryPercentage: 1596
   },
   {
-    id: 101,
     temperature: 22.2838,
     humidity: 31.5105,
     pressure: 100570.0234,
@@ -1059,7 +954,6 @@ const bme68xData = [
     batteryPercentage: 1594
   },
   {
-    id: 102,
     temperature: 21.6765,
     humidity: 31.2449,
     pressure: 100570.4062,
@@ -1069,7 +963,6 @@ const bme68xData = [
     batteryPercentage: 1581
   },
   {
-    id: 103,
     temperature: 21.4698,
     humidity: 30.7366,
     pressure: 100566.1328,
@@ -1079,7 +972,6 @@ const bme68xData = [
     batteryPercentage: 1582
   },
   {
-    id: 104,
     temperature: 21.4494,
     humidity: 30.3816,
     pressure: 100568.2266,
@@ -1089,7 +981,6 @@ const bme68xData = [
     batteryPercentage: 1585
   },
   {
-    id: 105,
     temperature: 21.4111,
     humidity: 30.3947,
     pressure: 100561.8672,
@@ -1099,7 +990,6 @@ const bme68xData = [
     batteryPercentage: 1585
   },
   {
-    id: 106,
     temperature: 21.3065,
     humidity: 30.2937,
     pressure: 100549.9297,
@@ -1109,7 +999,6 @@ const bme68xData = [
     batteryPercentage: 1584
   },
   {
-    id: 107,
     temperature: 22.2634,
     humidity: 35.5872,
     pressure: 100550.1953,
@@ -1119,7 +1008,6 @@ const bme68xData = [
     batteryPercentage: 1596
   },
   {
-    id: 108,
     temperature: 21.5285,
     humidity: 30.475,
     pressure: 100532.1172,
@@ -1129,7 +1017,6 @@ const bme68xData = [
     batteryPercentage: 1616
   },
   {
-    id: 109,
     temperature: 21.258,
     humidity: 30.2029,
     pressure: 100539.1406,
@@ -1139,7 +1026,6 @@ const bme68xData = [
     batteryPercentage: 1615
   },
   {
-    id: 110,
     temperature: 21.1304,
     humidity: 29.9704,
     pressure: 100515.1953,
@@ -1149,7 +1035,6 @@ const bme68xData = [
     batteryPercentage: 1615
   },
   {
-    id: 111,
     temperature: 21.1406,
     humidity: 29.9604,
     pressure: 100516.8906,
@@ -1159,7 +1044,6 @@ const bme68xData = [
     batteryPercentage: 1615
   },
   {
-    id: 112,
     temperature: 21.0743,
     humidity: 29.8685,
     pressure: 100511.3359,
@@ -1169,7 +1053,6 @@ const bme68xData = [
     batteryPercentage: 1616
   },
   {
-    id: 113,
     temperature: 21.0131,
     humidity: 30.2206,
     pressure: 100506.625,
@@ -1179,7 +1062,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 114,
     temperature: 21.0156,
     humidity: 30.8127,
     pressure: 100504.3125,
@@ -1189,7 +1071,6 @@ const bme68xData = [
     batteryPercentage: 1565
   },
   {
-    id: 115,
     temperature: 20.9748,
     humidity: 30.1362,
     pressure: 100492.0703,
@@ -1199,7 +1080,6 @@ const bme68xData = [
     batteryPercentage: 1615
   },
   {
-    id: 116,
     temperature: 20.9773,
     humidity: 30.1798,
     pressure: 100487.0234,
@@ -1209,7 +1089,6 @@ const bme68xData = [
     batteryPercentage: 1616
   },
   {
-    id: 117,
     temperature: 20.9901,
     humidity: 30.1808,
     pressure: 100486.3984,
@@ -1219,7 +1098,6 @@ const bme68xData = [
     batteryPercentage: 1566
   },
   {
-    id: 118,
     temperature: 21.0233,
     humidity: 30.1131,
     pressure: 100478.2422,
@@ -1229,7 +1107,6 @@ const bme68xData = [
     batteryPercentage: 1615
   },
   {
-    id: 119,
     temperature: 21.0003,
     humidity: 30.2304,
     pressure: 100482.6406,
@@ -1239,7 +1116,6 @@ const bme68xData = [
     batteryPercentage: 1568
   },
   {
-    id: 120,
     temperature: 20.9824,
     humidity: 30.3482,
     pressure: 100471.4688,
@@ -1249,7 +1125,6 @@ const bme68xData = [
     batteryPercentage: 1616
   },
   {
-    id: 121,
     temperature: 20.9595,
     humidity: 30.5036,
     pressure: 100451.25,
@@ -1259,7 +1134,6 @@ const bme68xData = [
     batteryPercentage: 1616
   },
   {
-    id: 122,
     temperature: 20.9289,
     humidity: 34.8998,
     pressure: 100457.0859,
@@ -1269,7 +1143,6 @@ const bme68xData = [
     batteryPercentage: 1616
   },
   {
-    id: 123,
     temperature: 20.888,
     humidity: 30.8292,
     pressure: 100444.8516,
@@ -1279,7 +1152,6 @@ const bme68xData = [
     batteryPercentage: 1616
   },
   {
-    id: 124,
     temperature: 20.9518,
     humidity: 32.8126,
     pressure: 100436.3047,
@@ -1289,7 +1161,6 @@ const bme68xData = [
     batteryPercentage: 1615
   },
   {
-    id: 125,
     temperature: 20.9161,
     humidity: 35.4425,
     pressure: 100435.8438,
@@ -1299,7 +1170,6 @@ const bme68xData = [
     batteryPercentage: 1616
   },
   {
-    id: 126,
     temperature: 20.8906,
     humidity: 35.7211,
     pressure: 100426.1406,
@@ -1309,7 +1179,6 @@ const bme68xData = [
     batteryPercentage: 1616
   },
   {
-    id: 127,
     temperature: 20.837,
     humidity: 34.785,
     pressure: 100428.1641,
@@ -1319,7 +1188,6 @@ const bme68xData = [
     batteryPercentage: 1615
   },
   {
-    id: 128,
     temperature: 20.7809,
     humidity: 34.1328,
     pressure: 100429.7656,
@@ -1329,7 +1197,6 @@ const bme68xData = [
     batteryPercentage: 1616
   },
   {
-    id: 129,
     temperature: 20.763,
     humidity: 34.1311,
     pressure: 100421.3516,
@@ -1339,7 +1206,6 @@ const bme68xData = [
     batteryPercentage: 1615
   },
   {
-    id: 130,
     temperature: 20.7579,
     humidity: 34.32,
     pressure: 100406.8281,
@@ -1349,7 +1215,6 @@ const bme68xData = [
     batteryPercentage: 1615
   },
   {
-    id: 131,
     temperature: 20.7426,
     humidity: 34.3911,
     pressure: 100415.2266,
@@ -1359,7 +1224,6 @@ const bme68xData = [
     batteryPercentage: 1564
   },
   {
-    id: 132,
     temperature: 20.7094,
     humidity: 34.0261,
     pressure: 100412.4375,
@@ -1369,7 +1233,6 @@ const bme68xData = [
     batteryPercentage: 1615
   },
   {
-    id: 133,
     temperature: 20.689,
     humidity: 33.7576,
     pressure: 100398.1172,
@@ -1379,7 +1242,6 @@ const bme68xData = [
     batteryPercentage: 1564
   },
   {
-    id: 134,
     temperature: 20.6711,
     humidity: 31.1158,
     pressure: 100400.6172,
@@ -1389,7 +1251,6 @@ const bme68xData = [
     batteryPercentage: 1614
   },
   {
-    id: 135,
     temperature: 20.7018,
     humidity: 32.6362,
     pressure: 100392.0469,
@@ -1399,7 +1260,6 @@ const bme68xData = [
     batteryPercentage: 1616
   },
   {
-    id: 136,
     temperature: 20.7196,
     humidity: 33.3889,
     pressure: 100405.9297,
@@ -1409,7 +1269,6 @@ const bme68xData = [
     batteryPercentage: 1615
   },
   {
-    id: 137,
     temperature: 20.7145,
     humidity: 31.8682,
     pressure: 100394.1641,
@@ -1419,7 +1278,6 @@ const bme68xData = [
     batteryPercentage: 1615
   },
   {
-    id: 138,
     temperature: 20.7732,
     humidity: 31.3863,
     pressure: 100392.9922,
@@ -1429,7 +1287,6 @@ const bme68xData = [
     batteryPercentage: 1565
   },
   {
-    id: 139,
     temperature: 20.7732,
     humidity: 32.6976,
     pressure: 100379.3359,
@@ -1439,7 +1296,6 @@ const bme68xData = [
     batteryPercentage: 1615
   },
   {
-    id: 140,
     temperature: 20.7706,
     humidity: 33.9927,
     pressure: 100376.1641,
@@ -1449,7 +1305,6 @@ const bme68xData = [
     batteryPercentage: 1615
   },
   {
-    id: 141,
     temperature: 20.7655,
     humidity: 34.2929,
     pressure: 100375.3203,
@@ -1459,7 +1314,6 @@ const bme68xData = [
     batteryPercentage: 1615
   },
   {
-    id: 142,
     temperature: 20.7502,
     humidity: 34.6932,
     pressure: 100350.9219,
@@ -1469,7 +1323,6 @@ const bme68xData = [
     batteryPercentage: 1615
   },
   {
-    id: 143,
     temperature: 20.7502,
     humidity: 33.1482,
     pressure: 100345.4531,
@@ -1479,7 +1332,6 @@ const bme68xData = [
     batteryPercentage: 1563
   },
   {
-    id: 144,
     temperature: 20.7426,
     humidity: 33.5073,
     pressure: 100344.1875,
@@ -1489,7 +1341,6 @@ const bme68xData = [
     batteryPercentage: 1615
   },
   {
-    id: 145,
     temperature: 20.7809,
     humidity: 31.1142,
     pressure: 100339.6016,
@@ -1499,7 +1350,6 @@ const bme68xData = [
     batteryPercentage: 1614
   },
   {
-    id: 146,
     temperature: 20.7911,
     humidity: 30.7503,
     pressure: 100333.1172,
@@ -1509,7 +1359,6 @@ const bme68xData = [
     batteryPercentage: 1615
   },
   {
-    id: 147,
     temperature: 20.7987,
     humidity: 31.8973,
     pressure: 100331.6484,
@@ -1519,7 +1368,6 @@ const bme68xData = [
     batteryPercentage: 1614
   },
   {
-    id: 148,
     temperature: 20.8064,
     humidity: 31.0728,
     pressure: 100335.6562,
@@ -1529,7 +1377,6 @@ const bme68xData = [
     batteryPercentage: 1563
   },
   {
-    id: 149,
     temperature: 20.8166,
     humidity: 30.8612,
     pressure: 100329.1484,
@@ -1539,7 +1386,6 @@ const bme68xData = [
     batteryPercentage: 1614
   },
   {
-    id: 150,
     temperature: 20.8038,
     humidity: 31.4545,
     pressure: 100329.7656,
@@ -1549,7 +1395,6 @@ const bme68xData = [
     batteryPercentage: 1614
   },
   {
-    id: 151,
     temperature: 20.8421,
     humidity: 31.7203,
     pressure: 100336.1172,
@@ -1559,7 +1404,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 152,
     temperature: 20.8702,
     humidity: 32.2658,
     pressure: 100335.3047,
@@ -1569,7 +1413,6 @@ const bme68xData = [
     batteryPercentage: 1614
   },
   {
-    id: 153,
     temperature: 20.8957,
     humidity: 32.3505,
     pressure: 100334.0703,
@@ -1579,7 +1422,6 @@ const bme68xData = [
     batteryPercentage: 1614
   },
   {
-    id: 154,
     temperature: 20.9237,
     humidity: 32.7218,
     pressure: 100327.8047,
@@ -1589,7 +1431,6 @@ const bme68xData = [
     batteryPercentage: 1614
   },
   {
-    id: 155,
     temperature: 20.9212,
     humidity: 32.9147,
     pressure: 100324.6484,
@@ -1599,7 +1440,6 @@ const bme68xData = [
     batteryPercentage: 1562
   },
   {
-    id: 156,
     temperature: 20.9569,
     humidity: 33.7874,
     pressure: 100319.6484,
@@ -1609,7 +1449,6 @@ const bme68xData = [
     batteryPercentage: 1614
   },
   {
-    id: 157,
     temperature: 20.9059,
     humidity: 33.4222,
     pressure: 100308.4531,
@@ -1619,7 +1458,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 158,
     temperature: 20.8804,
     humidity: 35.0073,
     pressure: 100298.75,
@@ -1629,7 +1467,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 159,
     temperature: 20.8574,
     humidity: 34.91,
     pressure: 100289.4766,
@@ -1639,7 +1476,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 160,
     temperature: 20.8421,
     humidity: 34.6179,
     pressure: 100281.4609,
@@ -1649,7 +1485,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 161,
     temperature: 20.8319,
     humidity: 34.2377,
     pressure: 100279.7578,
@@ -1659,7 +1494,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 162,
     temperature: 20.8268,
     humidity: 34.0145,
     pressure: 100278.9219,
@@ -1669,7 +1503,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 163,
     temperature: 20.8268,
     humidity: 33.82,
     pressure: 100265.2578,
@@ -1679,7 +1512,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 164,
     temperature: 20.8293,
     humidity: 33.7703,
     pressure: 100257.5,
@@ -1689,7 +1521,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 165,
     temperature: 20.8268,
     humidity: 33.7312,
     pressure: 100257.0625,
@@ -1699,7 +1530,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 166,
     temperature: 20.8319,
     humidity: 33.6595,
     pressure: 100252.4375,
@@ -1709,7 +1539,6 @@ const bme68xData = [
     batteryPercentage: 1612
   },
   {
-    id: 167,
     temperature: 20.837,
     humidity: 33.61,
     pressure: 100264.2266,
@@ -1719,7 +1548,6 @@ const bme68xData = [
     batteryPercentage: 1612
   },
   {
-    id: 168,
     temperature: 20.8293,
     humidity: 33.3212,
     pressure: 100257.5,
@@ -1729,7 +1557,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 169,
     temperature: 20.8217,
     humidity: 32.9611,
     pressure: 100242.5547,
@@ -1739,7 +1566,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 170,
     temperature: 20.8191,
     humidity: 32.6575,
     pressure: 100255.7891,
@@ -1749,7 +1575,6 @@ const bme68xData = [
     batteryPercentage: 1612
   },
   {
-    id: 171,
     temperature: 20.8293,
     humidity: 32.9508,
     pressure: 100257.5,
@@ -1759,7 +1584,6 @@ const bme68xData = [
     batteryPercentage: 1612
   },
   {
-    id: 172,
     temperature: 20.837,
     humidity: 32.8686,
     pressure: 100261.4922,
@@ -1769,7 +1593,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 173,
     temperature: 20.8727,
     humidity: 30.9041,
     pressure: 100253.75,
@@ -1779,7 +1602,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 174,
     temperature: 20.9952,
     humidity: 32.8826,
     pressure: 100246.7344,
@@ -1789,7 +1611,6 @@ const bme68xData = [
     batteryPercentage: 1612
   },
   {
-    id: 175,
     temperature: 21.1228,
     humidity: 33.2976,
     pressure: 100259.6953,
@@ -1799,7 +1620,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 176,
     temperature: 21.2121,
     humidity: 33.3167,
     pressure: 100249.8906,
@@ -1809,7 +1629,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 177,
     temperature: 21.2784,
     humidity: 32.9409,
     pressure: 100244.4844,
@@ -1819,7 +1638,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 178,
     temperature: 21.3346,
     humidity: 33.5661,
     pressure: 100237.3828,
@@ -1829,7 +1647,6 @@ const bme68xData = [
     batteryPercentage: 1614
   },
   {
-    id: 179,
     temperature: 21.4035,
     humidity: 33.5391,
     pressure: 100237.8594,
@@ -1839,7 +1656,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 180,
     temperature: 21.3907,
     humidity: 33.3328,
     pressure: 100230.2812,
@@ -1849,7 +1665,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 181,
     temperature: 21.4366,
     humidity: 33.1541,
     pressure: 100232.4297,
@@ -1859,7 +1674,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 182,
     temperature: 21.4672,
     humidity: 33.0683,
     pressure: 100248.4375,
@@ -1869,7 +1683,6 @@ const bme68xData = [
     batteryPercentage: 1561
   },
   {
-    id: 183,
     temperature: 21.5412,
     humidity: 32.9809,
     pressure: 100249.7578,
@@ -1879,7 +1692,6 @@ const bme68xData = [
     batteryPercentage: 1599
   },
   {
-    id: 184,
     temperature: 21.5591,
     humidity: 32.9107,
     pressure: 100247.2656,
@@ -1889,7 +1701,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 185,
     temperature: 21.6025,
     humidity: 32.8427,
     pressure: 100232.5547,
@@ -1899,7 +1710,6 @@ const bme68xData = [
     batteryPercentage: 1614
   },
   {
-    id: 186,
     temperature: 21.6306,
     humidity: 33.3488,
     pressure: 100215.3281,
@@ -1909,7 +1719,6 @@ const bme68xData = [
     batteryPercentage: 1614
   },
   {
-    id: 187,
     temperature: 21.6739,
     humidity: 33.4415,
     pressure: 100208.8281,
@@ -1919,7 +1728,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 188,
     temperature: 21.6892,
     humidity: 33.3763,
     pressure: 100205.8906,
@@ -1929,7 +1737,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 189,
     temperature: 21.7352,
     humidity: 33.7747,
     pressure: 100197.0859,
@@ -1939,7 +1746,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 190,
     temperature: 21.8117,
     humidity: 33.7205,
     pressure: 100157.7656,
@@ -1949,7 +1755,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 191,
     temperature: 21.9138,
     humidity: 33.9691,
     pressure: 100144.5469,
@@ -1959,7 +1764,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 192,
     temperature: 21.9138,
     humidity: 34.6782,
     pressure: 100108.9688,
@@ -1969,7 +1773,6 @@ const bme68xData = [
     batteryPercentage: 1612
   },
   {
-    id: 193,
     temperature: 21.9214,
     humidity: 34.6621,
     pressure: 100104.7734,
@@ -1979,7 +1782,6 @@ const bme68xData = [
     batteryPercentage: 1612
   },
   {
-    id: 194,
     temperature: 21.9189,
     humidity: 34.1145,
     pressure: 100109.8203,
@@ -1989,7 +1791,6 @@ const bme68xData = [
     batteryPercentage: 1612
   },
   {
-    id: 195,
     temperature: 21.8679,
     humidity: 33.9037,
     pressure: 100098.6406,
@@ -1999,7 +1800,6 @@ const bme68xData = [
     batteryPercentage: 1612
   },
   {
-    id: 196,
     temperature: 21.8806,
     humidity: 33.8492,
     pressure: 100103.5,
@@ -2009,7 +1809,6 @@ const bme68xData = [
     batteryPercentage: 1560
   },
   {
-    id: 197,
     temperature: 21.8985,
     humidity: 33.8119,
     pressure: 100084.5547,
@@ -2019,7 +1818,6 @@ const bme68xData = [
     batteryPercentage: 1612
   },
   {
-    id: 198,
     temperature: 21.8934,
     humidity: 33.6613,
     pressure: 100080.9609,
@@ -2029,7 +1827,6 @@ const bme68xData = [
     batteryPercentage: 1561
   },
   {
-    id: 199,
     temperature: 21.873,
     humidity: 33.6205,
     pressure: 100061.1641,
@@ -2039,7 +1836,6 @@ const bme68xData = [
     batteryPercentage: 1612
   },
   {
-    id: 200,
     temperature: 21.873,
     humidity: 33.7428,
     pressure: 100058.4375,
@@ -2049,7 +1845,6 @@ const bme68xData = [
     batteryPercentage: 1560
   },
   {
-    id: 201,
     temperature: 21.8806,
     humidity: 33.8325,
     pressure: 100054.2344,
@@ -2059,7 +1854,6 @@ const bme68xData = [
     batteryPercentage: 1612
   },
   {
-    id: 202,
     temperature: 21.8704,
     humidity: 33.8594,
     pressure: 100049.8125,
@@ -2069,7 +1863,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 203,
     temperature: 21.9342,
     humidity: 34.2051,
     pressure: 100060.3594,
@@ -2079,7 +1872,6 @@ const bme68xData = [
     batteryPercentage: 1612
   },
   {
-    id: 204,
     temperature: 21.9419,
     humidity: 34.1278,
     pressure: 100056.1484,
@@ -2089,7 +1881,6 @@ const bme68xData = [
     batteryPercentage: 1612
   },
   {
-    id: 205,
     temperature: 21.9291,
     humidity: 34.5957,
     pressure: 100037.6172,
@@ -2099,7 +1890,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 206,
     temperature: 21.9317,
     humidity: 34.6183,
     pressure: 100032.5703,
@@ -2109,7 +1899,6 @@ const bme68xData = [
     batteryPercentage: 1612
   },
   {
-    id: 207,
     temperature: 21.9852,
     humidity: 35.2906,
     pressure: 100035.9531,
@@ -2119,7 +1908,6 @@ const bme68xData = [
     batteryPercentage: 1612
   },
   {
-    id: 208,
     temperature: 22.0388,
     humidity: 35.1159,
     pressure: 100047.5391,
@@ -2129,7 +1917,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 209,
     temperature: 22.0643,
     humidity: 35.0117,
     pressure: 100035.3281,
@@ -2139,7 +1926,6 @@ const bme68xData = [
     batteryPercentage: 1612
   },
   {
-    id: 210,
     temperature: 22.0694,
     humidity: 35.3042,
     pressure: 100041.6484,
@@ -2149,7 +1935,6 @@ const bme68xData = [
     batteryPercentage: 1612
   },
   {
-    id: 211,
     temperature: 22.049,
     humidity: 34.9149,
     pressure: 100019.1172,
@@ -2159,7 +1944,6 @@ const bme68xData = [
     batteryPercentage: 1612
   },
   {
-    id: 212,
     temperature: 22.0133,
     humidity: 35.1304,
     pressure: 100035.1094,
@@ -2169,7 +1953,6 @@ const bme68xData = [
     batteryPercentage: 1612
   },
   {
-    id: 213,
     temperature: 22.0057,
     humidity: 35.405,
     pressure: 99998.2734,
@@ -2179,7 +1962,6 @@ const bme68xData = [
     batteryPercentage: 1612
   },
   {
-    id: 214,
     temperature: 22.0082,
     humidity: 35.5741,
     pressure: 99995.9609,
@@ -2189,7 +1971,6 @@ const bme68xData = [
     batteryPercentage: 1613
   },
   {
-    id: 215,
     temperature: 21.9878,
     humidity: 35.3639,
     pressure: 99970.6797,
@@ -2199,7 +1980,6 @@ const bme68xData = [
     batteryPercentage: 1612
   },
   {
-    id: 216,
     temperature: 21.9827,
     humidity: 35.0826,
     pressure: 99958.8984,
@@ -2209,7 +1989,6 @@ const bme68xData = [
     batteryPercentage: 1611
   },
   {
-    id: 217,
     temperature: 21.9495,
     humidity: 34.9617,
     pressure: 99942.4688,
@@ -2219,7 +1998,6 @@ const bme68xData = [
     batteryPercentage: 1612
   },
   {
-    id: 218,
     temperature: 21.9291,
     humidity: 34.7132,
     pressure: 99960.9844,
@@ -2229,7 +2007,6 @@ const bme68xData = [
     batteryPercentage: 1612
   },
   {
-    id: 219,
     temperature: 21.8908,
     humidity: 34.9449,
     pressure: 99965.6172,
@@ -2239,7 +2016,6 @@ const bme68xData = [
     batteryPercentage: 1611
   },
   {
-    id: 220,
     temperature: 21.8653,
     humidity: 34.6513,
     pressure: 99966.8828,
@@ -2249,7 +2025,6 @@ const bme68xData = [
     batteryPercentage: 1611
   },
   {
-    id: 221,
     temperature: 21.8117,
     humidity: 34.473,
     pressure: 99971.6953,
@@ -2259,7 +2034,6 @@ const bme68xData = [
     batteryPercentage: 1611
   },
   {
-    id: 222,
     temperature: 21.8117,
     humidity: 34.4842,
     pressure: 99968.9609,
@@ -2269,7 +2043,6 @@ const bme68xData = [
     batteryPercentage: 1611
   },
   {
-    id: 223,
     temperature: 21.7734,
     humidity: 34.2796,
     pressure: 99946.2266,
@@ -2279,7 +2052,6 @@ const bme68xData = [
     batteryPercentage: 1612
   },
   {
-    id: 224,
     temperature: 21.7632,
     humidity: 34.0222,
     pressure: 99941.7969,
@@ -2289,7 +2061,6 @@ const bme68xData = [
     batteryPercentage: 1560
   },
   {
-    id: 225,
     temperature: 21.776,
     humidity: 34.3859,
     pressure: 99930.2266,
@@ -2299,7 +2070,6 @@ const bme68xData = [
     batteryPercentage: 1611
   },
   {
-    id: 226,
     temperature: 21.7607,
     humidity: 34.7927,
     pressure: 99914.0078,
@@ -2309,7 +2079,6 @@ const bme68xData = [
     batteryPercentage: 1611
   },
   {
-    id: 227,
     temperature: 21.7428,
     humidity: 34.8526,
     pressure: 99908.3281,
@@ -2319,7 +2088,6 @@ const bme68xData = [
     batteryPercentage: 1611
   },
   {
-    id: 228,
     temperature: 21.7479,
     humidity: 34.7579,
     pressure: 99898.2344,
@@ -2329,7 +2097,6 @@ const bme68xData = [
     batteryPercentage: 1556
   },
   {
-    id: 229,
     temperature: 21.7632,
     humidity: 34.9217,
     pressure: 99895.2812,
@@ -2339,7 +2106,6 @@ const bme68xData = [
     batteryPercentage: 1610
   },
   {
-    id: 230,
     temperature: 21.7275,
     humidity: 35.1652,
     pressure: 99881.1719,
@@ -2349,7 +2115,6 @@ const bme68xData = [
     batteryPercentage: 1611
   },
   {
-    id: 231,
     temperature: 21.7071,
     humidity: 34.9837,
     pressure: 99855.9297,
@@ -2359,7 +2124,6 @@ const bme68xData = [
     batteryPercentage: 1611
   },
   {
-    id: 232,
     temperature: 21.6867,
     humidity: 34.6347,
     pressure: 99847.0859,
@@ -2369,7 +2133,6 @@ const bme68xData = [
     batteryPercentage: 1609
   },
   {
-    id: 233,
     temperature: 21.6561,
     humidity: 34.7157,
     pressure: 99855.7109,
@@ -2379,7 +2142,6 @@ const bme68xData = [
     batteryPercentage: 1609
   },
   {
-    id: 234,
     temperature: 21.6382,
     humidity: 34.9829,
     pressure: 99844.5469,
@@ -2389,7 +2151,6 @@ const bme68xData = [
     batteryPercentage: 1609
   },
   {
-    id: 235,
     temperature: 21.6203,
     humidity: 34.9644,
     pressure: 99836.1328,
@@ -2399,7 +2160,6 @@ const bme68xData = [
     batteryPercentage: 1607
   },
   {
-    id: 236,
     temperature: 21.6152,
     humidity: 35.02,
     pressure: 99838.0391,
@@ -2409,7 +2169,6 @@ const bme68xData = [
     batteryPercentage: 1608
   },
   {
-    id: 237,
     temperature: 21.6331,
     humidity: 35.0553,
     pressure: 99810.8984,
@@ -2419,7 +2178,6 @@ const bme68xData = [
     batteryPercentage: 1608
   },
   {
-    id: 238,
     temperature: 21.6357,
     humidity: 35.179,
     pressure: 99786.6953,
@@ -2429,7 +2187,6 @@ const bme68xData = [
     batteryPercentage: 1608
   },
   {
-    id: 239,
     temperature: 21.6306,
     humidity: 35.3301,
     pressure: 99772.1797,
@@ -2439,7 +2196,6 @@ const bme68xData = [
     batteryPercentage: 1608
   },
   {
-    id: 240,
     temperature: 21.6229,
     humidity: 35.2171,
     pressure: 99751.7656,
@@ -2449,7 +2205,6 @@ const bme68xData = [
     batteryPercentage: 1553
   },
   {
-    id: 241,
     temperature: 21.5974,
     humidity: 34.6264,
     pressure: 99747.5547,
@@ -2459,7 +2214,6 @@ const bme68xData = [
     batteryPercentage: 1607
   },
   {
-    id: 242,
     temperature: 21.577,
     humidity: 34.3954,
     pressure: 99749.6641,
@@ -2469,7 +2223,6 @@ const bme68xData = [
     batteryPercentage: 1607
   },
   {
-    id: 243,
     temperature: 21.531,
     humidity: 34.6314,
     pressure: 99750.2969,
@@ -2479,7 +2232,6 @@ const bme68xData = [
     batteryPercentage: 1609
   },
   {
-    id: 244,
     temperature: 21.531,
     humidity: 34.6761,
     pressure: 99744.8281,
@@ -2489,7 +2241,6 @@ const bme68xData = [
     batteryPercentage: 1607
   },
   {
-    id: 245,
     temperature: 21.5336,
     humidity: 34.9507,
     pressure: 99715.1641,
@@ -2499,7 +2250,6 @@ const bme68xData = [
     batteryPercentage: 1608
   },
   {
-    id: 246,
     temperature: 21.5183,
     humidity: 34.8036,
     pressure: 99704.4453,
@@ -2509,7 +2259,6 @@ const bme68xData = [
     batteryPercentage: 1608
   },
   {
-    id: 247,
     temperature: 21.4826,
     humidity: 34.9571,
     pressure: 99704.0234,
@@ -2519,7 +2268,6 @@ const bme68xData = [
     batteryPercentage: 1608
   },
   {
-    id: 248,
     temperature: 21.4596,
     humidity: 34.787,
     pressure: 99705.6875,
@@ -2529,7 +2277,6 @@ const bme68xData = [
     batteryPercentage: 1609
   },
   {
-    id: 249,
     temperature: 21.4392,
     humidity: 34.9923,
     pressure: 99716,
@@ -2539,7 +2286,6 @@ const bme68xData = [
     batteryPercentage: 1609
   },
   {
-    id: 250,
     temperature: 21.4264,
     humidity: 35.1649,
     pressure: 99689.2969,
@@ -2549,7 +2295,6 @@ const bme68xData = [
     batteryPercentage: 1610
   },
   {
-    id: 251,
     temperature: 21.4009,
     humidity: 34.3345,
     pressure: 99712.4297,
@@ -2559,7 +2304,6 @@ const bme68xData = [
     batteryPercentage: 1609
   },
   {
-    id: 252,
     temperature: 21.3984,
     humidity: 34.1224,
     pressure: 99706.5391,
@@ -2569,7 +2313,6 @@ const bme68xData = [
     batteryPercentage: 1609
   },
   {
-    id: 253,
     temperature: 21.3856,
     humidity: 34.8136,
     pressure: 99726.3125,
@@ -2579,7 +2322,6 @@ const bme68xData = [
     batteryPercentage: 1609
   },
   {
-    id: 254,
     temperature: 21.3754,
     humidity: 34.8575,
     pressure: 99710.9609,
@@ -2589,7 +2331,6 @@ const bme68xData = [
     batteryPercentage: 1608
   },
   {
-    id: 255,
     temperature: 21.355,
     humidity: 33.9347,
     pressure: 99682.9844,
@@ -2599,7 +2340,6 @@ const bme68xData = [
     batteryPercentage: 1607
   },
   {
-    id: 256,
     temperature: 21.4009,
     humidity: 34.4964,
     pressure: 99712.4297,
@@ -2609,7 +2349,6 @@ const bme68xData = [
     batteryPercentage: 1608
   },
   {
-    id: 257,
     temperature: 21.3907,
     humidity: 34.066,
     pressure: 99738.0781,
@@ -2619,7 +2358,6 @@ const bme68xData = [
     batteryPercentage: 1608
   },
   {
-    id: 258,
     temperature: 21.3754,
     humidity: 33.3813,
     pressure: 99743.7812,
@@ -2629,7 +2367,6 @@ const bme68xData = [
     batteryPercentage: 1609
   },
   {
-    id: 259,
     temperature: 21.3881,
     humidity: 33.1,
     pressure: 99745.875,
@@ -2639,7 +2376,6 @@ const bme68xData = [
     batteryPercentage: 1609
   },
   {
-    id: 260,
     temperature: 21.3448,
     humidity: 32.737,
     pressure: 99725.0469,
@@ -2649,7 +2385,6 @@ const bme68xData = [
     batteryPercentage: 1609
   },
   {
-    id: 261,
     temperature: 21.3524,
     humidity: 32.5777,
     pressure: 99715.3672,
@@ -2659,7 +2394,6 @@ const bme68xData = [
     batteryPercentage: 1554
   },
   {
-    id: 262,
     temperature: 21.3269,
     humidity: 31.6854,
     pressure: 99686.5547,
@@ -2669,7 +2403,6 @@ const bme68xData = [
     batteryPercentage: 1609
   },
   {
-    id: 263,
     temperature: 21.3269,
     humidity: 31.8169,
     pressure: 99683.8203,
@@ -2679,7 +2412,6 @@ const bme68xData = [
     batteryPercentage: 1609
   },
   {
-    id: 264,
     temperature: 21.3244,
     humidity: 31.7673,
     pressure: 99683.4062,
@@ -2689,7 +2421,6 @@ const bme68xData = [
     batteryPercentage: 1609
   },
   {
-    id: 265,
     temperature: 21.3397,
     humidity: 32.4279,
     pressure: 99680.4688,
@@ -2699,7 +2430,6 @@ const bme68xData = [
     batteryPercentage: 1609
   },
   {
-    id: 266,
     temperature: 21.3014,
     humidity: 31.333,
     pressure: 99715.1641,
@@ -2709,7 +2439,6 @@ const bme68xData = [
     batteryPercentage: 1609
   },
   {
-    id: 267,
     temperature: 21.2529,
     humidity: 31.2688,
     pressure: 99704.4219,
@@ -2719,7 +2448,6 @@ const bme68xData = [
     batteryPercentage: 1608
   },
   {
-    id: 268,
     temperature: 21.2299,
     humidity: 32.9256,
     pressure: 99681.5156,
@@ -2729,7 +2457,6 @@ const bme68xData = [
     batteryPercentage: 1608
   },
   {
-    id: 269,
     temperature: 21.2274,
     humidity: 34.2182,
     pressure: 99700.2266,
@@ -2739,7 +2466,6 @@ const bme68xData = [
     batteryPercentage: 1554
   },
   {
-    id: 270,
     temperature: 21.2146,
     humidity: 32.4499,
     pressure: 99695.3828,
@@ -2749,7 +2475,6 @@ const bme68xData = [
     batteryPercentage: 1554
   },
   {
-    id: 271,
     temperature: 21.1713,
     humidity: 32.2426,
     pressure: 99680.0391,
@@ -2759,7 +2484,6 @@ const bme68xData = [
     batteryPercentage: 1608
   },
   {
-    id: 272,
     temperature: 21.2019,
     humidity: 32.2507,
     pressure: 99657.75,
@@ -2769,7 +2493,6 @@ const bme68xData = [
     batteryPercentage: 1608
   },
   {
-    id: 273,
     temperature: 21.2172,
     humidity: 32.1257,
     pressure: 99654.7969,
@@ -2779,7 +2502,6 @@ const bme68xData = [
     batteryPercentage: 1608
   },
   {
-    id: 274,
     temperature: 21.2146,
     humidity: 31.9059,
     pressure: 99662.5859,
@@ -2789,7 +2511,6 @@ const bme68xData = [
     batteryPercentage: 1608
   },
   {
-    id: 275,
     temperature: 21.2172,
     humidity: 31.8951,
     pressure: 99652.0703,
@@ -2799,7 +2520,6 @@ const bme68xData = [
     batteryPercentage: 1608
   },
   {
-    id: 276,
     temperature: 21.1968,
     humidity: 33.7869,
     pressure: 99651.4375,
@@ -2809,7 +2529,6 @@ const bme68xData = [
     batteryPercentage: 1607
   },
   {
-    id: 277,
     temperature: 21.184,
     humidity: 36.0138,
     pressure: 99652.0781,
@@ -2819,7 +2538,6 @@ const bme68xData = [
     batteryPercentage: 1607
   },
   {
-    id: 278,
     temperature: 21.1585,
     humidity: 35.9945,
     pressure: 99634.1953,
@@ -2829,7 +2547,6 @@ const bme68xData = [
     batteryPercentage: 1607
   },
   {
-    id: 279,
     temperature: 21.1483,
     humidity: 35.3801,
     pressure: 99637.9922,
@@ -2839,7 +2556,6 @@ const bme68xData = [
     batteryPercentage: 1607
   },
   {
-    id: 280,
     temperature: 21.1304,
     humidity: 35.1876,
     pressure: 99615.9141,
@@ -2849,7 +2565,6 @@ const bme68xData = [
     batteryPercentage: 1607
   },
   {
-    id: 281,
     temperature: 21.0947,
     humidity: 34.6859,
     pressure: 99607.2969,
@@ -2859,7 +2574,6 @@ const bme68xData = [
     batteryPercentage: 1607
   },
   {
-    id: 282,
     temperature: 21.0998,
     humidity: 34.7088,
     pressure: 99602.6641,
@@ -2869,7 +2583,6 @@ const bme68xData = [
     batteryPercentage: 1550
   },
   {
-    id: 283,
     temperature: 21.0871,
     humidity: 34.7803,
     pressure: 99584.1641,
@@ -2879,7 +2592,6 @@ const bme68xData = [
     batteryPercentage: 1591
   },
   {
-    id: 284,
     temperature: 21.0717,
     humidity: 34.7453,
     pressure: 99570.7109,
@@ -2889,7 +2601,6 @@ const bme68xData = [
     batteryPercentage: 1605
   },
   {
-    id: 285,
     temperature: 20.9875,
     humidity: 33.1361,
     pressure: 99554.1172,
@@ -2899,7 +2610,6 @@ const bme68xData = [
     batteryPercentage: 1600
   },
   {
-    id: 286,
     temperature: 20.7783,
     humidity: 33.3277,
     pressure: 99557.8828,
@@ -2909,7 +2619,6 @@ const bme68xData = [
     batteryPercentage: 1606
   },
   {
-    id: 287,
     temperature: 20.7502,
     humidity: 33.9798,
     pressure: 99561.4531,
@@ -2919,7 +2628,6 @@ const bme68xData = [
     batteryPercentage: 1608
   },
   {
-    id: 288,
     temperature: 20.8115,
     humidity: 33.9853,
     pressure: 99557.8828,
@@ -2929,7 +2637,6 @@ const bme68xData = [
     batteryPercentage: 1609
   },
   {
-    id: 289,
     temperature: 20.8446,
     humidity: 34.4953,
     pressure: 99574.2891,
@@ -2939,7 +2646,6 @@ const bme68xData = [
     batteryPercentage: 1609
   },
   {
-    id: 290,
     temperature: 20.8651,
     humidity: 34.4525,
     pressure: 99574.9141,
@@ -2949,7 +2655,6 @@ const bme68xData = [
     batteryPercentage: 1609
   },
   {
-    id: 291,
     temperature: 20.8676,
     humidity: 34.2353,
     pressure: 99558.9531,
@@ -2959,7 +2664,6 @@ const bme68xData = [
     batteryPercentage: 1609
   },
   {
-    id: 292,
     temperature: 20.8651,
     humidity: 34.2017,
     pressure: 99561.2578,
@@ -2969,7 +2673,6 @@ const bme68xData = [
     batteryPercentage: 1554
   },
   {
-    id: 293,
     temperature: 20.8778,
     humidity: 34.2419,
     pressure: 99566.1016,
@@ -2979,7 +2682,6 @@ const bme68xData = [
     batteryPercentage: 1609
   },
   {
-    id: 294,
     temperature: 20.8804,
     humidity: 34.1808,
     pressure: 99566.5078,
@@ -2989,7 +2691,6 @@ const bme68xData = [
     batteryPercentage: 1554
   },
   {
-    id: 295,
     temperature: 20.8778,
     humidity: 34.292,
     pressure: 99579.7578,
@@ -2999,7 +2700,6 @@ const bme68xData = [
     batteryPercentage: 1609
   },
   {
-    id: 296,
     temperature: 20.8064,
     humidity: 33.574,
     pressure: 99581.6328,
@@ -3009,7 +2709,6 @@ const bme68xData = [
     batteryPercentage: 1609
   },
   {
-    id: 297,
     temperature: 20.7171,
     humidity: 32.8967,
     pressure: 99605.1484,
@@ -3019,7 +2718,6 @@ const bme68xData = [
     batteryPercentage: 1609
   },
   {
-    id: 298,
     temperature: 20.6482,
     humidity: 32.3289,
     pressure: 99607.4531,
@@ -3029,7 +2727,6 @@ const bme68xData = [
     batteryPercentage: 1608
   },
   {
-    id: 299,
     temperature: 20.5512,
     humidity: 31.7227,
     pressure: 99607.8594,
@@ -3039,7 +2736,6 @@ const bme68xData = [
     batteryPercentage: 1608
   },
   {
-    id: 300,
     temperature: 20.5589,
     humidity: 31.7781,
     pressure: 99617.3203,
@@ -3049,7 +2745,6 @@ const bme68xData = [
     batteryPercentage: 1608
   },
   {
-    id: 301,
     temperature: 20.5844,
     humidity: 31.7858,
     pressure: 99626.9844,
@@ -3059,7 +2754,6 @@ const bme68xData = [
     batteryPercentage: 1607
   },
   {
-    id: 302,
     temperature: 20.6175,
     humidity: 31.5698,
     pressure: 99610.6016,
@@ -3069,7 +2763,6 @@ const bme68xData = [
     batteryPercentage: 1607
   },
   {
-    id: 303,
     temperature: 20.6584,
     humidity: 29.8777,
     pressure: 99614.5938,
@@ -3079,7 +2772,6 @@ const bme68xData = [
     batteryPercentage: 1608
   },
   {
-    id: 304,
     temperature: 20.8395,
     humidity: 30.0601,
     pressure: 99614.4141,
@@ -3089,7 +2781,6 @@ const bme68xData = [
     batteryPercentage: 1608
   },
   {
-    id: 305,
     temperature: 20.8421,
     humidity: 30.0333,
     pressure: 99617.5703,
@@ -3099,7 +2790,6 @@ const bme68xData = [
     batteryPercentage: 1553
   },
   {
-    id: 306,
     temperature: 20.9518,
     humidity: 29.9287,
     pressure: 99605.5938,
@@ -3109,7 +2799,6 @@ const bme68xData = [
     batteryPercentage: 1607
   },
   {
-    id: 307,
     temperature: 20.985,
     humidity: 30.1858,
     pressure: 99613.7891,
@@ -3119,7 +2808,6 @@ const bme68xData = [
     batteryPercentage: 1608
   },
   {
-    id: 308,
     temperature: 20.9773,
     humidity: 31.9073,
     pressure: 99612.5391,
@@ -3129,7 +2817,6 @@ const bme68xData = [
     batteryPercentage: 1608
   },
   {
-    id: 309,
     temperature: 20.9493,
     humidity: 31.6036,
     pressure: 99635.2266,
@@ -3139,7 +2826,6 @@ const bme68xData = [
     batteryPercentage: 1553
   },
   {
-    id: 310,
     temperature: 20.9926,
     humidity: 30.8271,
     pressure: 99636.9219,
@@ -3149,7 +2835,6 @@ const bme68xData = [
     batteryPercentage: 1607
   },
   {
-    id: 311,
     temperature: 21.0539,
     humidity: 31.0828,
     pressure: 99641.5547,
@@ -3159,7 +2844,6 @@ const bme68xData = [
     batteryPercentage: 1608
   },
   {
-    id: 312,
     temperature: 21.1866,
     humidity: 31.2304,
     pressure: 99641.5547,
@@ -3169,7 +2853,6 @@ const bme68xData = [
     batteryPercentage: 1608
   },
   {
-    id: 313,
     temperature: 21.2759,
     humidity: 31.0798,
     pressure: 99637.1406,
@@ -3179,7 +2862,6 @@ const bme68xData = [
     batteryPercentage: 1607
   },
   {
-    id: 314,
     temperature: 21.3626,
     humidity: 30.6895,
     pressure: 99626.8359,
@@ -3189,7 +2871,6 @@ const bme68xData = [
     batteryPercentage: 1607
   },
   {
-    id: 315,
     temperature: 21.4239,
     humidity: 30.6457,
     pressure: 99634.1953,
@@ -3199,7 +2880,6 @@ const bme68xData = [
     batteryPercentage: 1607
   },
   {
-    id: 316,
     temperature: 21.4928,
     humidity: 30.8311,
     pressure: 99631.8672,
@@ -3209,7 +2889,6 @@ const bme68xData = [
     batteryPercentage: 1606
   },
   {
-    id: 317,
     temperature: 21.5948,
     humidity: 31.2652,
     pressure: 99640.4844,
@@ -3219,7 +2898,6 @@ const bme68xData = [
     batteryPercentage: 1606
   },
   {
-    id: 318,
     temperature: 21.6459,
     humidity: 31.2368,
     pressure: 99640.6875,
@@ -3229,7 +2907,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 319,
     temperature: 21.7097,
     humidity: 32.3117,
     pressure: 99645.7188,
@@ -3239,7 +2916,6 @@ const bme68xData = [
     batteryPercentage: 1607
   },
   {
-    id: 320,
     temperature: 21.7479,
     humidity: 32.1005,
     pressure: 99654.75,
@@ -3249,7 +2925,6 @@ const bme68xData = [
     batteryPercentage: 1606
   },
   {
-    id: 321,
     temperature: 21.8526,
     humidity: 32.6551,
     pressure: 99641.8906,
@@ -3259,7 +2934,6 @@ const bme68xData = [
     batteryPercentage: 1606
   },
   {
-    id: 322,
     temperature: 21.8704,
     humidity: 37.0373,
     pressure: 99644.8359,
@@ -3269,7 +2943,6 @@ const bme68xData = [
     batteryPercentage: 1607
   },
   {
-    id: 323,
     temperature: 21.901,
     humidity: 34.046,
     pressure: 99641.6641,
@@ -3279,7 +2952,6 @@ const bme68xData = [
     batteryPercentage: 1608
   },
   {
-    id: 324,
     temperature: 21.9929,
     humidity: 33.7315,
     pressure: 99651.3125,
@@ -3289,7 +2961,6 @@ const bme68xData = [
     batteryPercentage: 1607
   },
   {
-    id: 325,
     temperature: 22.0899,
     humidity: 33.6736,
     pressure: 99645.3906,
@@ -3299,7 +2970,6 @@ const bme68xData = [
     batteryPercentage: 1551
   },
   {
-    id: 326,
     temperature: 22.1664,
     humidity: 33.5472,
     pressure: 99636.1016,
@@ -3309,7 +2979,6 @@ const bme68xData = [
     batteryPercentage: 1607
   },
   {
-    id: 327,
     temperature: 22.1715,
     humidity: 33.5199,
     pressure: 99631.4609,
@@ -3319,7 +2988,6 @@ const bme68xData = [
     batteryPercentage: 1606
   },
   {
-    id: 328,
     temperature: 22.2914,
     humidity: 34.0819,
     pressure: 99640.25,
@@ -3329,7 +2997,6 @@ const bme68xData = [
     batteryPercentage: 1605
   },
   {
-    id: 329,
     temperature: 22.3654,
     humidity: 34.8718,
     pressure: 99641.4688,
@@ -3339,7 +3006,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 330,
     temperature: 22.4369,
     humidity: 34.4752,
     pressure: 99634.0703,
@@ -3349,7 +3015,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 331,
     temperature: 22.4981,
     humidity: 34.2853,
     pressure: 99641.4141,
@@ -3359,7 +3024,6 @@ const bme68xData = [
     batteryPercentage: 1606
   },
   {
-    id: 332,
     temperature: 22.5721,
     humidity: 34.0632,
     pressure: 99656.3281,
@@ -3369,7 +3033,6 @@ const bme68xData = [
     batteryPercentage: 1606
   },
   {
-    id: 333,
     temperature: 22.613,
     humidity: 34.0056,
     pressure: 99665.7969,
@@ -3379,7 +3042,6 @@ const bme68xData = [
     batteryPercentage: 1606
   },
   {
-    id: 334,
     temperature: 22.5058,
     humidity: 33.6115,
     pressure: 99672.8047,
@@ -3389,7 +3051,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 335,
     temperature: 22.419,
     humidity: 33.2204,
     pressure: 99666.7422,
@@ -3399,7 +3060,6 @@ const bme68xData = [
     batteryPercentage: 1605
   },
   {
-    id: 336,
     temperature: 22.3323,
     humidity: 32.742,
     pressure: 99677.0938,
@@ -3409,7 +3069,6 @@ const bme68xData = [
     batteryPercentage: 1606
   },
   {
-    id: 337,
     temperature: 22.2659,
     humidity: 32.3663,
     pressure: 99690.8125,
@@ -3419,7 +3078,6 @@ const bme68xData = [
     batteryPercentage: 1605
   },
   {
-    id: 338,
     temperature: 22.2481,
     humidity: 33.5602,
     pressure: 99687.8672,
@@ -3429,7 +3087,6 @@ const bme68xData = [
     batteryPercentage: 1606
   },
   {
-    id: 339,
     temperature: 22.2685,
     humidity: 33.5509,
     pressure: 99693.9688,
@@ -3439,7 +3096,6 @@ const bme68xData = [
     batteryPercentage: 1606
   },
   {
-    id: 340,
     temperature: 22.2506,
     humidity: 33.566,
     pressure: 99704.7109,
@@ -3449,7 +3105,6 @@ const bme68xData = [
     batteryPercentage: 1606
   },
   {
-    id: 341,
     temperature: 22.22,
     humidity: 33.4799,
     pressure: 99705.1406,
@@ -3459,7 +3114,6 @@ const bme68xData = [
     batteryPercentage: 1606
   },
   {
-    id: 342,
     temperature: 22.1766,
     humidity: 33.3871,
     pressure: 99703.4766,
@@ -3469,7 +3123,6 @@ const bme68xData = [
     batteryPercentage: 1605
   },
   {
-    id: 343,
     temperature: 22.1358,
     humidity: 33.4666,
     pressure: 99710.4375,
@@ -3479,7 +3132,6 @@ const bme68xData = [
     batteryPercentage: 1606
   },
   {
-    id: 344,
     temperature: 22.1026,
     humidity: 33.336,
     pressure: 99710.4531,
@@ -3489,7 +3141,6 @@ const bme68xData = [
     batteryPercentage: 1607
   },
   {
-    id: 345,
     temperature: 22.0694,
     humidity: 33.8776,
     pressure: 99715.9297,
@@ -3499,7 +3150,6 @@ const bme68xData = [
     batteryPercentage: 1605
   },
   {
-    id: 346,
     temperature: 22.0822,
     humidity: 33.6173,
     pressure: 99726.25,
@@ -3509,7 +3159,6 @@ const bme68xData = [
     batteryPercentage: 1605
   },
   {
-    id: 347,
     temperature: 22.0694,
     humidity: 33.8553,
     pressure: 99718.6562,
@@ -3519,7 +3168,6 @@ const bme68xData = [
     batteryPercentage: 1606
   },
   {
-    id: 348,
     temperature: 22.0797,
     humidity: 33.8507,
     pressure: 99725.8359,
@@ -3529,7 +3177,6 @@ const bme68xData = [
     batteryPercentage: 1607
   },
   {
-    id: 349,
     temperature: 22.072,
     humidity: 33.7999,
     pressure: 99738.25,
@@ -3539,7 +3186,6 @@ const bme68xData = [
     batteryPercentage: 1606
   },
   {
-    id: 350,
     temperature: 22.0669,
     humidity: 33.716,
     pressure: 99764.7812,
@@ -3549,7 +3195,6 @@ const bme68xData = [
     batteryPercentage: 1549
   },
   {
-    id: 351,
     temperature: 22.0669,
     humidity: 33.627,
     pressure: 99753.8281,
@@ -3559,7 +3204,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 352,
     temperature: 22.0797,
     humidity: 34.0568,
     pressure: 99747.7266,
@@ -3569,7 +3213,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 353,
     temperature: 22.095,
     humidity: 33.8744,
     pressure: 99763.9453,
@@ -3579,7 +3222,6 @@ const bme68xData = [
     batteryPercentage: 1605
   },
   {
-    id: 354,
     temperature: 22.1026,
     humidity: 33.8918,
     pressure: 99754.2422,
@@ -3589,7 +3231,6 @@ const bme68xData = [
     batteryPercentage: 1587
   },
   {
-    id: 355,
     temperature: 22.1205,
     humidity: 33.9826,
     pressure: 99762.6641,
@@ -3599,7 +3240,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 356,
     temperature: 22.1511,
     humidity: 34.1917,
     pressure: 99767.6953,
@@ -3609,7 +3249,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 357,
     temperature: 22.1792,
     humidity: 35.0899,
     pressure: 99766.8672,
@@ -3619,7 +3258,6 @@ const bme68xData = [
     batteryPercentage: 1606
   },
   {
-    id: 358,
     temperature: 22.1562,
     humidity: 34.9979,
     pressure: 99782.2422,
@@ -3629,7 +3267,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 359,
     temperature: 22.1256,
     humidity: 34.0722,
     pressure: 99790.8672,
@@ -3639,7 +3276,6 @@ const bme68xData = [
     batteryPercentage: 1606
   },
   {
-    id: 360,
     temperature: 22.1281,
     humidity: 34.4912,
     pressure: 99810.4531,
@@ -3649,7 +3285,6 @@ const bme68xData = [
     batteryPercentage: 1606
   },
   {
-    id: 361,
     temperature: 22.1332,
     humidity: 34.4861,
     pressure: 99803.0859,
@@ -3659,7 +3294,6 @@ const bme68xData = [
     batteryPercentage: 1605
   },
   {
-    id: 362,
     temperature: 22.1639,
     humidity: 34.4107,
     pressure: 99799.9297,
@@ -3669,7 +3303,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 363,
     temperature: 22.1868,
     humidity: 35.3547,
     pressure: 99798.2266,
@@ -3679,7 +3312,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 364,
     temperature: 22.2276,
     humidity: 35.8544,
     pressure: 99794.0078,
@@ -3689,7 +3321,6 @@ const bme68xData = [
     batteryPercentage: 1605
   },
   {
-    id: 365,
     temperature: 22.2557,
     humidity: 36.1396,
     pressure: 99787.6797,
@@ -3699,7 +3330,6 @@ const bme68xData = [
     batteryPercentage: 1605
   },
   {
-    id: 366,
     temperature: 22.2761,
     humidity: 36.85,
     pressure: 99791.0391,
@@ -3709,7 +3339,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 367,
     temperature: 22.3016,
     humidity: 36.8298,
     pressure: 99781.5781,
@@ -3719,7 +3348,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 368,
     temperature: 22.3016,
     humidity: 37.0799,
     pressure: 99792.5234,
@@ -3729,7 +3357,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 369,
     temperature: 22.3042,
     humidity: 37.3364,
     pressure: 99782.0078,
@@ -3739,7 +3366,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 370,
     temperature: 22.2812,
     humidity: 37.3398,
     pressure: 99794.6406,
@@ -3749,7 +3375,6 @@ const bme68xData = [
     batteryPercentage: 1600
   },
   {
-    id: 371,
     temperature: 22.3246,
     humidity: 37.2017,
     pressure: 99782.6172,
@@ -3759,7 +3384,6 @@ const bme68xData = [
     batteryPercentage: 1600
   },
   {
-    id: 372,
     temperature: 22.3323,
     humidity: 38.5751,
     pressure: 99786.6172,
@@ -3769,7 +3393,6 @@ const bme68xData = [
     batteryPercentage: 1600
   },
   {
-    id: 373,
     temperature: 22.2889,
     humidity: 38.2608,
     pressure: 99795.8906,
@@ -3779,7 +3402,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 374,
     temperature: 22.2634,
     humidity: 37.9661,
     pressure: 99794.4297,
@@ -3789,7 +3411,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 375,
     temperature: 22.2532,
     humidity: 38.1712,
     pressure: 99795.4844,
@@ -3799,7 +3420,6 @@ const bme68xData = [
     batteryPercentage: 1601
   },
   {
-    id: 376,
     temperature: 22.2404,
     humidity: 38.0726,
     pressure: 99798.8516,
@@ -3809,7 +3429,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 377,
     temperature: 22.271,
     humidity: 38.5976,
     pressure: 99812.1172,
@@ -3819,7 +3438,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 378,
     temperature: 22.2736,
     humidity: 38.7128,
     pressure: 99815.2734,
@@ -3829,7 +3447,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 379,
     temperature: 22.243,
     humidity: 38.5258,
     pressure: 99802.0156,
@@ -3839,7 +3456,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 380,
     temperature: 22.2251,
     humidity: 38.4379,
     pressure: 99820.9688,
@@ -3849,7 +3465,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 381,
     temperature: 22.2225,
     humidity: 38.2082,
     pressure: 99823.2969,
@@ -3859,7 +3474,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 382,
     temperature: 22.2047,
     humidity: 38.3841,
     pressure: 99834.0312,
@@ -3869,7 +3483,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 383,
     temperature: 22.2072,
     humidity: 38.8095,
     pressure: 99848.1328,
@@ -3879,7 +3492,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 384,
     temperature: 22.197,
     humidity: 39.1885,
     pressure: 99838.2578,
@@ -3889,7 +3501,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 385,
     temperature: 22.197,
     humidity: 39.4482,
     pressure: 99838.2578,
@@ -3899,7 +3510,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 386,
     temperature: 22.1868,
     humidity: 39.3144,
     pressure: 99844.7656,
@@ -3909,7 +3519,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 387,
     temperature: 22.1868,
     humidity: 39.1241,
     pressure: 99842.0234,
@@ -3919,7 +3528,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 388,
     temperature: 22.1843,
     humidity: 39.1757,
     pressure: 99841.625,
@@ -3929,7 +3537,6 @@ const bme68xData = [
     batteryPercentage: 1602
   },
   {
-    id: 389,
     temperature: 22.2149,
     humidity: 39.2596,
     pressure: 99841.1953,
@@ -3939,7 +3546,6 @@ const bme68xData = [
     batteryPercentage: 1601
   },
   {
-    id: 390,
     temperature: 22.2225,
     humidity: 39.1566,
     pressure: 99847.9297,
@@ -3949,7 +3555,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 391,
     temperature: 22.1996,
     humidity: 39.0159,
     pressure: 99846.8828,
@@ -3959,7 +3564,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 392,
     temperature: 22.2123,
     humidity: 38.7582,
     pressure: 99857.1953,
@@ -3969,7 +3573,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 393,
     temperature: 22.2149,
     humidity: 38.8333,
     pressure: 99863.0938,
@@ -3979,7 +3582,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 394,
     temperature: 22.2174,
     humidity: 38.989,
     pressure: 99869,
@@ -3989,7 +3591,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 395,
     temperature: 22.2047,
     humidity: 38.7805,
     pressure: 99883.3125,
@@ -3999,7 +3600,6 @@ const bme68xData = [
     batteryPercentage: 1548
   },
   {
-    id: 396,
     temperature: 22.2072,
     humidity: 38.4074,
     pressure: 99894.6719,
@@ -4009,7 +3609,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 397,
     temperature: 22.1817,
     humidity: 38.2385,
     pressure: 99909.6328,
@@ -4019,7 +3618,6 @@ const bme68xData = [
     batteryPercentage: 1605
   },
   {
-    id: 398,
     temperature: 22.1562,
     humidity: 38.1156,
     pressure: 99919.1094,
@@ -4029,7 +3627,6 @@ const bme68xData = [
     batteryPercentage: 1605
   },
   {
-    id: 399,
     temperature: 22.1792,
     humidity: 37.849,
     pressure: 99914.6953,
@@ -4039,7 +3636,6 @@ const bme68xData = [
     batteryPercentage: 1605
   },
   {
-    id: 400,
     temperature: 22.1588,
     humidity: 37.687,
     pressure: 99925.0234,
@@ -4049,7 +3645,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 401,
     temperature: 22.146,
     humidity: 37.68,
     pressure: 99922.9062,
@@ -4059,7 +3654,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 402,
     temperature: 22.1383,
     humidity: 38.0508,
     pressure: 99918.8984,
@@ -4069,7 +3663,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 403,
     temperature: 22.1001,
     humidity: 37.6811,
     pressure: 99934.4844,
@@ -4079,7 +3672,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 404,
     temperature: 22.0797,
     humidity: 37.839,
     pressure: 99933.8594,
@@ -4089,7 +3681,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 405,
     temperature: 22.0592,
     humidity: 37.5629,
     pressure: 99925.0156,
@@ -4099,7 +3690,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 406,
     temperature: 22.0439,
     humidity: 37.6184,
     pressure: 99922.4844,
@@ -4109,7 +3699,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 407,
     temperature: 22.0057,
     humidity: 37.4834,
     pressure: 99921.6328,
@@ -4119,7 +3708,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 408,
     temperature: 21.9954,
     humidity: 37.3741,
     pressure: 99919.9531,
@@ -4129,7 +3717,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 409,
     temperature: 21.9954,
     humidity: 37.3684,
     pressure: 99925.4219,
@@ -4139,7 +3726,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 410,
     temperature: 21.9852,
     humidity: 37.4928,
     pressure: 99912.7969,
@@ -4149,7 +3735,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 411,
     temperature: 22.0108,
     humidity: 38.5366,
     pressure: 99919.7344,
@@ -4159,7 +3744,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 412,
     temperature: 22.0133,
     humidity: 38.7034,
     pressure: 99917.4141,
@@ -4169,7 +3753,6 @@ const bme68xData = [
     batteryPercentage: 1603
   },
   {
-    id: 413,
     temperature: 22.0184,
     humidity: 37.5816,
     pressure: 99910.0547,
@@ -4179,7 +3762,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 414,
     temperature: 22.0771,
     humidity: 41.4052,
     pressure: 99917.0078,
@@ -4189,7 +3771,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 415,
     temperature: 22.146,
     humidity: 39.3794,
     pressure: 99906.4844,
@@ -4199,7 +3780,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 416,
     temperature: 22.1639,
     humidity: 38.0992,
     pressure: 99903.9531,
@@ -4209,7 +3789,6 @@ const bme68xData = [
     batteryPercentage: 1604
   },
   {
-    id: 417,
     temperature: 22.1715,
     humidity: 37.2264,
     pressure: 99905.2109,
@@ -4219,7 +3798,6 @@ const bme68xData = [
     batteryPercentage: 1605
   },
   {
-    id: 418,
     temperature: 22.1766,
     humidity: 36.8459,
     pressure: 99919.7422,
@@ -4241,6 +3819,10 @@ const transformedBme68xData = bme68xData.map((data) => ({
 }));
 
 console.log('Seed started');
+
+const sql = postgres(dbUrl, { max: 1 });
+const db = drizzle(sql);
+
 await db.insert(userSchema).values(hashedUserData).onConflictDoNothing();
 await Promise.all([
   db.insert(sensorSchema).values(sensorData).onConflictDoNothing(),
@@ -4250,6 +3832,7 @@ await Promise.all([
   db.insert(kioskToSensorSchema).values(kioskToSensorData).onConflictDoNothing(),
   db.insert(bme68xDataSchema).values(transformedBme68xData).onConflictDoNothing()
 ]);
-console.log('Seed done');
 
 await sql.end();
+
+console.log('Seed completed');

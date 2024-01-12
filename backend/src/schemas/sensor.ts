@@ -1,12 +1,15 @@
-import { SensorType } from '@prisma/client';
 import { z } from 'zod';
 import { getBME68xDataInputSchema } from './bme68x';
 import { dateRangeQuerySchema } from './helpers';
+import { createInsertSchema } from 'drizzle-zod';
+import { sensorSchema } from '../db/drizzle';
+
+export const insertSensorSchema = createInsertSchema(sensorSchema);
 
 export const getSensorOutputSchema = z.object({
   id: z.number(),
   name: z.string(),
-  type: z.nativeEnum(SensorType)
+  type: insertSensorSchema.shape.type
 });
 
 export const getSensorWithCurrentDataSchema = getSensorOutputSchema.extend({

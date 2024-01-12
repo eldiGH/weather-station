@@ -1,4 +1,4 @@
-import { relations } from 'drizzle-orm';
+import { relations, sql } from 'drizzle-orm';
 import {
   boolean,
   char,
@@ -9,8 +9,34 @@ import {
   primaryKey,
   serial,
   text,
-  timestamp
+  customType,
+  type PgCustomColumnBuilder
 } from 'drizzle-orm/pg-core';
+
+const myTimestamp = customType<{ data: Date; driverData: string }>({
+  dataType() {
+    return 'timestamp without time zone';
+  },
+
+  toDriver(value) {
+    return value.toISOString();
+  },
+
+  fromDriver(value) {
+    return new Date(`${value}Z`);
+  }
+});
+
+const defaultNow = <T extends string>(
+  column: PgCustomColumnBuilder<{
+    name: T;
+    dataType: 'custom';
+    columnType: 'PgCustomColumn';
+    data: Date;
+    driverParam: string;
+    enumValues: undefined;
+  }>
+) => column.default(sql`(now() at time zone 'utc')`);
 
 export const sensorTypeEnumSchema = pgEnum('sensor_type', ['BME68X']);
 
@@ -20,7 +46,7 @@ export const userSchema = pgTable('user', {
   email: text('email').unique().notNull(),
   password: text('password').notNull(),
 
-  createdAt: timestamp('created_at').defaultNow().notNull()
+  createdAt: defaultNow(myTimestamp('created_at')).notNull()
 });
 
 export const userRelations = relations(userSchema, ({ many }) => ({
@@ -63,9 +89,9 @@ export const refreshTokenSchema = pgTable('refresh_token', {
 
   sessionId: char('session_id', { length: 36 }).notNull(),
 
-  expirationDate: timestamp('expiration_date').notNull(),
+  expirationDate: myTimestamp('expiration_date').notNull(),
 
-  createdAt: timestamp('created_at').defaultNow().notNull()
+  createdAt: defaultNow(myTimestamp('created_at')).notNull()
 });
 
 export const refreshTokenRelations = relations(refreshTokenSchema, ({ one }) => ({
@@ -79,7 +105,7 @@ export const sensorSchema = pgTable('sensor', {
   type: sensorTypeEnumSchema('type').notNull(),
   secret: char('secret', { length: 36 }).notNull().unique(),
 
-  createdAt: timestamp('created_at').defaultNow().notNull(),
+  createdAt: defaultNow(myTimestamp('created_at')).notNull(),
 
   ownerId: integer('owner_id')
     .references(() => userSchema.id)
@@ -110,7 +136,7 @@ export const bme68xDataSchema = pgTable('bme68x_data', {
     .references(() => sensorSchema.id)
     .notNull(),
 
-  createdAt: timestamp('created_at').defaultNow().notNull()
+  createdAt: defaultNow(myTimestamp('created_at')).notNull()
 });
 
 export const bme68xSensorDataRelations = relations(bme68xDataSchema, ({ one }) => ({

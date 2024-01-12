@@ -1,4 +1,3 @@
-import type { User } from '@prisma/client';
 import { redisClient } from '../db/redis';
 import { KioskNotFound } from '../errors/KioskNotFound';
 import { KioskWithoutCoordinates } from '../errors/KioskWithoutCoordinates';
@@ -18,6 +17,7 @@ import {
   getKioskWithSensors
 } from '../repositories/kiosk';
 import { getSensorsWithIds } from '../repositories/sensor';
+import type { userSchema } from '../db/drizzle';
 
 const FORECAST_CACHE_MINUTES = 30;
 
@@ -147,7 +147,7 @@ export const KioskService = {
     return parsedKiosk;
   },
 
-  createKiosk: async (data: CreateKioskInput, user: User) => {
+  createKiosk: async (data: CreateKioskInput, user: typeof userSchema.$inferSelect) => {
     const sensors = await getSensorsWithIds([...new Set(data.sensors)]);
 
     const foundSensorsIds = sensors.map((sensor) => sensor.id);

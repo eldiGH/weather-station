@@ -1,11 +1,20 @@
-import { and, asc, type ColumnBaseConfig, desc, gte, lte, type SQL } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  type ColumnBaseConfig,
+  desc,
+  gte,
+  lte,
+  type SQL,
+  type ColumnDataType
+} from 'drizzle-orm';
 import type { DateRangeQuery } from '../schemas';
 import { PgColumn } from 'drizzle-orm/pg-core';
 import { subDays } from 'date-fns';
 import type { QueryOrder } from '../types/QueryOptions';
 
-export const getSQLForDates = (
-  column: PgColumn<ColumnBaseConfig<'date', 'PgTimestamp'>>,
+export const getSQLForDates = <T extends ColumnBaseConfig<ColumnDataType, string>>(
+  column: PgColumn<T>,
   dateRanges: DateRangeQuery
 ): SQL<unknown> | undefined => {
   const { from, to, fromLastDays } = dateRanges ?? {};

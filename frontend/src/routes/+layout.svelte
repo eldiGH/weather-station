@@ -3,7 +3,7 @@
 	import 'agnostic-svelte/css/common.min.css';
 	import 'chartjs-adapter-date-fns';
 	import '$lib/styles/global.scss';
-	import { Chart } from 'chart.js';
+	import { Chart, registerables } from 'chart.js';
 	import NavigationLoader from '$lib/components/NavigationLoader.svelte';
 	import { setDefaultOptions } from 'date-fns';
 	import { pl } from 'date-fns/locale';
@@ -11,6 +11,8 @@
 
 	Chart.defaults.borderColor = '#545454';
 	Chart.defaults.color = '#FFFFFF';
+
+	Chart.register(...registerables);
 
 	setDefaultOptions({ locale: pl });
 </script>

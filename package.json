@@ -17,9 +17,5 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@prisma/client": "4.15.0-integration-feat-client-esm.27",
-    "prisma": "4.15.0-integration-feat-client-esm.27"
-  }
+  "license": "ISC"
 }
