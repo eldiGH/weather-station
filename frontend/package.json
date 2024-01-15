@@ -25,15 +25,17 @@
 		"@types/http-proxy": "^1.17.14",
 		"@typescript-eslint/eslint-plugin": "^6.17.0",
 		"@typescript-eslint/parser": "^6.17.0",
-		"agnostic-svelte": "^1.1.27",
 		"backend": "workspace:^",
 		"chart.js": "^4.4.1",
 		"chartjs-adapter-date-fns": "^3.0.0",
 		"cookie": "^0.6.0",
 		"date-fns": "^3.0.6",
+		"devalue": "^4.3.2",
+		"dotenv": "^16.3.1",
 		"eslint": "^8.56.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-svelte": "^2.35.1",
+		"jwt-decode": "^4.0.0",
 		"material-icons": "^1.13.12",
 		"overlayscrollbars": "^2.4.6",
 		"overlayscrollbars-svelte": "^0.5.2",
@@ -51,9 +53,6 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"devalue": "^4.3.2",
-		"dotenv": "^16.3.1",
-		"http-proxy": "^1.18.1",
-		"jwt-decode": "^4.0.0"
+		"http-proxy": "^1.18.1"
 	}
 }
