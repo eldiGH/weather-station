@@ -65,12 +65,8 @@
           "tableFrom": "bme68x_data",
           "tableTo": "sensor",
           "schemaTo": "public",
-          "columnsFrom": [
-            "sensor_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["sensor_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -80,9 +76,7 @@
         "bme68x_data_id_unique": {
           "name": "bme68x_data_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       }
     },
@@ -128,12 +122,8 @@
           "tableFrom": "kiosk",
           "tableTo": "user",
           "schemaTo": "public",
-          "columnsFrom": [
-            "owner_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["owner_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -143,16 +133,12 @@
         "kiosk_id_unique": {
           "name": "kiosk_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         },
         "kiosk_kiosk_uuid_unique": {
           "name": "kiosk_kiosk_uuid_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "kiosk_uuid"
-          ]
+          "columns": ["kiosk_uuid"]
         }
       }
     },
@@ -180,12 +166,8 @@
           "tableFrom": "kiosk_to_sensor",
           "tableTo": "kiosk",
           "schemaTo": "public",
-          "columnsFrom": [
-            "kiosk_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["kiosk_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -194,12 +176,8 @@
           "tableFrom": "kiosk_to_sensor",
           "tableTo": "sensor",
           "schemaTo": "public",
-          "columnsFrom": [
-            "sensor_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["sensor_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -207,10 +185,7 @@
       "compositePrimaryKeys": {
         "kiosk_to_sensor_kiosk_id_sensor_id_pk": {
           "name": "kiosk_to_sensor_kiosk_id_sensor_id_pk",
-          "columns": [
-            "kiosk_id",
-            "sensor_id"
-          ]
+          "columns": ["kiosk_id", "sensor_id"]
         }
       },
       "uniqueConstraints": {}
@@ -271,12 +246,8 @@
           "tableFrom": "refresh_token",
           "tableTo": "user",
           "schemaTo": "public",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -286,16 +257,12 @@
         "refresh_token_id_unique": {
           "name": "refresh_token_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         },
         "refresh_token_token_unique": {
           "name": "refresh_token_token_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "token"
-          ]
+          "columns": ["token"]
         }
       }
     },
@@ -348,12 +315,8 @@
           "tableFrom": "sensor",
           "tableTo": "user",
           "schemaTo": "public",
-          "columnsFrom": [
-            "owner_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["owner_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -363,16 +326,12 @@
         "sensor_id_unique": {
           "name": "sensor_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         },
         "sensor_secret_unique": {
           "name": "sensor_secret_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "secret"
-          ]
+          "columns": ["secret"]
         }
       }
     },
@@ -413,9 +372,7 @@
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       }
     }
