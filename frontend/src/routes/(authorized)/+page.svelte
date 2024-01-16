@@ -1,10 +1,7 @@
 <script lang="ts">
-	import Button from '$lib/components/Button.svelte';
 </script>
 
-<div class="root">
-	<Button busy>Test</Button>
-</div>
+<div class="root"></div>
 
 <style lang="scss">
 	.root {
