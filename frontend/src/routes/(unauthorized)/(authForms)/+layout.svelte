@@ -7,7 +7,7 @@
 	// });
 </script>
 
-<Container><div><slot /></div></Container>
+<Container pt={5}><div><slot /></div></Container>
 
 <style lang="scss">
 	div {
