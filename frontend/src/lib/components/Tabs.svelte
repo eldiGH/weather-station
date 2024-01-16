@@ -57,11 +57,18 @@
 		});
 	};
 
+	let moved = false;
 	const moveIndicator = (tabsDiv: HTMLDivElement, toElement: HTMLElement, vertical?: boolean) => {
 		const { width, offset } = calculateIndicatorForDiv(toElement, vertical);
 
 		tabsDiv.style.setProperty('--indicator-width', `${width / 100}`);
 		tabsDiv.style.setProperty('--indicator-offset', `${offset}px`);
+
+		if (!moved) {
+			setTimeout(() => {
+				moved = true;
+			}, 0);
+		}
 	};
 
 	const shouldBeActive = (url: string, tab: Tab, index: number, currentTab: number) => {
@@ -99,7 +106,7 @@
 	}));
 </script>
 
-<div bind:this={tabsDiv} class:vertical class="tabs">
+<div bind:this={tabsDiv} class:vertical class="tabs" class:animate={moved}>
 	<div class:vertical class="tab-items">
 		{#each calculatedTabs as tab, i (tab)}
 			<!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -171,6 +178,9 @@
 
 			transform-origin: left;
 			transform: translateX(var(--indicator-offset)) scaleX(var(--indicator-width));
+		}
+
+		&.animate::after {
 			transition: transform 200ms ease-in-out;
 		}
 
