@@ -60,7 +60,7 @@
 	const moveIndicator = (tabsDiv: HTMLDivElement, toElement: HTMLElement, vertical?: boolean) => {
 		const { width, offset } = calculateIndicatorForDiv(toElement, vertical);
 
-		tabsDiv.style.setProperty('--indicator-width', `${width}`);
+		tabsDiv.style.setProperty('--indicator-width', `${width / 100}`);
 		tabsDiv.style.setProperty('--indicator-offset', `${offset}px`);
 	};
 
@@ -127,6 +127,9 @@
 
 <style lang="scss">
 	.tabs {
+		--indicator-offset: 0;
+		--indicator-width: 0;
+
 		display: flex;
 		border-bottom: 1px solid gray;
 		position: relative;
@@ -163,7 +166,7 @@
 			position: absolute;
 			bottom: 0;
 			height: 2px;
-			width: 1px;
+			width: 100px;
 			background-color: #f39530;
 
 			transform-origin: left;
@@ -179,7 +182,7 @@
 
 			&::after {
 				width: 2px;
-				height: 1px;
+				height: 100px;
 				transform: translateY(var(--indicator-offset)) scaleY(var(--indicator-width));
 				transform-origin: top;
 				top: 0;
