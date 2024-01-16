@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Spinner } from 'agnostic-svelte';
+	import Spinner from './Spinner.svelte';
 
 	export let overlay = false;
 	export let show = false;
@@ -8,7 +8,7 @@
 {#if show}
 	<div class:overlay class="loader-container">
 		<div class="spinner">
-			<Spinner size="xlarge" />
+			<Spinner size={128} thickness={6} />
 		</div>
 	</div>
 {/if}

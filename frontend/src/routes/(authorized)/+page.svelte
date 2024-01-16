@@ -1,9 +1,9 @@
 <script lang="ts">
-	import Button from '$lib/components/Button.svelte';
+	import Input from '$lib/components/Input.svelte';
 </script>
 
 <div class="root">
-	<Button>Test</Button>
+	<Input label="Email" />
 </div>
 
 <style lang="scss">

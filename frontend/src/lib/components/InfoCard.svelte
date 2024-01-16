@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Card } from 'agnostic-svelte';
+	import Card from './Card.svelte';
 	import type { ComponentProps } from 'svelte';
 	import IconInfo from './IconInfo.svelte';
 
@@ -8,7 +8,7 @@
 </script>
 
 <div class="root">
-	<Card isBorder isRounded>
+	<Card class="card">
 		{header}
 		<div class="data-section-container">
 			<div class="data-section">

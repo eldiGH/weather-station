@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Button from '$lib/components/Button.svelte';
+	import Card from '$lib/components/Card.svelte';
+	import Input from '$lib/components/Input.svelte';
 	import Link from '$lib/components/Link.svelte';
 	import { register } from '$lib/helpers/auth';
 	import { createForm } from '$lib/stores/form';
-	import { Card, Input } from 'agnostic-svelte';
 	import { registerInputFormSchema, type RegisterInputForm } from 'backend/schemas';
 	import { ApiErrorCode } from 'backend/types';
 
@@ -28,7 +29,7 @@
 </script>
 
 <form class="root" on:submit={submit(handleSubmit)}>
-	<Card isBorder isRounded isShadow isStacked css="card">
+	<Card class="card">
 		<span>Rejestracja</span>
 		<Input
 			bind:value={$values.email}
@@ -56,8 +57,7 @@
 			name="passwordRepeat"
 			type="password"
 			disabled={$isSubmitting} />
-		<Button isBusy={$isSubmitting} isDisabled={!$isValid} type="submit" mode="primary"
-			>Zarejestruj</Button>
+		<Button busy={$isSubmitting} disabled={!$isValid} type="submit">Zarejestruj</Button>
 		<div>Masz już konto? <Link href="/login">Zaloguj się</Link></div>
 	</Card>
 </form>
@@ -74,6 +74,7 @@
 			padding: 2rem;
 			display: flex;
 			flex-direction: column;
+			align-items: center;
 			gap: 2rem;
 		}
 	}

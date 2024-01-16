@@ -1,6 +1,5 @@
 <script lang="ts">
 	import 'overlayscrollbars/overlayscrollbars.css';
-	import 'agnostic-svelte/css/common.min.css';
 	import 'chartjs-adapter-date-fns';
 	import '$lib/styles/global.scss';
 	import { Chart, registerables } from 'chart.js';

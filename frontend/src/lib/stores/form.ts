@@ -19,16 +19,49 @@ export type FormReturn<
 	handleBlur: (event: FocusEvent) => void;
 };
 
-const getInitialErrors = <T extends Record<string, unknown>>(
-	initialValues: T
-): ChangePropsType<T, string> => {
-	const errors: Record<string, unknown> = {};
-
-	for (const key of Object.keys(initialValues)) {
-		errors[key] = '';
+const parseZodResponse = (
+	response: z.SafeParseReturnType<unknown, unknown>
+):
+	| { success: true; data: Record<string, unknown> }
+	| { success: false; errors: Record<string, unknown> } => {
+	if (response.success) {
+		return { success: true, data: response.data as Record<string, unknown> };
 	}
 
-	return errors as ChangePropsType<T, string>;
+	const schemaErrors = response.error.errors;
+
+	const finalErrors: Record<string, unknown> = {};
+
+	for (const error of schemaErrors) {
+		if (error.path) {
+			finalErrors[error.path[0]] = error.message;
+		}
+	}
+
+	return { success: false, errors: finalErrors };
+};
+
+const getInitialErrors = <T extends Record<string, unknown>>(
+	initialValues: T,
+	schema: Schema | undefined
+): ChangePropsType<T, string> => {
+	const blankErrors: Record<string, unknown> = {};
+
+	for (const key of Object.keys(initialValues)) {
+		blankErrors[key] = '';
+	}
+
+	if (!schema) {
+		return blankErrors as ChangePropsType<T, string>;
+	}
+
+	const response = parseZodResponse(schema.safeParse(initialValues));
+
+	if (response.success) {
+		return blankErrors as ChangePropsType<T, string>;
+	}
+
+	return response.errors as ChangePropsType<T, string>;
 };
 
 const getInitialTouched = <T extends Record<string, unknown>>(
@@ -51,13 +84,13 @@ export const createForm = <
 	schema?: MySchema
 ): FormReturn<T, MySchema> => {
 	const values = writable(initialValues);
-	const errors = writable(getInitialErrors(initialValues));
 	const touched = writable(getInitialTouched(initialValues));
+	const errors = writable(getInitialErrors(initialValues, schema));
 	const isSubmitting = writable(false);
 
-	const hasAnyErrors = () => Object.values(get(errors)).some((error) => !!error);
-
 	const isValid = derived(errors, ($errors) => Object.values($errors).every((error) => !error));
+
+	const hasAnyErrors = () => Object.values(get(errors)).some((error) => !!error);
 
 	const clearErrors = () => {
 		const newErrors = get(errors);
@@ -72,24 +105,14 @@ export const createForm = <
 	const validate = (
 		schema
 			? async () => {
-					const validationResponse = await schema.spa(get(values));
+					const response = parseZodResponse(await schema.spa(get(values)));
 
-					if (validationResponse.success) {
+					if (response.success) {
 						clearErrors();
-						return validationResponse.data;
+						return response.data;
 					}
 
-					const schemaErrors = validationResponse.error.errors;
-
-					const finalErrors: Record<string, unknown> = {};
-
-					for (const error of schemaErrors) {
-						if (error.path) {
-							finalErrors[error.path[0]] = error.message;
-						}
-					}
-
-					errors.set(finalErrors as ChangePropsType<T, string>);
+					errors.set(response.errors as ChangePropsType<T, string>);
 				}
 			: undefined
 	) as MySchema extends Schema ? () => Promise<T> : undefined;
@@ -130,11 +153,11 @@ export const createForm = <
 		});
 	};
 
-	values.subscribe(() => {
-		if (validate) {
+	if (validate) {
+		values.subscribe(() => {
 			validate();
-		}
-	});
+		});
+	}
 
 	return {
 		values,

@@ -2,10 +2,11 @@
 	import Button from '$lib/components/Button.svelte';
 	import Link from '$lib/components/Link.svelte';
 	import { createForm } from '$lib/stores/form';
-	import { Card, Input } from 'agnostic-svelte';
 	import { login } from '$lib/helpers/auth';
 	import { loginInputSchema, type LoginInput } from 'backend/schemas';
 	import { ApiErrorCode } from 'backend/types';
+	import Input from '$lib/components/Input.svelte';
+	import Card from '$lib/components/Card.svelte';
 
 	const { submit, handleBlur, values, errors, isSubmitting, isValid, touched } = createForm(
 		{ email: '', password: '' },
@@ -24,27 +25,24 @@
 </script>
 
 <form class="root" on:submit={submit(handleSubmit)}>
-	<Card isBorder isRounded isShadow isStacked css="card">
+	<Card class="card">
 		<span>Logowanie</span>
 		<Input
 			bind:value={$values.email}
 			on:blur={handleBlur}
-			isInvalid={$touched.email && !!$errors.email}
-			invalidText={$errors.email}
+			error={$touched.email && $errors.email}
 			label="Email"
 			name="email"
 			disabled={$isSubmitting} />
 		<Input
 			bind:value={$values.password}
 			on:blur={handleBlur}
-			isInvalid={$touched.password && !!$errors.password}
-			invalidText={$errors.password}
+			error={$touched.password && $errors.password}
 			label="Hasło"
 			name="password"
 			type="password"
 			disabled={$isSubmitting} />
-		<Button isBusy={$isSubmitting} isDisabled={!$isValid} type="submit" mode="primary"
-			>Zaloguj</Button>
+		<Button busy={$isSubmitting} disabled={!$isValid} type="submit">Zaloguj</Button>
 		<div>Nie masz konta? <Link href="/register">Zarejestruj się</Link></div>
 	</Card>
 </form>
@@ -62,6 +60,7 @@
 			display: flex;
 			flex-direction: column;
 			gap: 2rem;
+			align-items: center;
 		}
 	}
 </style>

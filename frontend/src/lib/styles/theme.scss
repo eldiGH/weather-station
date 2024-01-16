@@ -3,4 +3,15 @@
 $background: colors.$gunmetal-gray;
 $text: colors.$white;
 
-$navbar: colors.$deep-saffron;
+$primary: colors.$deep-saffron;
+
+$error: colors.$coral-red;
+
+$navbar: $primary;
+
+$button-disabled: colors.$davy-gray;
+
+$card-border: colors.$davy-gray;
+
+$input-border: $primary;
+$input-inactive-border: colors.$davy-gray;

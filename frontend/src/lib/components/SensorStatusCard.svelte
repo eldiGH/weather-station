@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Card } from 'agnostic-svelte';
+	import Card from './Card.svelte';
 	import IconInfo from './IconInfo.svelte';
 	import Link from './Link.svelte';
 	import { page } from '$app/stores';
@@ -14,7 +14,7 @@
 
 <Link noColor href={`${$page.url.pathname}/${sensor.id}`}>
 	<div class="root">
-		<Card isBorder isRounded isShadow>
+		<Card>
 			<div class="card-content">
 				<div class="header">
 					<div class="sensor-name">

@@ -7,6 +7,6 @@
 
 <TopBar>
 	<Link slot="left" noColor class="header" href="/">Weather station app</Link>
-	<Button slot="right" on:click={() => logout()} isBlank mode="primary">Wyloguj</Button>
+	<Button slot="right" on:click={() => logout()}>Wyloguj</Button>
 	<slot />
 </TopBar>

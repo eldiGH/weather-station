@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Card } from 'agnostic-svelte';
+	import Card from '../Card.svelte';
 	import IconInfo from '../IconInfo.svelte';
 
 	export let windDirection: number;
@@ -7,7 +7,7 @@
 </script>
 
 <div class="root">
-	<Card css="card" isBorder isRounded>
+	<Card class="card">
 		Wiatr
 		<div class="wind">
 			<svg class="wind-indicator" viewBox="0 0 4 4">
