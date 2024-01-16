@@ -4,13 +4,11 @@
 	import Ripple, { type ShowRippleFn } from './Ripple.svelte';
 
 	interface $$Props extends HTMLButtonAttributes {
-		loading?: boolean;
 		busy?: boolean;
 		ripple?: boolean;
 	}
 
 	export let busy = false;
-	export let loading = false;
 	export let disabled: boolean | null = false;
 	export let ripple = true;
 
@@ -22,10 +20,10 @@
 	class="btn"
 	on:click
 	on:click={ripple ? showRipple : undefined}
-	class:loading={loading || busy}
+	class:busy
 	disabled={busy || disabled}>
 	<span class="content"><slot /></span>
-	{#if loading || busy}
+	{#if busy}
 		<div class="spinner">
 			<Spinner size={32} thickness={2} />
 		</div>
@@ -68,7 +66,7 @@
 			transform: translate(-50%, -50%);
 		}
 
-		.loading {
+		&.busy {
 			.content {
 				visibility: hidden;
 			}
