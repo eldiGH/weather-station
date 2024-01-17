@@ -1,60 +1,63 @@
 <script lang="ts">
-	export let size = 80;
-	export let thickness = size / 10;
+	import { roundToPrecision } from '$lib/helpers/math';
+	import { onMount } from 'svelte';
+
+	export let size = 40;
+	export let thickness = roundToPrecision(size / 11.111, 3);
+	$: radius = roundToPrecision((size - thickness) / 2, 3);
+
+	let circle: SVGCircleElement;
+
+	let totalPathLen = 0;
+
+	onMount(() => {
+		totalPathLen = roundToPrecision(circle.getTotalLength(), 3);
+	});
 </script>
 
-<div style={`--size: ${size}px; --thickness: ${thickness}px;`} class="loader"></div>
+<span style="--size: {size}px; --total-path-len: {totalPathLen}px">
+	<svg viewBox="{size / 2} {size / 2} {size} {size}">
+		<circle
+			bind:this={circle}
+			cx={size}
+			cy={size}
+			r={radius}
+			fill="none"
+			stroke-width={thickness}
+			stroke="#fff" />
+	</svg>
+</span>
 
 <style lang="scss">
-	.loader {
+	span {
 		width: var(--size);
-		aspect-ratio: 1;
-		border: var(--thickness) solid #fff;
-		border-radius: 50%;
+		height: var(--size);
 
-		animation:
-			1.5s linear infinite clipping,
-			1.6s linear infinite rotate;
+		display: inline-block;
+
+		animation: rotate 1.2s linear infinite;
+		circle {
+			stroke-dasharray: calc(var(--total-path-len) * 0.7), var(--total-path-len);
+			stroke-dashoffset: calc(-1 * ((var(--total-path-len) * 0.1) + var(--total-path-len)));
+
+			animation: stroke-len 1.4s ease-in-out infinite;
+		}
 	}
 
-	@keyframes clipping {
-		0%,
-		10% {
-			clip-path: polygon(50% 50%, 100% 50%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%);
+	@keyframes stroke-len {
+		0% {
+			stroke-dasharray: 1px, var(--total-path-len);
+			stroke-dashoffset: 0;
 		}
 
-		21.666% {
-			clip-path: polygon(50% 50%, 100% 50%, 100% 100%, 0 100%, 0 100%, 0 100%, 0 100%);
+		50% {
+			stroke-dasharray: calc(var(--total-path-len) * 0.85), var(--total-path-len);
+			stroke-dashoffset: calc(-1 * (var(--total-path-len) * 0.15));
 		}
 
-		33.333% {
-			clip-path: polygon(50% 50%, 100% 50%, 100% 100%, 0 100%, 0 0%, 0 0%, 0 0%);
-		}
-
-		45%,
-		55% {
-			clip-path: polygon(50% 50%, 100% 50%, 100% 100%, 0 100%, 0 0%, 100% 0, 100% 0);
-		}
-
-		62% {
-			clip-path: polygon(50% 50%, 100% 100%, 100% 100%, 0 100%, 0 0, 100% 0, 100% 25%);
-		}
-
-		69% {
-			clip-path: polygon(50% 50%, 0% 100%, 0 100%, 0 100%, 0 0, 100% 0, 100% 50%);
-		}
-
-		76% {
-			clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 100% 0, 100% 75%);
-		}
-
-		83% {
-			clip-path: polygon(50% 50%, 50% 0, 50% 0, 50% 0, 50% 0, 100% 0, 100% 100%);
-		}
-
-		90%,
 		100% {
-			clip-path: polygon(50% 50%, 100% 50%, 100% 50%, 100% 50%, 100% 50%, 100% 0, 100% 100%);
+			stroke-dasharray: calc(var(--total-path-len) * 0.85), var(--total-path-len);
+			stroke-dashoffset: calc(-1 * var(--total-path-len));
 		}
 	}
 

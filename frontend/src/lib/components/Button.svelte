@@ -25,7 +25,7 @@
 	<span class="content"><slot /></span>
 	{#if busy}
 		<div class="spinner">
-			<Spinner size={32} thickness={2} />
+			<Spinner size={32} />
 		</div>
 	{/if}
 	<Ripple bind:showRipple />
@@ -64,6 +64,9 @@
 			top: 50%;
 			left: 50%;
 			transform: translate(-50%, -50%);
+
+			display: flex;
+			align-items: center;
 		}
 
 		&.busy {

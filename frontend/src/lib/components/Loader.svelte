@@ -3,12 +3,13 @@
 
 	export let overlay = false;
 	export let show = false;
+	export let spinnerSize: number = 128;
 </script>
 
 {#if show}
 	<div class:overlay class="loader-container">
 		<div class="spinner">
-			<Spinner size={128} thickness={6} />
+			<Spinner size={spinnerSize} />
 		</div>
 	</div>
 {/if}
