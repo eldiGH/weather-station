@@ -4,27 +4,37 @@ import { SensorNotFound } from '../errors/SensorNotFound';
 import type { DateRangeQuery } from '../schemas/helpers';
 import { emitNewSensorData } from '../helpers/eventEmitter';
 import type { PostBME68XDataInput } from '../schemas/bme68x';
-import { getSensorBySecret, getSensorWithBme68xData } from '../repositories/sensor';
+import {
+  createSensor,
+  getAllSensorsSecrets,
+  getSensorByName,
+  getSensorBySecret,
+  getSensorWithBme68xData
+} from '../repositories/sensor';
 import { createBme68xDataEntry } from '../repositories/bme68x';
+import { v4 } from 'uuid';
+import { SensorNameAlreadyUsed } from '../errors/SensorNameAlreadyUsed';
+import type { CreateSensorInput } from '../schemas/sensor';
+import type { userSchema } from '../db/drizzle/schema';
 
-// const addNewSensor = async (data: CreateSensorRequest, user: User) => {
-//   const existingSensor = await db.sensor.findFirst({ where: { name: data.name } });
+const addNewSensor = async (data: CreateSensorInput, user: typeof userSchema.$inferSelect) => {
+  const existingSensor = await getSensorByName(data.name);
 
-//   if (existingSensor) {
-//     throw SensorNameAlreadyUsed(data.name);
-//   }
+  if (existingSensor) {
+    throw SensorNameAlreadyUsed(data.name);
+  }
 
-//   let secret: string;
-//   const sensors = await db.sensor.findMany({ select: { secret: true } });
+  let secret: string;
+  const secrets = await getAllSensorsSecrets();
 
-//   do {
-//     secret = v4();
-//   } while (sensors.some((sensor) => sensor.secret === secret));
+  do {
+    secret = v4();
+  } while (secrets.some((usedSecret) => usedSecret === secret));
 
-//   await db.sensor.create({ data: { ...data, secret, ownerId: user.id } });
+  await createSensor({ ...data, secret, ownerId: user.id });
 
-//   return secret;
-// };
+  return secret;
+};
 
 const addBME68XDataEntry = async ({ secret, ...data }: PostBME68XDataInput) => {
   const sensor = await getSensorBySecret(secret);
@@ -65,5 +75,6 @@ const getBME68XData = async (sensorId: number, query: DateRangeQuery) => {
 export const SensorService = {
   addBME68XDataEntry,
   getLatestBME68XDataEntry,
-  getBME68XData
+  getBME68XData,
+  addNewSensor
 };

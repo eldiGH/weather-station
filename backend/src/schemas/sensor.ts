@@ -22,3 +22,10 @@ export const getSensorDataInputSchema = z.object({
 });
 
 export const getSensorDataOutputSchema = z.array(getBME68xDataInputSchema);
+
+export const createSensorInputSchema = z.object({
+  name: z.string().min(3),
+  type: insertSensorSchema.shape.type
+});
+
+export type CreateSensorInput = z.infer<typeof createSensorInputSchema>;
