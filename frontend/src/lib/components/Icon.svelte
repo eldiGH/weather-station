@@ -12,10 +12,15 @@
 	export let weight = 400;
 	export let grade = 0;
 	export let opticalSize = 24;
+
+	export let size: number | undefined = undefined;
 </script>
 
 <i
-	style={`font-variation-settings:'FILL' ${
-		filled ? 1 : 0
-	}, 'wght' ${weight}, 'GRAD' ${grade}, 'opsz' ${opticalSize}`}
+	style="
+	font-variation-settings:'FILL' {filled ? 1 : 0}, 
+	'wght' {weight}, 
+	'GRAD' ${grade}, 
+	'opsz' {opticalSize};
+	font-size: {size ? size + 'px' : 'inherit'}"
 	class={`material-symbols-${variant}`}>{icon}</i>

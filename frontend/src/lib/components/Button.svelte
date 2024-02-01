@@ -6,11 +6,13 @@
 	interface $$Props extends HTMLButtonAttributes {
 		busy?: boolean;
 		ripple?: boolean;
+		style?: string;
 	}
 
 	export let busy = false;
 	export let disabled: boolean | null = false;
 	export let ripple = true;
+	export let style: string = '';
 
 	let showRipple: ShowRippleFn;
 </script>
@@ -18,11 +20,12 @@
 <button
 	{...$$restProps}
 	class="btn"
+	{style}
 	on:click
 	on:click={ripple ? showRipple : undefined}
 	class:busy
 	disabled={busy || disabled}>
-	<span class="content"><slot /></span>
+	<div class="content"><slot /></div>
 	{#if busy}
 		<div class="spinner">
 			<Spinner size={32} />
@@ -65,6 +68,11 @@
 			left: 50%;
 			transform: translate(-50%, -50%);
 
+			display: flex;
+			align-items: center;
+		}
+
+		.content {
 			display: flex;
 			align-items: center;
 		}

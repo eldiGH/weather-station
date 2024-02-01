@@ -24,7 +24,7 @@
 			position: sticky;
 			top: 0;
 			box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-			padding: 0.5rem 1rem;
+			padding: 0.5rem 1rem 0.5rem 0.5rem;
 			display: flex;
 			z-index: 1000;
 

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import 'overlayscrollbars/overlayscrollbars.css';
 	import 'chartjs-adapter-date-fns';
 	import '$lib/styles/global.scss';
 	import { Chart, registerables } from 'chart.js';
