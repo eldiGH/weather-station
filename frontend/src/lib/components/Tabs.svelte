@@ -106,43 +106,53 @@
 	}));
 </script>
 
-<div bind:this={tabsDiv} class:vertical class="tabs" class:animate={moved}>
-	<div class:vertical class="tab-items">
-		{#each calculatedTabs as tab, i (tab)}
-			<!-- svelte-ignore a11y-click-events-have-key-events -->
-			<!-- svelte-ignore a11y-no-static-element-interactions -->
-			{#if navigation && typeof tab.value === 'string' && !tab.active}
-				<Link
-					noColor
-					href={tab.to ?? tab.value}
-					bind:ref={tabItems[i]}
-					class={`tab ${tab.active ? 'active' : ''}`}
-					on:click={() => handleTabChange(i, tab, true)}>{tab.label}</Link>
-			{:else}
-				<div
-					bind:this={tabItems[i]}
-					on:click={() => handleTabChange(i, tab, true)}
-					class="tab"
-					class:active={tab.active}>
-					{tab.label}
-				</div>
-			{/if}
-		{/each}
+<div class="container">
+	<div bind:this={tabsDiv} class:vertical class="tabs" class:animate={moved}>
+		<div class:vertical class="tab-items">
+			{#each calculatedTabs as tab, i (tab)}
+				<!-- svelte-ignore a11y-click-events-have-key-events -->
+				<!-- svelte-ignore a11y-no-static-element-interactions -->
+				{#if navigation && typeof tab.value === 'string' && !tab.active}
+					<Link
+						noColor
+						href={tab.to ?? tab.value}
+						bind:ref={tabItems[i]}
+						class={`tab ${tab.active ? 'active' : ''}`}
+						on:click={() => handleTabChange(i, tab, true)}>{tab.label}</Link>
+				{:else}
+					<div
+						bind:this={tabItems[i]}
+						on:click={() => handleTabChange(i, tab, true)}
+						class="tab"
+						class:active={tab.active}>
+						{tab.label}
+					</div>
+				{/if}
+			{/each}
+		</div>
+		<slot />
 	</div>
-	<slot />
 </div>
 
 <style lang="scss">
+	.container {
+		overflow-x: auto;
+
+		&::-webkit-scrollbar {
+			height: 8px;
+		}
+	}
+
 	.tabs {
 		--indicator-offset: 0;
 		--indicator-width: 0;
 
 		display: flex;
-		border-bottom: 1px solid gray;
 		position: relative;
 		justify-content: space-between;
 		align-items: center;
 		padding-right: 2rem;
+		border-bottom: 1px solid gray;
 
 		.tab-items {
 			display: inline-flex;

@@ -39,7 +39,8 @@
 						borderColor: borderColor ?? '#f39530',
 						backgroundColor: backgroundColor ?? '#f39530',
 						borderDash,
-						yAxisID
+						yAxisID,
+						tension: 0.5
 					})
 				)
 			},

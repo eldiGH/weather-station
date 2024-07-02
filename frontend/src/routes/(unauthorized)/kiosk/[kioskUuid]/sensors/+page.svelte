@@ -13,7 +13,7 @@
 		<div class="header centered">Brak dostępnych czujników</div>
 	{:else}
 		<div class="sensors">
-			{#each sensors as sensor}
+			{#each sensors as sensor (sensor.id)}
 				<SensorStatusCard {sensor} />
 			{/each}
 		</div>

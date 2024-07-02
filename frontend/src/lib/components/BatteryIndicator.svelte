@@ -2,8 +2,11 @@
 	import { getGradient } from '$lib/helpers/colors';
 	import { minMax, roundToPrecision } from '$lib/helpers/math';
 	import { onMount } from 'svelte';
+	import { v4 } from 'uuid';
 
 	export let batteryReading: number;
+
+	const clipId = `clip-${v4()}`;
 
 	const convertReadingToVoltage = (reading: number) => {
 		const conversionFactor = (3.3 / 4096) * 3;
@@ -44,9 +47,9 @@
 
 <svg width="150" viewBox="0 0 100 50">
 	<defs>
-		<clipPath id="clip">
+		<clipPath id={clipId}>
 			<rect
-				id="clip-rect"
+				class="clip-rect"
 				transform={`scale(${batteryPercentage}, 1)`}
 				x="10"
 				y="10"
@@ -65,7 +68,7 @@
 		stroke="transparent"
 		class="filling"
 		rx="5"
-		clip-path="url(#clip)" />
+		clip-path={`url(#${clipId})`} />
 	<rect x="10" y="10" width="80" height="30" fill="transparent" stroke="white" rx="5" />
 	<rect x="90" y="20" width="5" height="10" fill="transparent" stroke="white" />
 	<text text-anchor="middle" transform="translate(0 8)" stroke-width="1" fill="white" x="50" y="25"
@@ -81,7 +84,7 @@
 		stroke: rgba(0, 0, 0, 0.4);
 	}
 
-	#clip-rect {
+	.clip-rect {
 		transition: transform $animationTime $animationTimingFunc;
 		transform-origin: 9.99px 25px;
 	}

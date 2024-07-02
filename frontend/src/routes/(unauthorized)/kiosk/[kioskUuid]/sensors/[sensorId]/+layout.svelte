@@ -17,7 +17,7 @@
 
 	const tabs: Tab[] = [
 		{ label: 'Szczegóły', value: urls[0], exactRoute: true },
-		{ label: 'Wykresy', value: urls[1], exactRoute: true }
+		{ label: '24h', value: urls[1], exactRoute: true }
 	];
 </script>
 
