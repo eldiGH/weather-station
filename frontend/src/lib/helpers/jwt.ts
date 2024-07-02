@@ -10,10 +10,14 @@ export interface IsValidOptions {
 const decode = (token: string) => jwtDecode(token) as Jwt;
 
 const isValid = (token: string, options?: IsValidOptions): Jwt | undefined => {
-	const decodedToken = decode(token);
+	try {
+		const decodedToken = decode(token);
 
-	if (isBefore(new Date(), fromUnixTime(decodedToken.exp - (options?.advanceTime ?? 0)))) {
-		return decodedToken;
+		if (isBefore(new Date(), fromUnixTime(decodedToken.exp - (options?.advanceTime ?? 0)))) {
+			return decodedToken;
+		}
+	} catch (error) {
+		console.error(error);
 	}
 };
 

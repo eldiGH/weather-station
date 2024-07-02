@@ -55,7 +55,7 @@
 			font-size: 2rem;
 		}
 
-		:global(.card) {
+		& :global(.card) {
 			padding: 2rem;
 			display: flex;
 			flex-direction: column;
