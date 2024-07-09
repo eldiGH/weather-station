@@ -1,31 +1,12 @@
 <script lang="ts">
+	import { MAX_TEMPERATURE, MIN_TEMPERATURE } from '$lib/constants/ambient';
+	import { HUM_GRADIENT, TEMP_GRADIENT } from '$lib/constants/gradients';
 	import { getGradient } from '$lib/helpers/colors';
 	import IconInfo from './IconInfo.svelte';
 	import SvgCircleProgressBar from './SvgCircleProgressBar.svelte';
 
 	export let temperature: number;
 	export let humidity: number;
-
-	const minTemperature = -15;
-	const idealTemperature = 23;
-	const maxTemperature = 40;
-
-	const tempGradient = getGradient([
-		{ value: 5, color: '#3b41ff' },
-		{ value: 15, color: '#5293fa' },
-		{ value: idealTemperature, color: '#0ac947' },
-		{ value: 31, color: '#fff700' },
-		{ value: 35, color: '#ff7a21' },
-		{ value: maxTemperature, color: '#ff2424' }
-	]);
-
-	const humGradient = getGradient([
-		{ value: 0, color: '#ff2424' },
-		{ value: 35, color: '#fff700' },
-		{ value: 50, color: '#0ac947' },
-		{ value: 65, color: '#fff700' },
-		{ value: 100, color: '#ff2424' }
-	]);
 
 	const radius = 120;
 	const width = 10;
@@ -38,8 +19,6 @@
 
 	$: svgWidth = radius * 2 + width * 2;
 	$: svgHeight = radius * 2 + width * 2;
-
-	$: centerPoint = { x: svgWidth / 2, y: svgHeight / 2 };
 
 	const formatTemperature = (temperature: number) => {
 		const roundedTemp = Math.round(temperature * 10) / 10;
@@ -70,12 +49,11 @@
 		<SvgCircleProgressBar
 			angle={tempAngle}
 			fromAngle={tempFromAngle}
-			min={minTemperature}
-			max={maxTemperature}
+			min={MIN_TEMPERATURE}
+			max={MAX_TEMPERATURE}
 			value={temperature}
-			gradient={tempGradient}
+			gradient={TEMP_GRADIENT}
 			{radius}
-			{centerPoint}
 			{width} />
 		<SvgCircleProgressBar
 			angle={humAngle}
@@ -83,9 +61,8 @@
 			min={0}
 			max={100}
 			value={humidity}
-			gradient={humGradient}
+			gradient={HUM_GRADIENT}
 			{radius}
-			{centerPoint}
 			{width} />
 	</svg>
 	<div class="temperature-text">

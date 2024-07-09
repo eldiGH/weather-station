@@ -17,33 +17,35 @@
 
 <div class="root">
 	<table>
-		{#each daysOrHours as dayOrHour, i}
-			<tr on:click={() => goto(`${baseUrl}/${i}`)}>
-				{#if isDaily}
-					<td>{i === 0 ? 'Dzisiaj' : capitalize(format(fromUnixTime(dayOrHour.dt), 'EEEE'))}</td>
-				{:else}
-					<td>{format(fromUnixTime(dayOrHour.dt), 'HH:mm')}</td>
-				{/if}
-				<td><IconInfo icon="humidity_high">{Math.round(dayOrHour.pop * 100)}%</IconInfo></td>
-				<td>
-					{#if dayOrHour.weather[0]}
-						<div class="weather-description">
-							<img
-								alt={dayOrHour.weather[0].description}
-								src={getWeatherIcon(dayOrHour.weather[0].icon)} />{capitalize(
-								dayOrHour.weather[0].description
-							)}
-						</div>
+		<tbody>
+			{#each daysOrHours as dayOrHour, i}
+				<tr on:click={() => goto(`${baseUrl}/${i}`)}>
+					{#if isDaily}
+						<td>{i === 0 ? 'Dzisiaj' : capitalize(format(fromUnixTime(dayOrHour.dt), 'EEEE'))}</td>
+					{:else}
+						<td>{format(fromUnixTime(dayOrHour.dt), 'HH:mm')}</td>
 					{/if}
-				</td>
-				{#if typeof dayOrHour.temp !== 'number'}
-					<td>{formatTemperature(dayOrHour.temp.max)}</td>
-					<td class="min-temperature">{formatTemperature(dayOrHour.temp.min)}</td>
-				{:else}
-					<td>{formatTemperature(dayOrHour.temp)}</td>
-				{/if}
-			</tr>
-		{/each}
+					<td><IconInfo icon="humidity_high">{Math.round(dayOrHour.pop * 100)}%</IconInfo></td>
+					<td>
+						{#if dayOrHour.weather[0]}
+							<div class="weather-description">
+								<img
+									alt={dayOrHour.weather[0].description}
+									src={getWeatherIcon(dayOrHour.weather[0].icon)} />{capitalize(
+									dayOrHour.weather[0].description
+								)}
+							</div>
+						{/if}
+					</td>
+					{#if typeof dayOrHour.temp !== 'number'}
+						<td>{formatTemperature(dayOrHour.temp.max)}</td>
+						<td class="min-temperature">{formatTemperature(dayOrHour.temp.min)}</td>
+					{:else}
+						<td>{formatTemperature(dayOrHour.temp)}</td>
+					{/if}
+				</tr>
+			{/each}
+		</tbody>
 	</table>
 </div>
 

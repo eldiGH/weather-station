@@ -5,38 +5,66 @@
 	import type { Point } from 'chart.js';
 	import { onMount } from 'svelte';
 
-	export let min: number;
-	export let max: number;
-	export let value: number;
+	interface Props {
+		min: number;
+		max: number;
 
-	export let color: string | undefined = undefined;
-	export let gradient: Gradient | undefined = undefined;
+		value: number;
+		fromValue?: number;
 
-	export let centerPoint: Point;
-	export let angle: number;
-	export let fromAngle: number;
+		color?: string;
+		gradient?: Gradient;
 
-	export let width: number;
-	export let radius: number;
+		centerPoint?: Point;
+		angle: number;
+		fromAngle: number;
+
+		width: number;
+		radius: number;
+	}
+
+	let {
+		min,
+		max,
+		value,
+		fromValue,
+		color,
+		gradient,
+		centerPoint,
+		angle,
+		fromAngle,
+		width,
+		radius
+	}: Props = $props();
 
 	let backgroundPathRef: SVGPathElement;
 
-	let totalLength = 0;
+	let totalLength = $state(0);
 	onMount(() => {
 		totalLength = backgroundPathRef.getTotalLength();
 	});
 
-	$: percentage = (minMax(value, min, max) - min) / (max - min);
-	let dashArray = [0, 99999999];
+	let percentage = $derived((minMax(value, min, max) - min) / (max - min));
 
-	$: {
+	let hasValueFrom = $derived(fromValue !== undefined);
+	let percentageFrom = $derived.by(() => {
+		if (fromValue !== undefined) {
+			return (minMax(fromValue, min, max) - min) / (max - min);
+		}
+
+		return 0;
+	});
+
+	let dashArray = $derived.by(() => {
 		if (totalLength > 0) {
-			const dashLength = percentage * totalLength;
+			const dashLength = (hasValueFrom ? percentage - percentageFrom : percentage) * totalLength;
 			const gapLength = totalLength - dashLength + 1;
 
-			dashArray = [dashLength, gapLength];
+			return [dashLength, gapLength];
 		}
-	}
+
+		return [0, 99999999];
+	});
 
 	const getRotationAngleOfCircleIndicator = (
 		totalLength: number,
@@ -52,24 +80,44 @@
 		return -rotationAngle;
 	};
 
-	$: arc = getArcOfCircle(centerPoint, radius, fromAngle, angle);
-	$: circleIndicatorAngle = getRotationAngleOfCircleIndicator(totalLength, percentage, angle);
+	let cp = $derived.by(() => {
+		if (centerPoint) {
+			return centerPoint;
+		}
 
-	let finalColor: string;
+		const svgWidth = radius * 2 + width * 2;
+		const svgHeight = radius + width * 2;
 
-	$: {
+		return { x: svgWidth / 2, y: svgHeight - width };
+	});
+
+	let arc = $derived(getArcOfCircle(cp, radius, fromAngle, angle));
+	let circleIndicatorAngle = $derived(
+		getRotationAngleOfCircleIndicator(totalLength, percentage, angle)
+	);
+	let circleIndicatorFromAngle = $derived(
+		hasValueFrom ? getRotationAngleOfCircleIndicator(totalLength, percentageFrom, angle) : 0
+	);
+
+	let dashoffset = $derived(hasValueFrom ? totalLength * percentageFrom : 0);
+
+	$inspect(circleIndicatorAngle, circleIndicatorFromAngle);
+
+	let finalColor = $derived.by(() => {
 		if (color) {
-			finalColor = color;
+			return color;
 		} else if (gradient) {
 			if (totalLength <= 0) {
-				finalColor = gradient.getColor(0);
-			} else {
-				finalColor = gradient.calculate(value);
+				return gradient.getColor(0);
 			}
-		} else {
-			finalColor = '#FFFFFF';
+
+			if (fromValue !== undefined) {
+				return gradient.calculate((fromValue + value) / 2);
+			}
+			return gradient.calculate(value);
 		}
-	}
+		return '#FFFFFF';
+	});
 </script>
 
 <g>
@@ -88,9 +136,10 @@
 		fill="transparent"
 		stroke-linecap="round"
 		class="indicator"
-		stroke-dasharray={`${dashArray.join(' ')}`} />
+		stroke-dasharray={`${dashArray.join(' ')}`}
+		stroke-dashoffset={-dashoffset} />
 	<circle
-		style={`transform-origin: ${centerPoint.x}px ${centerPoint.y}px`}
+		style={`transform-origin: ${cp.x}px ${cp.y}px`}
 		cx={arc.startPoint.x}
 		cy={arc.startPoint.y}
 		r={width}
@@ -98,6 +147,17 @@
 		stroke="transparent"
 		transform={`rotate(${circleIndicatorAngle})`}
 		class="indicator__ball" />
+	{#if hasValueFrom}
+		<circle
+			style={`transform-origin: ${cp.x}px ${cp.y}px`}
+			cx={arc.startPoint.x}
+			cy={arc.startPoint.y}
+			r={width}
+			fill={finalColor}
+			stroke="transparent"
+			transform={`rotate(${circleIndicatorFromAngle})`}
+			class="indicator__ball" />
+	{/if}
 </g>
 
 <style lang="scss">
@@ -109,7 +169,7 @@
 
 		transition-duration: $animationTime;
 		transition-timing-function: $animationTimingFunc;
-		transition-property: stroke, stroke-dasharray;
+		transition-property: stroke, stroke-dasharray, stroke-dashoffset;
 
 		&__background {
 			filter: drop-shadow(1px 1px 1px 1px rgb(0 0 0 / 0.4));

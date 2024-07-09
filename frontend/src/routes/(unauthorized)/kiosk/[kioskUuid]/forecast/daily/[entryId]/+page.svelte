@@ -13,7 +13,7 @@
 			<Icon weight={200} opticalSize={48} icon="arrow_back" />
 		</button>
 		<div class="label">{format(fromUnixTime(data.currentDay.dt), 'EEEE dd.MM')}</div>
-		<div />
+		<div></div>
 	</div>
 	<div class="scroll-panel-container">
 		<DailyWeatherStatus data={data.currentDay} />

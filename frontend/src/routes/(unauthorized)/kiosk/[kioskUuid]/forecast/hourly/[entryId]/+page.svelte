@@ -13,7 +13,7 @@
 			<Icon weight={200} opticalSize={48} icon="arrow_back" />
 		</button>
 		<div class="label">{format(fromUnixTime(data.currentHour.dt), 'HH:mm')}</div>
-		<div />
+		<div></div>
 	</div>
 	<div class="scroll-panel-container">
 		<HourlyWeatherStatus data={data.currentHour} />
