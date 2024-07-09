@@ -1,6 +1,5 @@
 <script lang="ts">
 	import ChartTabs from '$lib/components/ChartTabs.svelte';
-	import RangeSlider from 'svelte-range-slider-pips';
 	import IconInfo from '$lib/components/IconInfo.svelte';
 	import type { PageData } from './$types';
 
