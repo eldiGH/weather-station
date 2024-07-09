@@ -8,6 +8,7 @@
 	import MinMaxProgressBar from './MinMaxCard.svelte';
 	import { MAX_TEMPERATURE, MIN_TEMPERATURE } from '$lib/constants/ambient';
 	import MinMaxCard from './MinMaxCard.svelte';
+	import IconInfo from './IconInfo.svelte';
 
 	type DataType = AppRouterOutputs['kiosk']['getKioskSensorDetails']['bme68xData'];
 	interface SummaryReadingsResult {
@@ -91,9 +92,9 @@
 </script>
 
 <div class="container">
-	<MinMaxCard label="Temperatura" readingResult={temperature} />
-	<MinMaxCard label="Wilgotność" readingResult={humidity} />
-	<MinMaxCard label="Ciśnienie" readingResult={pressure} />
+	<MinMaxCard label="Temperatura" icon="device_thermostat" readingResult={temperature} />
+	<MinMaxCard label="Wilgotność" icon="humidity_high" readingResult={humidity} />
+	<MinMaxCard label="Ciśnienie" icon="compress" readingResult={pressure} />
 </div>
 
 <style lang="scss">

@@ -1,6 +1,8 @@
 <script lang="ts">
+	import type { Snippet } from 'svelte';
 	import Card from './Card.svelte';
 	import IconInfo from './IconInfo.svelte';
+	import type { IconType } from '$lib/types/IconType';
 
 	interface FormattedResult {
 		value: string;
@@ -15,16 +17,19 @@
 	interface Props {
 		readingResult: FormattedMinMaxResult;
 		label?: string;
+		icon?: IconType;
 	}
 
-	let { readingResult, label }: Props = $props();
+	let { readingResult, label, icon }: Props = $props();
 </script>
 
 <Card class="minmax-card">
 	<div class="container">
-		<div class="label">
-			<IconInfo icon="device_thermostat">{label}</IconInfo>
-		</div>
+		{#if icon}
+			<div class="label">
+				<IconInfo {icon}>{label}</IconInfo>
+			</div>
+		{/if}
 		<div class="minmax-container">
 			<div class="minmax">
 				Min
