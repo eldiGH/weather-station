@@ -20,7 +20,8 @@
 <slot />
 
 <style lang="scss">
-	@use 'theme' as t;
+	@use '@theme' as t;
+
 	:root {
 		@include t.add-theme('weather-station');
 	}

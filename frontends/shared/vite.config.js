@@ -1,6 +1,7 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vitest/config';
 import config from './config.json' with { type: 'json' };
+import { resolve } from 'path';
 
 export const viteConfig = defineConfig({
 	plugins: [sveltekit()],
@@ -27,5 +28,5 @@ export const viteConfig = defineConfig({
 			}
 		}
 	},
-	resolve: { alias: { themes: 'frontend.shared/styles/themes.scss' } }
+	resolve: { alias: { '@theme': resolve(import.meta.dirname, 'styles/themes.scss') } }
 });
