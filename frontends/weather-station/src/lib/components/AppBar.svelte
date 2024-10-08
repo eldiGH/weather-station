@@ -1,5 +1,5 @@
 <script>
-	import { logout } from '$lib/helpers/auth';
+	import { logout } from 'frontend.shared/helpers/auth';
 	import { sidebarStore } from '$lib/stores/sidebar';
 	import Button from './Button.svelte';
 	import IconButton from './IconButton.svelte';

@@ -1,4 +1,4 @@
-import type { Jwt } from '$lib/types/Jwt';
+import type { Jwt } from '../types/Jwt';
 import { fromUnixTime, isBefore } from 'date-fns';
 import { jwtDecode } from 'jwt-decode';
 

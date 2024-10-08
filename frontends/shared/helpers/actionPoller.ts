@@ -1,6 +1,6 @@
 import { browser } from '$app/environment';
 import { invalidate } from '$app/navigation';
-import { throttle } from '$lib/helpers/throttle';
+import { throttle } from '../helpers/throttle';
 import { differenceInMilliseconds } from 'date-fns';
 
 const ACTIVITY_TIMEOUT_MS = 8 * 60 * 1000;

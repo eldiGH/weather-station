@@ -3,7 +3,7 @@
 	import Tabs, { type Tab } from '$lib/components/Tabs.svelte';
 	import { onDestroy } from 'svelte';
 	import type { LayoutData } from './$types';
-	import { subscribeAction } from '$lib/components/ActionPoller.svelte';
+	import { subscribeAction } from 'frontend.shared/components/ActionPoller';
 
 	export let data: LayoutData;
 

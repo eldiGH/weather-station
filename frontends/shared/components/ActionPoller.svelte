@@ -5,7 +5,7 @@
 </script>
 
 <script lang="ts">
-	import { createActionPoller } from '$lib/helpers/actionPoller';
+	import { createActionPoller } from '../helpers/actionPoller';
 	import { onDestroy, onMount } from 'svelte';
 
 	onMount(() => {

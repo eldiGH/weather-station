@@ -21,23 +21,43 @@
       "type": "node"
     },
     {
-      "name": "SSR",
+      "name": "SSR:weather-station",
       "request": "launch",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["fe:dev"],
+      "runtimeArgs": ["fe:weather-station:dev"],
       "skipFiles": ["<node_internals>/**"],
-      "type": "node"
+      "type": "node",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "SSR:time-sheet",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["fe:time-sheet:dev"],
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node",
+      "console": "integratedTerminal"
     }
   ],
   "compounds": [
     {
-      "name": "Fullstack",
-      "configurations": ["Backend", "SSR", "Frontend"],
+      "name": "Fullstack (weather-station)",
+      "configurations": ["Backend", "SSR:weather-station", "Frontend"],
       "stopAll": true
     },
     {
-      "name": "SSR+Frontend",
-      "configurations": ["SSR", "Frontend"],
+      "name": "SSR+Frontend (weather-station)",
+      "configurations": ["SSR:weather-station", "Frontend"],
+      "stopAll": true
+    },
+    {
+      "name": "Fullstack (time-sheet)",
+      "configurations": ["Backend", "SSR:time-sheet", "Frontend"],
+      "stopAll": true
+    },
+    {
+      "name": "SSR+Frontend (time-sheet)",
+      "configurations": ["SSR:time-sheet", "Frontend"],
       "stopAll": true
     }
   ]

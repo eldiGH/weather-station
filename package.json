@@ -6,10 +6,14 @@
     "be:dev": "pnpm --filter=backend dev",
     "be:build": "pnpm --filter=backend build",
     "be:start": "pnpm --filter=backend start",
-    "fe:dev": "pnpm --filter=frontend dev",
-    "fe:build": "pnpm --filter=frontend build",
-    "fe:start": "pnpm --filter=frontend start",
-    "build-all": "pnpm --filter=* build"
+    "fe:weather-station:dev": "pnpm --filter=frontend.weather-station dev",
+    "fe:weather-station:build": "pnpm --filter=frontend.weather-station build",
+    "fe:weather-station:start": "pnpm --filter=frontend.weather-station start",
+    "fe:time-sheet:dev": "pnpm --filter=frontend.time-sheet dev",
+    "fe:time-sheet:build": "pnpm --filter=frontend.time-sheet build",
+    "fe:time-sheet:start": "pnpm --filter=frontend.time-sheet start",
+    "build-all": "pnpm --filter=* build",
+    "format": "pnpm --filter=* format"
   },
   "keywords": [],
   "author": "",

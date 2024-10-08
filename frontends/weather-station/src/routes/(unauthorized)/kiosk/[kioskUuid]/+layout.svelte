@@ -4,7 +4,7 @@
 	import Tabs, { type Tab } from '$lib/components/Tabs.svelte';
 	import Clock from '$lib/components/Clock.svelte';
 	import { onDestroy } from 'svelte';
-	import { registerActivityChangeHandler } from '$lib/components/ActionPoller.svelte';
+	import { registerActivityChangeHandler } from 'frontend.shared/components/ActionPoller';
 
 	const baseUrl = `/kiosk/${$page.params.kioskUuid}`;
 	const sensorsUrl = `${baseUrl}/sensors`;

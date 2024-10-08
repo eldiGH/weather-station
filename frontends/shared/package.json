@@ -14,7 +14,8 @@
 		"./server.js": "./server.js",
 		"./eslint.config.js": "./eslint.config.js",
 		"./components/*": "./components/*.svelte",
-		"./helpers/*": "./helpers/*.ts"
+		"./helpers/*": "./helpers/*.ts",
+		"./api/*": "./api/*.ts"
 	},
 	"dependencies": {
 		"http-proxy": "^1.18.1"
@@ -23,16 +24,25 @@
 		"@sveltejs/adapter-node": "^5.2.5",
 		"@sveltejs/kit": "^2.6.3",
 		"@sveltejs/vite-plugin-svelte": "^4.0.0-next.6",
+		"@trpc/client": "^10.45.2",
+		"@types/cookie": "^0.6.0",
 		"@types/http-proxy": "^1.17.15",
 		"@types/node": "^22.7.5",
+		"@types/url-join": "^4.0.3",
+		"backend": "workspace:^",
+		"cookie": "^0.7.2",
+		"date-fns": "^4.1.0",
+		"devalue": "^5.1.1",
 		"eslint": "^9.12.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-svelte": "^2.44.1",
 		"globals": "^15.10.0",
+		"jwt-decode": "^4.0.0",
 		"prettier": "^3.3.3",
 		"prettier-plugin-svelte": "^3.2.7",
 		"svelte": "^5.0.0-next.262",
 		"typescript-eslint": "^8.8.1",
+		"url-join": "^5.0.0",
 		"vitest": "^2.1.2"
 	}
 }

@@ -1,5 +1,5 @@
 import type { PageLoad } from './$types';
-import { trpc } from '$lib/api/trpc';
+import { trpc } from '../../../../shared/api/trpc';
 
 type FetchType = (input: RequestInfo | URL, init?: RequestInit | undefined) => Promise<Response>;
 

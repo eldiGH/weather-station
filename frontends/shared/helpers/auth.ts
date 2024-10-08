@@ -1,7 +1,7 @@
 import cookie from 'cookie';
 import { fromUnixTime } from 'date-fns';
 import { goto } from '$app/navigation';
-import { handleTRCPErrors, trpc } from '$lib/api/trpc';
+import { handleTRCPErrors, trpc } from '../api/trpc';
 import type { LoginInput, RegisterInput } from 'backend/schemas';
 import type { ApiError } from 'backend/types';
 
@@ -62,4 +62,10 @@ export const logout = async (): Promise<void> => {
 	document.cookie = cookie.serialize('accessToken', '', { expires: unixTime });
 
 	goto('/login');
+};
+
+export const isLoggedIn = () => {
+	const { accessToken } = cookie.parse(document.cookie);
+
+	return Boolean(accessToken);
 };

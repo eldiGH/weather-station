@@ -4,7 +4,7 @@
 	import Card from '$lib/components/Card.svelte';
 	import Input from '$lib/components/Input.svelte';
 	import Link from '$lib/components/Link.svelte';
-	import { register } from '$lib/helpers/auth';
+	import { register } from 'frontend.shared/helpers/auth';
 	import { createForm } from '$lib/stores/form';
 	import { registerInputFormSchema, type RegisterInputForm } from 'backend/schemas';
 	import { ApiErrorCode } from 'backend/types';

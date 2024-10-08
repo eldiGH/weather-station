@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
 	import cookie from 'cookie';
-	import { logout, refresh } from '$lib/helpers/auth';
+	import { logout, refresh } from '../helpers/auth';
 	import { fromUnixTime } from 'date-fns';
-	import { ACCESS_TOKEN_ADVANCE_TIME } from '$lib/constants';
+	import { ACCESS_TOKEN_ADVANCE_TIME } from '../constants';
 	import { browser } from '$app/environment';
 	import { subscribeAction } from './ActionPoller.svelte';
-	import { jwt } from '$lib/helpers/jwt';
+	import { jwt } from 'frontend.shared/helpers/jwt';
 
 	const getExpirationDateOfAccessToken = () => {
 		if (!browser) {

@@ -1,4 +1,4 @@
-import { trpc } from '$lib/api/trpc';
+import { trpc } from 'frontend.shared/api/trpc';
 import { writable } from 'svelte/store';
 import type { LayoutLoad } from './$types';
 

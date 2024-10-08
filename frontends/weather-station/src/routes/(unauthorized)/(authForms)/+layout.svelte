@@ -1,10 +1,14 @@
 <script>
+	import { goto } from '$app/navigation';
 	import Container from '$lib/components/Container.svelte';
+	import { isLoggedIn } from 'frontend.shared/helpers/auth';
+	import { onMount } from 'svelte';
 
-	// TODO: Add redirection for client-side, when accessing /login or /register routes while logged in
-	// onMount(() => {
-	// 	goto('/', { replaceState: true });
-	// });
+	onMount(() => {
+		if (isLoggedIn()) {
+			goto('/', { replaceState: true });
+		}
+	});
 </script>
 
 <Container pt={5}><div><slot /></div></Container>

@@ -2,7 +2,7 @@
 	import Button from '$lib/components/Button.svelte';
 	import Link from '$lib/components/Link.svelte';
 	import { createForm } from '$lib/stores/form';
-	import { login } from '$lib/helpers/auth';
+	import { login } from 'frontend.shared/helpers/auth';
 	import { loginInputSchema, type LoginInput } from 'backend/schemas';
 	import { ApiErrorCode } from 'backend/types';
 	import Input from '$lib/components/Input.svelte';

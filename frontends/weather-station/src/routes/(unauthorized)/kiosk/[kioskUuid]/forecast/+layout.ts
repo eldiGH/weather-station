@@ -1,4 +1,4 @@
-import { trpc } from '$lib/api/trpc';
+import { trpc } from '../../../../../../../shared/api/trpc';
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = ({ fetch, params, depends }) => {

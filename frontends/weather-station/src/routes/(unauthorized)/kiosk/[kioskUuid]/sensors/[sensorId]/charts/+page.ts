@@ -1,4 +1,4 @@
-import { trpc } from '$lib/api/trpc';
+import { trpc } from '../../../../../../../../../shared/api/trpc';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch, parent, params }) => {
