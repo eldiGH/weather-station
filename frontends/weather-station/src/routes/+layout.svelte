@@ -6,6 +6,7 @@
 	import { pl } from 'date-fns/locale';
 	import ActionPoller from 'frontend.shared/components/ActionPoller';
 	import NavigationLoader from 'frontend.shared/components/NavigationLoader';
+	import { browser } from '$app/environment';
 
 	Chart.defaults.borderColor = '#545454';
 	Chart.defaults.color = '#FFFFFF';
@@ -15,8 +16,11 @@
 	setDefaultOptions({ locale: pl });
 </script>
 
+{#if browser}
+	<NavigationLoader />
+{/if}
+
 <ActionPoller />
-<NavigationLoader />
 <slot />
 
 <style lang="scss">
