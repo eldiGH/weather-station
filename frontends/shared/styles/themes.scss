@@ -1,0 +1,49 @@
+@use 'sass:map';
+@use './colors.scss';
+
+$themes: (
+	weather-station: (
+		background-color: colors.$gunmetal-gray,
+		text-color: colors.$white,
+		primary-color: colors.$deep-saffron,
+
+		error: colors.$coral-red,
+
+		navbar: var(--primary-color),
+		button-disabled: colors.$davy-gray,
+
+		card-border: colors.$outer-space,
+
+		input-border: var(--primary-color),
+		input-inactive-border: colors.$davy-gray,
+
+		sidebar-color: colors.$dirt,
+
+		top-bar-background: var(--primary-color)
+	),
+	time-sheet: (
+		background-color: colors.$gunmetal-gray,
+		text-color: colors.$white,
+		primary: colors.$deep-saffron,
+
+		error: colors.$coral-red,
+
+		navbar: var(--primary-color),
+		button-disabled: colors.$davy-gray,
+
+		card-border: colors.$outer-space,
+
+		input-border: var(--primary-color),
+		input-inactive-border: colors.$davy-gray,
+
+		sidebar-color: colors.$dirt,
+
+		top-bar-background: var(--primary-color)
+	)
+);
+
+@mixin add-theme($theme-name) {
+	@each $variable-name, $value in map-get($themes, $theme-name) {
+		--#{$variable-name}: #{$value};
+	}
+}

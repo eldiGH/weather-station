@@ -15,7 +15,8 @@
 		"./eslint.config.js": "./eslint.config.js",
 		"./components/*": "./components/*.svelte",
 		"./helpers/*": "./helpers/*.ts",
-		"./api/*": "./api/*.ts"
+		"./api/*": "./api/*.ts",
+		"./styles/*": "./styles/*"
 	},
 	"dependencies": {
 		"http-proxy": "^1.18.1"

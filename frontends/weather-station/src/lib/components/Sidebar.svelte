@@ -40,7 +40,6 @@
 </div>
 
 <style lang="scss">
-	@use '../styles/theme.scss' as theme;
 	$topbarHeight: 64px;
 	$animation: 200ms ease-in-out;
 	$closedWidth: 64px;
@@ -50,7 +49,7 @@
 		display: flex;
 
 		.sidebar {
-			background-color: theme.$sidebar-color;
+			background-color: var(--sidebar-color);
 			z-index: 2000;
 
 			width: $closedWidth;
@@ -82,7 +81,7 @@
 				}
 
 				:global(.btn) {
-					background-color: theme.$sidebar-color;
+					background-color: var(--sidebar-color);
 				}
 			}
 		}

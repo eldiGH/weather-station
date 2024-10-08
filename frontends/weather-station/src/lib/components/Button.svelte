@@ -35,10 +35,8 @@
 </button>
 
 <style lang="scss">
-	@use '../styles/theme.scss' as theme;
-
 	.btn {
-		background-color: theme.$primary;
+		background-color: var(--primary-color);
 		border: none;
 		color: white;
 		padding: 0.5em 1em;
@@ -55,7 +53,7 @@
 
 		&:disabled {
 			cursor: not-allowed;
-			background-color: theme.$button-disabled;
+			background-color: var(--button-disabled);
 
 			&:hover {
 				filter: none;

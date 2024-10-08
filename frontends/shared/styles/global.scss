@@ -1,6 +1,5 @@
 @use './font-roboto.scss';
 @use './font-material-icons.scss';
-@use './theme.scss';
 
 * {
 	box-sizing: border-box;
@@ -9,13 +8,14 @@
 body {
 	padding: 0;
 	margin: 0;
-	background-color: theme.$background;
-	color: theme.$text;
 	font-family: Roboto;
 
 	width: 100vw;
 	min-height: 100vh;
 	overflow-x: hidden;
+
+	color: var(--text-color);
+	background-color: var(--background-color);
 }
 
 * {

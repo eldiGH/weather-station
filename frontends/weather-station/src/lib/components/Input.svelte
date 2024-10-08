@@ -20,15 +20,13 @@
 </div>
 
 <style lang="scss">
-	@use '../styles/theme.scss' as theme;
-
 	$animationOpts: 150ms ease-in-out;
 	$raisedTransform: translateY(-1.8rem) scale(0.75);
 
 	.input {
 		background-color: transparent !important;
 		border: none;
-		border-bottom: 1px solid theme.$input-inactive-border;
+		border-bottom: 1px solid var(--input-inactive-border);
 		color: white;
 		padding: 0.5rem 0.5rem;
 		transition: border-color $animationOpts;
@@ -36,10 +34,10 @@
 
 		&:focus {
 			outline: none;
-			border-color: theme.$input-border;
+			border-color: var(--input-border);
 
 			+ label {
-				color: theme.$input-border;
+				color: var(--input-border);
 				transform: $raisedTransform;
 			}
 		}
@@ -57,7 +55,7 @@
 				color $animationOpts,
 				transform $animationOpts;
 
-			color: theme.$input-inactive-border;
+			color: var(--input-inactive-border);
 		}
 
 		+ .raised {
@@ -85,7 +83,7 @@
 		left: 0.4rem;
 		top: 105%;
 		font-size: 0.8rem;
-		color: theme.$error;
+		color: var(--error);
 		max-width: 100%;
 	}
 

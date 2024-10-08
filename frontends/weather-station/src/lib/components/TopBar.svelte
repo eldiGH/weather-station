@@ -10,8 +10,6 @@
 </div>
 
 <style lang="scss">
-	@use '../styles/colors.scss';
-
 	.root {
 		min-height: 100%;
 		display: flex;
@@ -19,7 +17,7 @@
 
 		.topbar {
 			width: 100%;
-			background-color: colors.$deep-saffron;
+			background-color: var(--top-bar-background);
 			min-height: 4rem;
 			position: sticky;
 			top: 0;

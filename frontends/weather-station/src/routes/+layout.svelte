@@ -1,6 +1,6 @@
 <script lang="ts">
 	import 'chartjs-adapter-date-fns';
-	import '$lib/styles/global.scss';
+	import 'frontend.shared/styles/global.scss';
 	import { Chart, registerables } from 'chart.js';
 	import { setDefaultOptions } from 'date-fns';
 	import { pl } from 'date-fns/locale';
@@ -18,3 +18,10 @@
 <ActionPoller />
 <NavigationLoader />
 <slot />
+
+<style lang="scss">
+	@use 'theme' as t;
+	:root {
+		@include t.add-theme('weather-station');
+	}
+</style>

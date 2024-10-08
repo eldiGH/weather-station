@@ -26,5 +26,6 @@ export const viteConfig = defineConfig({
 				api: 'modern-compiler'
 			}
 		}
-	}
+	},
+	resolve: { alias: { themes: 'frontend.shared/styles/themes.scss' } }
 });

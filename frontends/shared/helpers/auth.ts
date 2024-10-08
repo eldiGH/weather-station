@@ -61,7 +61,7 @@ export const logout = async (): Promise<void> => {
 
 	document.cookie = cookie.serialize('accessToken', '', { expires: unixTime });
 
-	goto('/login');
+	goto('/login', { replaceState: true });
 };
 
 export const isLoggedIn = () => {
