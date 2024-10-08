@@ -2,10 +2,6 @@
   "name": "weather-station",
   "version": "1.0.0",
   "description": "",
-  "prisma": {
-    "schema": "backend/prisma/schema.prisma",
-    "seed": "node backend/prisma/seed.js"
-  },
   "scripts": {
     "be:dev": "pnpm --filter=backend dev",
     "be:build": "pnpm --filter=backend build",

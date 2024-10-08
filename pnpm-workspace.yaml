@@ -1,3 +1,5 @@
 packages:
   - backend
-  - frontend
+  - frontends/shared
+  - frontends/time-sheet
+  - frontends/weather-station

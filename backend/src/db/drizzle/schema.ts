@@ -35,6 +35,7 @@ const defaultNow = <T extends string>(
     data: Date;
     driverParam: string;
     enumValues: undefined;
+    generated: undefined;
   }>
 ) => column.default(sql`(now() at time zone 'utc')`);
 
