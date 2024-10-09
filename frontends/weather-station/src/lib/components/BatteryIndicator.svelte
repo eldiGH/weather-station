@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getGradient } from '$lib/helpers/colors';
-	import { minMax, roundToPrecision } from 'frontend.shared/helpers/math';
+	import { minMax, roundToPrecision } from '@shared/helpers/math';
 	import { onMount } from 'svelte';
 	import { v4 } from 'uuid';
 

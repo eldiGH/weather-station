@@ -5,7 +5,7 @@
 	import TopBar from '$lib/components/TopBar.svelte';
 	import type { LayoutData } from './$types';
 	import { page } from '$app/stores';
-	import Container from 'frontend.shared/components/Container';
+	import Container from '@shared/components/Container.svelte';
 
 	export let data: LayoutData;
 

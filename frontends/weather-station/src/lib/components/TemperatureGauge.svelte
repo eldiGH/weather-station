@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { roundToPrecision } from 'frontend.shared/helpers/math';
+	import { roundToPrecision } from '@shared/helpers/math';
 	import IconInfo from './IconInfo.svelte';
 	import InfoGauge, { type GaugeConfig } from './InfoGauge/InfoGauge.svelte';
 

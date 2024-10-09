@@ -29,7 +29,7 @@
 	import GaugeLabel from './GaugeLabel.svelte';
 	import GaugeValue from './GaugeValue.svelte';
 	import GaugeBar from './GaugeBar.svelte';
-	import { roundToPrecision, getRadians } from 'frontend.shared/helpers/math';
+	import { roundToPrecision, getRadians } from '@shared/helpers/math';
 
 	export let config: GaugeConfig;
 	export let value: number;

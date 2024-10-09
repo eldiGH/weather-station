@@ -1,4 +1,4 @@
-import { minMax } from 'frontend.shared/helpers/math';
+import { minMax } from '@shared/helpers/math';
 
 export interface RGB {
 	r: number;

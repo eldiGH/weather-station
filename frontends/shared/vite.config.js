@@ -1,6 +1,6 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vitest/config';
-import config from 'frontend.shared/config.json' with { type: 'json' };
+import config from './config.json' with { type: 'json' };
 
 export default defineConfig({
 	plugins: [sveltekit()],

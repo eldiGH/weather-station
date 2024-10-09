@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { logout } from 'frontend.shared/helpers/auth';
+	import { logout } from '@shared/helpers/auth';
 	import { sidebarStore } from '$lib/stores/sidebar';
-	import Button from 'frontend.shared/components/Button';
+	import Button from '@shared/components/Button.svelte';
 	import IconButton from './IconButton.svelte';
 	import TopBar from './TopBar.svelte';
 	import Link from '@shared/components/Link.svelte';
