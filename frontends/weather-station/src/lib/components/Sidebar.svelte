@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import IconButton from './IconButton.svelte';
 	import type { IconType } from '$lib/types/IconType';
-	import Button from './Button.svelte';
+	import Button from 'frontend.shared/components/Button';
 
 	let sidebarWidth = 0;
 	let sidebar: HTMLDivElement;

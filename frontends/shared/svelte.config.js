@@ -1,8 +1,9 @@
 import adapter from '@sveltejs/adapter-node';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
-import { resolve } from 'path';
+import { resolve, join } from 'path';
 
-const themeAlias = resolve(import.meta.dirname, 'styles/themes.scss');
+const sharedPath = resolve(import.meta.dirname);
+const themesPath = join(sharedPath, 'styles/themes.scss');
 
 /** @type {import('@sveltejs/kit').Config} */
 export const svelteConfig = {
@@ -12,7 +13,7 @@ export const svelteConfig = {
 		style: {
 			resolve: {
 				alias: {
-					'@theme': themeAlias
+					'@theme': themesPath
 				}
 			}
 		}
@@ -23,7 +24,8 @@ export const svelteConfig = {
 		// See https://kit.svelte.dev/docs/adapters for more information about adapters.
 		adapter: adapter({ out: 'dist' }),
 		alias: {
-			'@theme': themeAlias
+			'@theme': themesPath,
+			'@shared/*': sharedPath
 		}
 	}
 };

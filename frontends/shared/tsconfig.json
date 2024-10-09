@@ -10,7 +10,11 @@
 		"strict": true,
 		"module": "Preserve",
 		"moduleResolution": "bundler",
-		"noEmit": true
+		"noEmit": true,
+		"baseUrl": ".",
+		"paths": {
+			"@shared/*": ["./*"]
+		}
 	},
 	"exclude": ["./node_modules/**/*"]
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias

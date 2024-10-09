@@ -1,9 +1,8 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vitest/config';
-import config from './config.json' with { type: 'json' };
-import { resolve } from 'path';
+import config from 'frontend.shared/config.json' with { type: 'json' };
 
-export const viteConfig = defineConfig({
+export default defineConfig({
 	plugins: [sveltekit()],
 	test: {
 		include: ['src/**/*.{test,spec}.{js,ts}']
@@ -27,6 +26,5 @@ export const viteConfig = defineConfig({
 				api: 'modern-compiler'
 			}
 		}
-	},
-	resolve: { alias: { '@theme': resolve(import.meta.dirname, 'styles/themes.scss') } }
+	}
 });

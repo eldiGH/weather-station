@@ -1,10 +1,10 @@
-<script>
+<script lang="ts">
 	import { logout } from 'frontend.shared/helpers/auth';
 	import { sidebarStore } from '$lib/stores/sidebar';
-	import Button from './Button.svelte';
+	import Button from 'frontend.shared/components/Button';
 	import IconButton from './IconButton.svelte';
-	import Link from './Link.svelte';
 	import TopBar from './TopBar.svelte';
+	import Link from '@shared/components/Link.svelte';
 </script>
 
 <TopBar>

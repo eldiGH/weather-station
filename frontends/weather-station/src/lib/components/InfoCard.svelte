@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Card from './Card.svelte';
+	import Card from '@shared/components/Card.svelte';
 	import type { ComponentProps } from 'svelte';
 	import IconInfo from './IconInfo.svelte';
 

@@ -15,7 +15,7 @@
 <script lang="ts">
 	import type { TabsStore } from '$lib/stores/tabs';
 	import { createEventDispatcher } from 'svelte';
-	import Link from './Link.svelte';
+	import Link from '@shared/components/Link.svelte';
 	import { page } from '$app/stores';
 
 	export let tabs: Tab[];

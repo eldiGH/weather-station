@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Card from './Card.svelte';
+	import Card from '@shared/components/Card.svelte';
 	import IconInfo from './IconInfo.svelte';
-	import Link from './Link.svelte';
+	import Link from '@shared/components/Link.svelte';
 	import { page } from '$app/stores';
 	import { formatCreatedAt } from '$lib/helpers/date';
 	import TempAndHumidityGauge from './TempAndHumidityGauge.svelte';

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { ComponentProps } from 'svelte';
 	import Icon from './Icon.svelte';
-	import Button from './Button.svelte';
+	import Button from 'frontend.shared/components/Button';
 
 	interface $$Props extends ComponentProps<Icon> {
 		size?: number;

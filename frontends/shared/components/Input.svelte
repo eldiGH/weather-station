@@ -20,10 +20,10 @@
 </div>
 
 <style lang="scss">
-	$animationOpts: 150ms ease-in-out;
-	$raisedTransform: translateY(-1.8rem) scale(0.75);
-
 	.input {
+		$animationOpts: 150ms ease-in-out;
+		$raisedTransform: translateY(-1.8rem) scale(0.75);
+
 		background-color: transparent !important;
 		border: none;
 		border-bottom: 1px solid var(--input-inactive-border);

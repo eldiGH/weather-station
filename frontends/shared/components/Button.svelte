@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 	import Ripple, { type ShowRippleFn } from './Ripple.svelte';
-	import Spinner from 'frontend.shared/components/Spinner';
+	import Spinner from './Spinner.svelte';
 
 	interface $$Props extends HTMLButtonAttributes {
 		busy?: boolean;

@@ -1,11 +1,11 @@
 <script lang="ts">
 	import Icon from '$lib/components/Icon.svelte';
-	import Link from '$lib/components/Link.svelte';
+	import Link from '@shared/components/Link.svelte';
 	import Tabs, { type Tab } from '$lib/components/Tabs.svelte';
 	import TopBar from '$lib/components/TopBar.svelte';
 	import type { LayoutData } from './$types';
 	import { page } from '$app/stores';
-	import Container from '$lib/components/Container.svelte';
+	import Container from 'frontend.shared/components/Container';
 
 	export let data: LayoutData;
 
