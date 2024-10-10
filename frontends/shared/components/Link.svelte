@@ -19,7 +19,7 @@
 	}
 
 	.color {
-		color: #709dd4;
+		color: var(--link-color);
 		transition: filter 100ms ease-in-out;
 
 		&:hover {

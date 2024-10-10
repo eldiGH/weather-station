@@ -1,4 +1,4 @@
-import { and, eq, inArray, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, sql } from 'drizzle-orm';
 import { db } from '../db/drizzle';
 import { timeSheetEntrySchema, timeSheetSchema, type UserModel } from '../db/drizzle/schema';
 import type {
@@ -39,14 +39,24 @@ const getAndValidateTimeSheet = async (timeSheetId: string, user: UserModel) =>
 export const TimeSheetService = {
   createTimeSheet: async (data: CreateTimeSheetInput, user: UserModel) => {
     const existingTimeSheetWithSameNameForUser = (
-      await db.select().from(timeSheetSchema).where(eq(timeSheetSchema.ownerId, user.id))
+      await db
+        .select()
+        .from(timeSheetSchema)
+        .where(and(eq(timeSheetSchema.ownerId, user.id), eq(timeSheetSchema.name, data.name)))
     ).at(0);
 
     if (existingTimeSheetWithSameNameForUser) {
       throw TimeSheetNameAlreadyUsed(data.name);
     }
 
-    await db.insert(timeSheetSchema).values({ ...data, ownerId: user.id });
+    const { id } = (
+      await db
+        .insert(timeSheetSchema)
+        .values({ ...data, ownerId: user.id })
+        .returning()
+    )[0];
+
+    return { id };
   },
 
   getTimeSheet: async (data: GetTimeSheetInput, user: UserModel) => {
@@ -54,7 +64,8 @@ export const TimeSheetService = {
       where: (timeSheet, { eq }) => eq(timeSheet.id, data.id),
       with: {
         entries: {
-          where: getSQLForDates(timeSheetEntrySchema.date, data.dates)
+          where: getSQLForDates(timeSheetEntrySchema.date, data.dates),
+          orderBy: desc(timeSheetEntrySchema.date)
         }
       }
     });
@@ -77,6 +88,17 @@ export const TimeSheetService = {
       }))
     };
   },
+
+  getTimeSheetsForUser: async (user: UserModel) =>
+    db
+      .select({
+        id: timeSheetSchema.id,
+        name: timeSheetSchema.name,
+        defaultPricePerHour: timeSheetSchema.defaultPricePerHour,
+        defaultHours: timeSheetSchema.defaultHours
+      })
+      .from(timeSheetSchema)
+      .where(eq(timeSheetSchema.ownerId, user.id)),
 
   setTimeSheetEntry: async (input: SetTimeSheetEntryInput, user: UserModel) => {
     await getAndValidateTimeSheet(input.timeSheetId, user);
@@ -108,7 +130,7 @@ export const TimeSheetService = {
   deleteTimeSheetEntry: async (input: DeleteTimeSheetEntryInput, user: UserModel) => {
     await getAndValidateTimeSheet(input.timeSheetId, user);
 
-    const { count } = await db
+    const { rowCount } = await db
       .delete(timeSheetEntrySchema)
       .where(
         and(
@@ -117,7 +139,7 @@ export const TimeSheetService = {
         )
       );
 
-    if (count === 0) {
+    if (rowCount === 0) {
       throw TimeSheetEntryNotFound();
     }
   },

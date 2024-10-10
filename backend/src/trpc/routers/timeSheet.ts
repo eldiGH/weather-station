@@ -9,5 +9,9 @@ export const timeSheetRouter = router({
 
   getTimeSheet: authedProcedure
     .input(getTimeSheetInputSchema)
-    .mutation(({ input, ctx }) => TimeSheetServiceTRPC.getTimeSheet(input, ctx.user))
+    .query(({ input, ctx }) => TimeSheetServiceTRPC.getTimeSheet(input, ctx.user)),
+
+  getTimeSheets: authedProcedure.query(({ ctx }) =>
+    TimeSheetServiceTRPC.getTimeSheetsForUser(ctx.user)
+  )
 });

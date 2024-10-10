@@ -35,14 +35,14 @@
 		<Input
 			bind:value={$values.email}
 			onblur={handleBlur}
-			error={$touched.email && $errors.email}
+			error={!$touched.email && $errors.email}
 			label="Email"
 			name="email"
 			disabled={$isSubmitting} />
 		<Input
 			bind:value={$values.password}
 			onblur={handleBlur}
-			error={$touched.password && $errors.password}
+			error={!$touched.password && $errors.password}
 			label="Hasło"
 			name="password"
 			type="password"
@@ -50,7 +50,7 @@
 		<Input
 			bind:value={$values.passwordRepeat}
 			onblur={handleBlur}
-			error={$touched.passwordRepeat && $errors.passwordRepeat}
+			error={!$touched.passwordRepeat && $errors.passwordRepeat}
 			label="Powtórz hasło"
 			name="passwordRepeat"
 			type="password"

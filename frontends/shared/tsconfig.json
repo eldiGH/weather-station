@@ -3,7 +3,8 @@
 	"compilerOptions": {
 		"baseUrl": ".",
 		"paths": {
-			"@shared/*": ["./*"]
+			"@shared/*": ["./*"],
+			"@backend/*": ["backend/*"]
 		}
 	}
 }

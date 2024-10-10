@@ -3,7 +3,8 @@ import { dateRangeQuerySchema } from './helpers';
 
 export const createTimeSheetInputSchema = object({
   name: string().min(3).max(30),
-  defaultPricePerHour: number().gt(0).optional()
+  defaultPricePerHour: number().gt(0).optional(),
+  defaultHours: number().gt(0).lte(24).optional()
 });
 
 export type CreateTimeSheetInput = z.infer<typeof createTimeSheetInputSchema>;

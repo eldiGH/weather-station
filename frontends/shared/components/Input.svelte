@@ -7,6 +7,7 @@
 		label?: string;
 		value?: string;
 		error?: string | false;
+		required?: boolean;
 	}
 
 	let {
@@ -14,7 +15,7 @@
 		error = '',
 		label = '',
 		value = $bindable(''),
-		onblur,
+		required,
 		...restProps
 	}: Props = $props();
 </script>
@@ -23,7 +24,12 @@
 	<div class="input__container">
 		<input {...restProps} {id} class="input" bind:value />
 		{#if label}
-			<label for={id} class:raised={!!value}>{label}</label>
+			<label for={id} class:raised={!!value}
+				>{label}
+				{#if required}
+					<span>*</span>
+				{/if}
+			</label>
 		{/if}
 		{#if error}
 			<span class="error">{error}</span>
@@ -39,9 +45,10 @@
 		background-color: transparent !important;
 		border: none;
 		border-bottom: 1px solid var(--input-inactive-border);
-		padding: 0.5rem 0.5rem;
+		padding: 0.5rem 0.5rem 0;
 		transition: border-color $animationOpts;
 		font-size: 1rem;
+		color: var(--input-text-color) !important;
 
 		&:focus {
 			outline: none;
@@ -67,6 +74,10 @@
 				transform $animationOpts;
 
 			color: var(--input-inactive-border);
+
+			& span {
+				color: var(--input-required-asterisk);
+			}
 		}
 
 		+ .raised,
@@ -86,6 +97,8 @@
 			-webkit-box-shadow: 0 0 50px rgba(255, 255, 255, 0) inset !important;
 			background-color: transparent !important;
 			background-clip: text;
+			color: var(--input-text-color) !important;
+			-webkit-text-fill-color: var(--input-text-color) !important;
 		}
 	}
 

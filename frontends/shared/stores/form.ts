@@ -7,15 +7,20 @@ type ChangePropsType<T extends Record<string, unknown>, NewType> = {
 
 export type FormReturn<
 	Values extends Record<string, unknown>,
-	MySchema extends Schema | undefined
+	MySchema extends Schema | undefined,
+	InferredValues extends Record<string, unknown> = MySchema extends Schema
+		? z.infer<MySchema>
+		: Values
 > = {
-	values: Writable<Values>;
-	errors: Writable<ChangePropsType<Values, string>>;
-	touched: Readable<ChangePropsType<Values, boolean>>;
-	validate: MySchema extends Schema ? () => Promise<Values> : undefined;
+	values: Writable<InferredValues>;
+	errors: Writable<ChangePropsType<InferredValues, string>>;
+	touched: Readable<ChangePropsType<InferredValues, boolean>>;
+	validate: MySchema extends Schema ? () => Promise<InferredValues> : undefined;
 	isSubmitting: Readable<boolean>;
 	isValid: Readable<boolean>;
-	submit: (onSubmit: (data: Values) => Promise<void>) => (e: SubmitEvent) => Promise<void>;
+	submit: (
+		onSubmit: (data: InferredValues) => Promise<void> | void
+	) => (e: SubmitEvent) => Promise<void> | void;
 	handleBlur: (event: FocusEvent) => void;
 };
 
@@ -78,11 +83,12 @@ const getInitialTouched = <T extends Record<string, unknown>>(
 
 export const createForm = <
 	T extends MySchema extends Schema ? z.infer<MySchema> : Record<string, unknown>,
-	MySchema extends Schema | undefined = undefined
+	MySchema extends Schema | undefined = undefined,
+	InferredValues extends Record<string, unknown> = MySchema extends Schema ? z.infer<MySchema> : T
 >(
 	initialValues: T,
 	schema?: MySchema
-): FormReturn<T, MySchema> => {
+): FormReturn<T, MySchema, InferredValues> => {
 	const values = writable(initialValues);
 	const touched = writable(getInitialTouched(initialValues));
 	const errors = writable(getInitialErrors(initialValues, schema));
@@ -117,7 +123,7 @@ export const createForm = <
 			: undefined
 	) as MySchema extends Schema ? () => Promise<T> : undefined;
 
-	const submit = (onSubmit: (data: T) => Promise<void>) => async (e: SubmitEvent) => {
+	const submit = (onSubmit: (data: T) => Promise<void> | void) => async (e: SubmitEvent) => {
 		e.preventDefault();
 
 		let parsedValues: T = get(values);

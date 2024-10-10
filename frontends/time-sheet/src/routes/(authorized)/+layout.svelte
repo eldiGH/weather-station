@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import Container from '@shared/components/Container.svelte';
 	import { isLoggedIn } from '@shared/helpers/auth';
 	import { onMount } from 'svelte';
 
@@ -10,4 +11,6 @@
 	});
 </script>
 
-<slot />
+<Container>
+	<slot />
+</Container>
