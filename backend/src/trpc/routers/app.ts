@@ -3,6 +3,7 @@ import { router } from '..';
 import { authRouter } from './auth';
 import { kioskRouter } from './kiosk';
 import { sensorRouter } from './sensor';
+import { timeSheetRouter } from './timeSheet';
 
 export const appRouter = router({
   kiosk: kioskRouter,
