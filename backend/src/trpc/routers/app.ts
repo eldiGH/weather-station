@@ -7,7 +7,8 @@ import { sensorRouter } from './sensor';
 export const appRouter = router({
   kiosk: kioskRouter,
   sensor: sensorRouter,
-  auth: authRouter
+  auth: authRouter,
+  timeSheet: timeSheetRouter
 });
 
 export type AppRouter = typeof appRouter;

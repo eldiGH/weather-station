@@ -2,7 +2,7 @@ import { redisClient } from '../db/redis';
 import { KioskNotFound } from '../errors/KioskNotFound';
 import { KioskWithoutCoordinates } from '../errors/KioskWithoutCoordinates';
 import { SensorNotFound } from '../errors/SensorNotFound';
-import type { CreateKioskInput, DateRangeQuery } from '../schemas';
+import type { CreateKioskInput, TimestampRangeQuery } from '../schemas';
 import type { RedisCachedEntry } from '../types/RedisCachedEntry';
 import type { WeatherApiResponse } from '../types/WeatherApiResponse';
 import axios from 'axios';
@@ -72,7 +72,7 @@ const mapForecastResponseData = (forecast: WeatherApiResponse, nextRefreshTimest
 };
 
 export const KioskService = {
-  getKioskSensorData: async (kioskUuid: string, sensorId: number, dates?: DateRangeQuery) => {
+  getKioskSensorData: async (kioskUuid: string, sensorId: number, dates?: TimestampRangeQuery) => {
     const kiosk = await getKioskWithBme68xSensor(kioskUuid, sensorId, { dates });
 
     if (!kiosk) {

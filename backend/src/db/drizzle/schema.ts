@@ -10,7 +10,9 @@ import {
   serial,
   text,
   customType,
-  type PgCustomColumnBuilder
+  type PgCustomColumnBuilder,
+  date,
+  uuid
 } from 'drizzle-orm/pg-core';
 
 const myTimestamp = customType<{ data: Date; driverData: string }>({
@@ -50,10 +52,13 @@ export const userSchema = pgTable('user', {
   createdAt: defaultNow(myTimestamp('created_at')).notNull()
 });
 
+export type UserModel = typeof userSchema.$inferSelect;
+
 export const userRelations = relations(userSchema, ({ many }) => ({
   sensors: many(sensorSchema),
   refreshTokens: many(refreshTokenSchema),
-  kiosks: many(kioskSchema)
+  kiosks: many(kioskSchema),
+  timeSheets: many(timeSheetSchema)
 }));
 
 export const kioskSchema = pgTable('kiosk', {
@@ -171,5 +176,54 @@ export const kioskToSensorRelations = relations(kioskToSensorSchema, ({ one }) =
   sensor: one(sensorSchema, {
     fields: [kioskToSensorSchema.sensorId],
     references: [sensorSchema.id]
+  })
+}));
+
+export const timeSheetSchema = pgTable('time_sheet', {
+  id: uuid('id').defaultRandom().primaryKey().unique().notNull(),
+
+  name: text().notNull(),
+  defaultPricePerHour: doublePrecision('default_price_per_hour'),
+  defaultHours: integer('default_hours'),
+
+  createdAt: defaultNow(myTimestamp('created_at')).notNull(),
+
+  ownerId: integer('owner_id')
+    .references(() => userSchema.id)
+    .notNull()
+});
+
+export const timeSheetRelations = relations(timeSheetSchema, ({ one, many }) => ({
+  owner: one(userSchema, {
+    fields: [timeSheetSchema.ownerId],
+    references: [userSchema.id]
+  }),
+
+  entries: many(timeSheetEntrySchema)
+}));
+
+export const timeSheetEntrySchema = pgTable(
+  'time_sheet_entry',
+  {
+    hours: integer('hours').notNull(),
+    pricePerHour: doublePrecision('pricePerHour').notNull(),
+
+    date: date('date', { mode: 'string' }).notNull(),
+
+    createdAt: defaultNow(myTimestamp('created_at')).notNull(),
+
+    timeSheetId: uuid('time_sheet_id')
+      .notNull()
+      .references(() => timeSheetSchema.id)
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.date, t.timeSheetId] })
+  })
+);
+
+export const timeSheetEntryRelations = relations(timeSheetEntrySchema, ({ one }) => ({
+  timeSheet: one(timeSheetSchema, {
+    fields: [timeSheetEntrySchema.timeSheetId],
+    references: [timeSheetSchema.id]
   })
 }));

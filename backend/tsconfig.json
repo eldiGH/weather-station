@@ -13,9 +13,8 @@
     "module": "ESNext",
     "target": "ESNext",
     "noEmit": true,
-    "rootDir": "src",
     "verbatimModuleSyntax": true
   },
-  "include": ["./src"],
+  "include": ["./src", "./*.ts", "./drizzle/**/*.ts"],
   "exclude": ["../node_modules/**"]
 }

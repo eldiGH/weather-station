@@ -1,15 +1,27 @@
 <script lang="ts">
+	import type { HTMLInputAttributes } from 'svelte/elements';
 	import { v4 as uuid } from 'uuid';
 
-	export let id = uuid();
-	export let label = '';
-	export let value: string = '';
-	export let error: string | false = '';
+	interface Props extends HTMLInputAttributes {
+		id?: string;
+		label?: string;
+		value?: string;
+		error?: string | false;
+	}
+
+	let {
+		id = uuid(),
+		error = '',
+		label = '',
+		value = $bindable(''),
+		onblur,
+		...restProps
+	}: Props = $props();
 </script>
 
 <div class="container">
 	<div class="input__container">
-		<input on:blur {...$$restProps} {id} class="input" bind:value />
+		<input {...restProps} {id} class="input" bind:value />
 		{#if label}
 			<label for={id} class:raised={!!value}>{label}</label>
 		{/if}
@@ -27,7 +39,6 @@
 		background-color: transparent !important;
 		border: none;
 		border-bottom: 1px solid var(--input-inactive-border);
-		color: white;
 		padding: 0.5rem 0.5rem;
 		transition: border-color $animationOpts;
 		font-size: 1rem;
@@ -58,7 +69,8 @@
 			color: var(--input-inactive-border);
 		}
 
-		+ .raised {
+		+ .raised,
+		&:autofill + label {
 			transform: $raisedTransform;
 		}
 
@@ -74,7 +86,6 @@
 			-webkit-box-shadow: 0 0 50px rgba(255, 255, 255, 0) inset !important;
 			background-color: transparent !important;
 			background-clip: text;
-			-webkit-text-fill-color: white;
 		}
 	}
 

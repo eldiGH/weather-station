@@ -1,13 +1,6 @@
-import postgres from 'postgres';
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle } from 'drizzle-orm/connect';
 import 'dotenv/config';
-import {
-  bme68xDataSchema,
-  kioskSchema,
-  kioskToSensorSchema,
-  sensorSchema,
-  userSchema
-} from '../src/db/drizzle/schema';
+import * as schema from '../src/db/drizzle/schema';
 import bcryptjs from 'bcryptjs';
 import { addMilliseconds, differenceInMilliseconds } from 'date-fns';
 
@@ -16,6 +9,8 @@ const dbUrl = process.env.DATABASE_URL;
 if (!dbUrl) {
   throw new Error('DATABASE_URL env variable missing!');
 }
+
+const { userSchema, sensorSchema, kioskSchema, kioskToSensorSchema, bme68xDataSchema } = schema;
 
 const userData: (typeof userSchema.$inferInsert)[] = [
   { email: 'admin@gmail.com', password: '6Gfdn7x2VKBwOn9' }
@@ -3820,8 +3815,7 @@ const transformedBme68xData = bme68xData.map((data) => ({
 
 console.log('Seed started');
 
-const sql = postgres(dbUrl, { max: 1 });
-const db = drizzle(sql);
+const db = await drizzle('node-postgres', { connection: dbUrl, schema });
 
 await db.insert(userSchema).values(hashedUserData).onConflictDoNothing();
 await Promise.all([
@@ -3832,7 +3826,5 @@ await Promise.all([
   db.insert(kioskToSensorSchema).values(kioskToSensorData).onConflictDoNothing(),
   db.insert(bme68xDataSchema).values(transformedBme68xData).onConflictDoNothing()
 ]);
-
-await sql.end();
 
 console.log('Seed completed');

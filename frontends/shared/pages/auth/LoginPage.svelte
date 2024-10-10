@@ -29,14 +29,14 @@
 		<span>Logowanie</span>
 		<Input
 			bind:value={$values.email}
-			on:blur={handleBlur}
+			onblur={handleBlur}
 			error={$touched.email && $errors.email}
 			label="Email"
 			name="email"
 			disabled={$isSubmitting} />
 		<Input
 			bind:value={$values.password}
-			on:blur={handleBlur}
+			onblur={handleBlur}
 			error={$touched.password && $errors.password}
 			label="Hasło"
 			name="password"

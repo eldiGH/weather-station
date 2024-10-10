@@ -18,6 +18,10 @@ export const registerInputFormSchema = registerInputSchema
   .extend({
     passwordRepeat: z.string()
   })
-  .refine(({ password, passwordRepeat }) => password == passwordRepeat, "Passwords don't match");
+  .superRefine(({ password, passwordRepeat }, { addIssue }) => {
+    if (password !== passwordRepeat) {
+      addIssue({ code: 'custom', message: "Passwords don't match", path: ['passwordRepeat'] });
+    }
+  });
 
 export type RegisterInputForm = z.infer<typeof registerInputFormSchema>;

@@ -34,26 +34,23 @@
 		<span>Rejestracja</span>
 		<Input
 			bind:value={$values.email}
-			on:blur={handleBlur}
-			isInvalid={$touched.email && !!$errors.email}
-			invalidText={$errors.email}
+			onblur={handleBlur}
+			error={$touched.email && $errors.email}
 			label="Email"
 			name="email"
 			disabled={$isSubmitting} />
 		<Input
 			bind:value={$values.password}
-			on:blur={handleBlur}
-			isInvalid={$touched.password && !!$errors.password}
-			invalidText={$errors.password}
+			onblur={handleBlur}
+			error={$touched.password && $errors.password}
 			label="Hasło"
 			name="password"
 			type="password"
 			disabled={$isSubmitting} />
 		<Input
 			bind:value={$values.passwordRepeat}
-			on:blur={handleBlur}
-			isInvalid={$touched.passwordRepeat && !!$errors.passwordRepeat}
-			invalidText={$errors.passwordRepeat}
+			onblur={handleBlur}
+			error={$touched.passwordRepeat && $errors.passwordRepeat}
 			label="Powtórz hasło"
 			name="passwordRepeat"
 			type="password"

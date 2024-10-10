@@ -1,7 +1,7 @@
-import type { DateRangeQuery } from '../schemas';
+import type { TimestampRangeQuery } from '../schemas';
 
 export type QueryDates = {
-  dates?: DateRangeQuery;
+  dates?: TimestampRangeQuery;
 };
 
 export type QueryLimit = {

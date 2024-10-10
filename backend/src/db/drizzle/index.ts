@@ -1,8 +1,8 @@
 import 'dotenv/config';
-import postgres from 'postgres';
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from './schema';
 import { isDevelopment } from '../../helpers/environment';
+import { Pool } from 'pg';
 
 const dbUrl = process.env.DATABASE_URL;
 
@@ -10,5 +10,7 @@ if (!dbUrl) {
   throw new Error('DATABASE_URL env variable missing!');
 }
 
-const queryClient = postgres(dbUrl);
-export const db = drizzle(queryClient, { schema, logger: isDevelopment });
+const pool = new Pool({
+  connectionString: dbUrl
+});
+export const db = drizzle(pool, { schema, logger: isDevelopment });

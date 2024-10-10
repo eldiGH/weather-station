@@ -1,7 +1,7 @@
 import { SecretIsNotValid } from '../errors/SecretIsNotValid';
 import { SensorDataNotFound } from '../errors/SensorDataNotFound';
 import { SensorNotFound } from '../errors/SensorNotFound';
-import type { DateRangeQuery } from '../schemas/helpers';
+import type { TimestampRangeQuery } from '../schemas/helpers';
 import { emitNewSensorData } from '../helpers/eventEmitter';
 import type { PostBME68XDataInput } from '../schemas/bme68x';
 import {
@@ -62,7 +62,7 @@ const getLatestBME68XDataEntry = async (sensorId: number) => {
   return sensor.bme68xData[0];
 };
 
-const getBME68XData = async (sensorId: number, query: DateRangeQuery) => {
+const getBME68XData = async (sensorId: number, query: TimestampRangeQuery) => {
   const sensor = await getSensorWithBme68xData(sensorId, { dates: query });
 
   if (!sensor) {

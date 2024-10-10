@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { getSensorWithCurrentDataSchema } from './sensor';
-import { dateRangeQuerySchema } from './helpers';
+import { timestampRangeQuerySchema } from './helpers';
 
 export const getKioskDataInputSchema = z.object({
   kioskUuid: z.string().uuid()
@@ -21,7 +21,7 @@ export const getForecastForKioskInputSchema = z.object({
 export const getKioskSensorDetailsInputSchema = z.object({
   kioskUuid: z.string().uuid(),
   sensorId: z.number().min(1),
-  dateRangeQuery: dateRangeQuerySchema
+  dateRangeQuery: timestampRangeQuerySchema
 });
 
 export const createKioskInputSchema = z.object({

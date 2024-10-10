@@ -8,16 +8,16 @@ import {
   type SQL,
   type ColumnDataType
 } from 'drizzle-orm';
-import type { DateRangeQuery } from '../schemas';
+import type { DateRangeQuery, TimestampRangeQuery } from '../schemas';
 import { PgColumn } from 'drizzle-orm/pg-core';
 import { subDays } from 'date-fns';
 import type { QueryOrder } from '../types/QueryOptions';
 
 export const getSQLForDates = <T extends ColumnBaseConfig<ColumnDataType, string>>(
   column: PgColumn<T>,
-  dateRanges: DateRangeQuery
+  timestampOrDateRanges: TimestampRangeQuery | DateRangeQuery
 ): SQL<unknown> | undefined => {
-  const { from, to, fromLastDays } = dateRanges ?? {};
+  const { from, to, fromLastDays } = timestampOrDateRanges ?? {};
 
   if (from && to) {
     return and(gte(column, from), lte(column, to));

@@ -1,4 +1,6 @@
 {
+  "id": "d4dd9b87-4022-46b0-98d8-0a10b2cf7d44",
+  "prevId": "6d2ecefe-cc6c-4989-a07f-7fc57f96f2c3",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -61,26 +63,25 @@
         "bme68x_data_sensor_id_sensor_id_fk": {
           "name": "bme68x_data_sensor_id_sensor_id_fk",
           "tableFrom": "bme68x_data",
+          "tableTo": "sensor",
           "columnsFrom": [
             "sensor_id"
           ],
-          "tableTo": "sensor",
-          "schemaTo": "public",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "bme68x_data_id_unique": {
           "name": "bme68x_data_id_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "id"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       }
     },
@@ -124,33 +125,32 @@
         "kiosk_owner_id_user_id_fk": {
           "name": "kiosk_owner_id_user_id_fk",
           "tableFrom": "kiosk",
+          "tableTo": "user",
           "columnsFrom": [
             "owner_id"
           ],
-          "tableTo": "user",
-          "schemaTo": "public",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "kiosk_id_unique": {
           "name": "kiosk_id_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "id"
-          ],
-          "nullsNotDistinct": false
+          ]
         },
         "kiosk_kiosk_uuid_unique": {
           "name": "kiosk_kiosk_uuid_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "kiosk_uuid"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       }
     },
@@ -176,30 +176,28 @@
         "kiosk_to_sensor_kiosk_id_kiosk_id_fk": {
           "name": "kiosk_to_sensor_kiosk_id_kiosk_id_fk",
           "tableFrom": "kiosk_to_sensor",
+          "tableTo": "kiosk",
           "columnsFrom": [
             "kiosk_id"
           ],
-          "tableTo": "kiosk",
-          "schemaTo": "public",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "kiosk_to_sensor_sensor_id_sensor_id_fk": {
           "name": "kiosk_to_sensor_sensor_id_sensor_id_fk",
           "tableFrom": "kiosk_to_sensor",
+          "tableTo": "sensor",
           "columnsFrom": [
             "sensor_id"
           ],
-          "tableTo": "sensor",
-          "schemaTo": "public",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
@@ -267,33 +265,32 @@
         "refresh_token_user_id_user_id_fk": {
           "name": "refresh_token_user_id_user_id_fk",
           "tableFrom": "refresh_token",
+          "tableTo": "user",
           "columnsFrom": [
             "user_id"
           ],
-          "tableTo": "user",
-          "schemaTo": "public",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "refresh_token_id_unique": {
           "name": "refresh_token_id_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "id"
-          ],
-          "nullsNotDistinct": false
+          ]
         },
         "refresh_token_token_unique": {
           "name": "refresh_token_token_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "token"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       }
     },
@@ -316,6 +313,7 @@
         "type": {
           "name": "type",
           "type": "sensor_type",
+          "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
         },
@@ -344,33 +342,165 @@
         "sensor_owner_id_user_id_fk": {
           "name": "sensor_owner_id_user_id_fk",
           "tableFrom": "sensor",
+          "tableTo": "user",
           "columnsFrom": [
             "owner_id"
           ],
-          "tableTo": "user",
-          "schemaTo": "public",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "sensor_id_unique": {
           "name": "sensor_id_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "id"
-          ],
-          "nullsNotDistinct": false
+          ]
         },
         "sensor_secret_unique": {
           "name": "sensor_secret_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "secret"
+          ]
+        }
+      }
+    },
+    "public.time_sheet_entry": {
+      "name": "time_sheet_entry",
+      "schema": "",
+      "columns": {
+        "hours": {
+          "name": "hours",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pricePerHour": {
+          "name": "pricePerHour",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp without time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "(now() at time zone 'utc')"
+        },
+        "time_sheet_id": {
+          "name": "time_sheet_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "time_sheet_entry_time_sheet_id_time_sheet_id_fk": {
+          "name": "time_sheet_entry_time_sheet_id_time_sheet_id_fk",
+          "tableFrom": "time_sheet_entry",
+          "tableTo": "time_sheet",
+          "columnsFrom": [
+            "time_sheet_id"
           ],
-          "nullsNotDistinct": false
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "time_sheet_entry_date_time_sheet_id_pk": {
+          "name": "time_sheet_entry_date_time_sheet_id_pk",
+          "columns": [
+            "date",
+            "time_sheet_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.time_sheet": {
+      "name": "time_sheet",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "default_price_per_hour": {
+          "name": "default_price_per_hour",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "default_hours": {
+          "name": "default_hours",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp without time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "(now() at time zone 'utc')"
+        },
+        "owner_id": {
+          "name": "owner_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "time_sheet_owner_id_user_id_fk": {
+          "name": "time_sheet_owner_id_user_id_fk",
+          "tableFrom": "time_sheet",
+          "tableTo": "user",
+          "columnsFrom": [
+            "owner_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "time_sheet_id_unique": {
+          "name": "time_sheet_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
         }
       }
     },
@@ -410,10 +540,10 @@
       "uniqueConstraints": {
         "user_email_unique": {
           "name": "user_email_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "email"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       }
     }
@@ -428,12 +558,10 @@
     }
   },
   "schemas": {},
+  "sequences": {},
   "_meta": {
+    "columns": {},
     "schemas": {},
-    "tables": {},
-    "columns": {}
-  },
-  "id": "6d2ecefe-cc6c-4989-a07f-7fc57f96f2c3",
-  "prevId": "00000000-0000-0000-0000-000000000000",
-  "sequences": {}
+    "tables": {}
+  }
 }
