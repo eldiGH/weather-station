@@ -89,8 +89,8 @@ export const TimeSheetService = {
     };
   },
 
-  getTimeSheetsForUser: async (user: UserModel) =>
-    db
+  getTimeSheetsForUser: async (user: UserModel) => {
+    const data = await db
       .select({
         id: timeSheetSchema.id,
         name: timeSheetSchema.name,
@@ -98,7 +98,23 @@ export const TimeSheetService = {
         defaultHours: timeSheetSchema.defaultHours
       })
       .from(timeSheetSchema)
-      .where(eq(timeSheetSchema.ownerId, user.id)),
+      .where(eq(timeSheetSchema.ownerId, user.id));
+
+    return data.map((data) => ({
+      ...data,
+      lastEntryDate: '2024-10-10',
+      currentMonth: {
+        entriesCount: 1,
+        totalPrice: 20,
+        hours: 1
+      },
+      lastMonth: {
+        entriesCount: 8,
+        totalPrice: 160,
+        hours: 8
+      }
+    }));
+  },
 
   setTimeSheetEntry: async (input: SetTimeSheetEntryInput, user: UserModel) => {
     await getAndValidateTimeSheet(input.timeSheetId, user);

@@ -2,7 +2,7 @@
 	import { logout } from '@shared/helpers/auth';
 	import { sidebarStore } from '$lib/stores/sidebar';
 	import Button from '@shared/components/Button.svelte';
-	import IconButton from './IconButton.svelte';
+	import IconButton from '@shared/components/IconButton.svelte';
 	import TopBar from './TopBar.svelte';
 	import Link from '@shared/components/Link.svelte';
 </script>

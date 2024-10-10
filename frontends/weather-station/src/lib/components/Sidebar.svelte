@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { sidebarStore } from '$lib/stores/sidebar';
 	import { onMount } from 'svelte';
-	import IconButton from './IconButton.svelte';
-	import type { IconType } from '$lib/types/IconType';
+	import IconButton from '@shared/components/IconButton.svelte';
+	import type { IconType } from '@shared/types/IconType';
 	import Button from '@shared/components/Button.svelte';
 
 	let sidebarWidth = 0;

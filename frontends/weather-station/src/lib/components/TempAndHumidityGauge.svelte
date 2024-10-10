@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { MAX_TEMPERATURE, MIN_TEMPERATURE } from '$lib/constants/ambient';
 	import { HUM_GRADIENT, TEMP_GRADIENT } from '$lib/constants/gradients';
-	import IconInfo from './IconInfo.svelte';
+	import IconInfo from '@shared/components/IconInfo.svelte';
 	import SvgCircleProgressBar from './SvgCircleProgressBar.svelte';
 
 	export let temperature: number;

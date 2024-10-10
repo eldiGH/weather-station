@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '@shared/components/Icon.svelte';
 	import DailyWeatherStatus from '$lib/components/Weather/DailyWeatherStatus.svelte';
 	import { format, fromUnixTime } from 'date-fns';
 	import type { PageData } from './$types';

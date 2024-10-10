@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { formatTemperature, formatUVI } from '$lib/helpers/formatters';
-	import type IconInfo from '../IconInfo.svelte';
+	import type IconInfo from '@shared/components/IconInfo.svelte';
 	import Container from '@shared/components/Container.svelte';
 	import WindCard from './WindCard.svelte';
 	import WeatherBasicInfo from './WeatherBasicInfo.svelte';

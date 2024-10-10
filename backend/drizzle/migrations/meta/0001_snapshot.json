@@ -64,12 +64,8 @@
           "name": "bme68x_data_sensor_id_sensor_id_fk",
           "tableFrom": "bme68x_data",
           "tableTo": "sensor",
-          "columnsFrom": [
-            "sensor_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["sensor_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -79,9 +75,7 @@
         "bme68x_data_id_unique": {
           "name": "bme68x_data_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       }
     },
@@ -126,12 +120,8 @@
           "name": "kiosk_owner_id_user_id_fk",
           "tableFrom": "kiosk",
           "tableTo": "user",
-          "columnsFrom": [
-            "owner_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["owner_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -141,16 +131,12 @@
         "kiosk_id_unique": {
           "name": "kiosk_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         },
         "kiosk_kiosk_uuid_unique": {
           "name": "kiosk_kiosk_uuid_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "kiosk_uuid"
-          ]
+          "columns": ["kiosk_uuid"]
         }
       }
     },
@@ -177,12 +163,8 @@
           "name": "kiosk_to_sensor_kiosk_id_kiosk_id_fk",
           "tableFrom": "kiosk_to_sensor",
           "tableTo": "kiosk",
-          "columnsFrom": [
-            "kiosk_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["kiosk_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -190,12 +172,8 @@
           "name": "kiosk_to_sensor_sensor_id_sensor_id_fk",
           "tableFrom": "kiosk_to_sensor",
           "tableTo": "sensor",
-          "columnsFrom": [
-            "sensor_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["sensor_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -203,10 +181,7 @@
       "compositePrimaryKeys": {
         "kiosk_to_sensor_kiosk_id_sensor_id_pk": {
           "name": "kiosk_to_sensor_kiosk_id_sensor_id_pk",
-          "columns": [
-            "kiosk_id",
-            "sensor_id"
-          ]
+          "columns": ["kiosk_id", "sensor_id"]
         }
       },
       "uniqueConstraints": {}
@@ -266,12 +241,8 @@
           "name": "refresh_token_user_id_user_id_fk",
           "tableFrom": "refresh_token",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -281,16 +252,12 @@
         "refresh_token_id_unique": {
           "name": "refresh_token_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         },
         "refresh_token_token_unique": {
           "name": "refresh_token_token_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "token"
-          ]
+          "columns": ["token"]
         }
       }
     },
@@ -343,12 +310,8 @@
           "name": "sensor_owner_id_user_id_fk",
           "tableFrom": "sensor",
           "tableTo": "user",
-          "columnsFrom": [
-            "owner_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["owner_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -358,16 +321,12 @@
         "sensor_id_unique": {
           "name": "sensor_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         },
         "sensor_secret_unique": {
           "name": "sensor_secret_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "secret"
-          ]
+          "columns": ["secret"]
         }
       }
     },
@@ -413,12 +372,8 @@
           "name": "time_sheet_entry_time_sheet_id_time_sheet_id_fk",
           "tableFrom": "time_sheet_entry",
           "tableTo": "time_sheet",
-          "columnsFrom": [
-            "time_sheet_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["time_sheet_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -426,10 +381,7 @@
       "compositePrimaryKeys": {
         "time_sheet_entry_date_time_sheet_id_pk": {
           "name": "time_sheet_entry_date_time_sheet_id_pk",
-          "columns": [
-            "date",
-            "time_sheet_id"
-          ]
+          "columns": ["date", "time_sheet_id"]
         }
       },
       "uniqueConstraints": {}
@@ -483,12 +435,8 @@
           "name": "time_sheet_owner_id_user_id_fk",
           "tableFrom": "time_sheet",
           "tableTo": "user",
-          "columnsFrom": [
-            "owner_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["owner_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -498,9 +446,7 @@
         "time_sheet_id_unique": {
           "name": "time_sheet_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "id"
-          ]
+          "columns": ["id"]
         }
       }
     },
@@ -541,9 +487,7 @@
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       }
     }
@@ -552,9 +496,7 @@
     "public.sensor_type": {
       "name": "sensor_type",
       "schema": "public",
-      "values": [
-        "BME68X"
-      ]
+      "values": ["BME68X"]
     }
   },
   "schemas": {},

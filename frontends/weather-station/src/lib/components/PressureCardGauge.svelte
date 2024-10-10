@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getGradient } from '$lib/helpers/colors';
-	import IconInfo from './IconInfo.svelte';
+	import IconInfo from '@shared/components/IconInfo.svelte';
 	import SvgCircleProgressBar from './SvgCircleProgressBar.svelte';
 
 	export let pressure: number;

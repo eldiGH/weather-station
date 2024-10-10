@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Card from '@shared/components/Card.svelte';
 	import type { ComponentProps } from 'svelte';
-	import IconInfo from './IconInfo.svelte';
+	import IconInfo from '@shared/components/IconInfo.svelte';
 
 	export let data: ComponentProps<IconInfo>[];
 	export let header: string;

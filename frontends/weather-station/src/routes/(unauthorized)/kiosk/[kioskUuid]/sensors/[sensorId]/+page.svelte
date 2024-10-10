@@ -1,6 +1,6 @@
 <script lang="ts">
 	import HumidityGauge from '$lib/components/HumidityGauge.svelte';
-	import IconInfo from '$lib/components/IconInfo.svelte';
+	import IconInfo from '@shared/components/IconInfo.svelte';
 	import PressureGauge from '$lib/components/PressureGauge.svelte';
 	import TemperatureGauge from '$lib/components/TemperatureGauge.svelte';
 	import { formatCreatedAt } from '$lib/helpers/date';

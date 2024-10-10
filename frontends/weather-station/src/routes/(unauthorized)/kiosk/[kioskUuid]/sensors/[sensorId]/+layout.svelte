@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '@shared/components/Icon.svelte';
 	import Link from '@shared/components/Link.svelte';
 	import Tabs, { type Tab } from '$lib/components/Tabs.svelte';
 	import TopBar from '$lib/components/TopBar.svelte';
