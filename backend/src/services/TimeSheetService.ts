@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray, sql } from 'drizzle-orm';
+import { and, count, desc, eq, gte, inArray, lt, sql, sum } from 'drizzle-orm';
 import { db } from '../db/drizzle';
 import { timeSheetEntrySchema, timeSheetSchema, type UserModel } from '../db/drizzle/schema';
 import type {
@@ -70,48 +70,108 @@ export const TimeSheetService = {
       }
     });
 
-    const { id, name, defaultPricePerHour, createdAt, entries } = validateTimeSheet(
+    const { id, name, defaultPricePerHour, defaultHours, createdAt, entries } = validateTimeSheet(
       timeSheet,
       user
+    );
+
+    const stats = entries.reduce(
+      (acc, { pricePerHour, hours }) => ({
+        ...acc,
+        hours: acc.totalHours + hours,
+        price: acc.totalPrice + pricePerHour
+      }),
+      { totalHours: 0, totalPrice: 0 }
     );
 
     return {
       id,
       name,
       defaultPricePerHour,
+      defaultHours,
       createdAt,
       entries: entries.map(({ date, hours, pricePerHour, createdAt }) => ({
         date,
         hours,
         pricePerHour,
         createdAt
-      }))
+      })),
+      stats
     };
   },
 
   getTimeSheetsForUser: async (user: UserModel) => {
-    const data = await db
+    const lastMonthDate = sql<string>`(DATE_TRUNC('month', CURRENT_DATE) - INTERVAL '1 month')::date`;
+    const currentMonthDate = sql<string>`DATE_TRUNC('month', CURRENT_DATE)::date`;
+
+    const timeSheetEntriesQuery = db.$with('entries').as(
+      db
+        .select({
+          timeSheet: { ...timeSheetSchema },
+          timeSheetEntry: {
+            ...timeSheetEntrySchema,
+            createdAt: sql`${timeSheetEntrySchema.createdAt}`.as('entryCreatedAt')
+          }
+        })
+        .from(timeSheetSchema)
+        .innerJoin(timeSheetEntrySchema, eq(timeSheetSchema.id, timeSheetEntrySchema.timeSheetId))
+        .where(and(eq(timeSheetSchema.ownerId, 1), gte(timeSheetEntrySchema.date, lastMonthDate)))
+    );
+
+    const currentMonthEntriesQuery = db
       .select({
-        id: timeSheetSchema.id,
-        name: timeSheetSchema.name,
-        defaultPricePerHour: timeSheetSchema.defaultPricePerHour,
-        defaultHours: timeSheetSchema.defaultHours
+        count: count().as('currentMonthCount'),
+        hours: sum(timeSheetEntriesQuery.timeSheetEntry.hours).as('currentMonthHours'),
+        totalPrice: sum(
+          sql<number>`${timeSheetEntriesQuery.timeSheetEntry.hours} * ${timeSheetEntriesQuery.timeSheetEntry.pricePerHour}`
+        ).as('currentMonthTotalPrice'),
+        timeSheetId: timeSheetEntriesQuery.timeSheet.id
       })
+      .from(timeSheetEntriesQuery)
+      .where(gte(timeSheetEntriesQuery.timeSheetEntry.date, currentMonthDate))
+      .groupBy(timeSheetEntriesQuery.timeSheet.id)
+      .as('currentMonthEntries');
+
+    const lastMonthEntriesQuery = db
+      .select({
+        count: count().as('lastMonthCount'),
+        hours: sum(timeSheetEntriesQuery.timeSheetEntry.hours).as('lastMonthHours'),
+        totalPrice: sum(
+          sql<number>`${timeSheetEntriesQuery.timeSheetEntry.hours} * ${timeSheetEntriesQuery.timeSheetEntry.pricePerHour}`
+        ).as('lastMonthTotalPrice'),
+        timeSheetId: timeSheetEntriesQuery.timeSheet.id
+      })
+      .from(timeSheetEntriesQuery)
+      .where(lt(timeSheetEntriesQuery.timeSheetEntry.date, currentMonthDate))
+      .groupBy(timeSheetEntriesQuery.timeSheet.id)
+      .as('lastMonthEntries');
+
+    const data = await db
+      .with(timeSheetEntriesQuery)
+      .select()
       .from(timeSheetSchema)
+      .leftJoin(
+        currentMonthEntriesQuery,
+        eq(currentMonthEntriesQuery.timeSheetId, timeSheetSchema.id)
+      )
+      .leftJoin(lastMonthEntriesQuery, eq(lastMonthEntriesQuery.timeSheetId, timeSheetSchema.id))
       .where(eq(timeSheetSchema.ownerId, user.id));
 
-    return data.map((data) => ({
-      ...data,
-      lastEntryDate: '2024-10-10',
+    return data.map((d) => ({
+      id: d.time_sheet.id,
+      name: d.time_sheet.name,
+      createdAt: d.time_sheet.createdAt,
+      defaultHours: d.time_sheet.defaultHours,
+      defaultPricePerHour: d.time_sheet.defaultPricePerHour,
       currentMonth: {
-        entriesCount: 1,
-        totalPrice: 20,
-        hours: 1
+        count: d.currentMonthEntries?.count ?? 0,
+        totalPrice: parseFloat(d.currentMonthEntries?.totalPrice ?? '0'),
+        hours: parseFloat(d.currentMonthEntries?.hours ?? '0')
       },
       lastMonth: {
-        entriesCount: 8,
-        totalPrice: 160,
-        hours: 8
+        count: d.lastMonthEntries?.count ?? 0,
+        totalPrice: parseFloat(d.lastMonthEntries?.totalPrice ?? '0'),
+        hours: parseFloat(d.lastMonthEntries?.hours ?? '0')
       }
     }));
   },

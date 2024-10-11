@@ -12,6 +12,7 @@ import { isApiError, type ApiError } from 'backend/types';
 import { isDevelopment } from '../helpers/environment';
 import { browser } from '$app/environment';
 import { InternalServerError } from 'backend/errors';
+import { devtoolsLink } from 'trpc-client-devtools-link';
 
 export type FetchFunc = (
 	input: RequestInfo | URL,
@@ -22,10 +23,11 @@ export const isTrpcClientError = (error: unknown): error is TRPCClientError<AppR
 	error instanceof TRPCClientError;
 
 const logger = loggerLink({ enabled: () => isDevelopment });
+const devtools = devtoolsLink({ enabled: isDevelopment });
 
 export const trpc = (fetch: FetchFunc, headers?: Record<string, string>) =>
 	createTRPCProxyClient<AppRouter>({
-		links: [logger, httpBatchLink({ url: '/trpc', fetch, headers })],
+		links: [logger, devtools, httpBatchLink({ url: '/trpc', fetch, headers })],
 		transformer
 	});
 
@@ -43,7 +45,7 @@ export const trpcWs = () => {
 		});
 
 		trpcWsClient = createTRPCProxyClient({
-			links: [logger, wsLink<AppRouter>({ client: wsClient })],
+			links: [logger, devtools, wsLink<AppRouter>({ client: wsClient })],
 			transformer
 		}) as unknown as CreateTRPCProxyClient<AppRouter>;
 	}

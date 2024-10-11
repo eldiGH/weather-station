@@ -6,7 +6,8 @@ import {
   gte,
   lte,
   type SQL,
-  type ColumnDataType
+  type ColumnDataType,
+  sql
 } from 'drizzle-orm';
 import type { DateRangeQuery, TimestampRangeQuery } from '../schemas';
 import { PgColumn } from 'drizzle-orm/pg-core';
@@ -45,4 +46,8 @@ export const getSQLForOrder = (column: PgColumn, order: QueryOrder['order']) => 
   }
 
   return [orderFunctions[order](column)];
+};
+
+export const coalesce = <T>(value: SQL.Aliased<T> | SQL<T>, defaultValue: SQL) => {
+  return sql<T>`coalesce(${value}, ${defaultValue})`;
 };

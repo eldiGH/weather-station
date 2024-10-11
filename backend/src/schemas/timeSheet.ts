@@ -11,12 +11,12 @@ export type CreateTimeSheetInput = z.infer<typeof createTimeSheetInputSchema>;
 
 export const getTimeSheetInputSchema = object({
   id: string().uuid(),
-  dates: dateRangeQuerySchema
+  dates: dateRangeQuerySchema.optional()
 });
 
 export type GetTimeSheetInput = z.infer<typeof getTimeSheetInputSchema>;
 
-const timeSheetHours = number().int().gt(0).lte(24);
+const timeSheetHours = number().gt(0).lte(24);
 
 export const setTimeSheetEntryInputSchema = object({
   date: string().date(),

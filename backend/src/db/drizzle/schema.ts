@@ -184,7 +184,7 @@ export const timeSheetSchema = pgTable('time_sheet', {
 
   name: text().notNull(),
   defaultPricePerHour: doublePrecision('default_price_per_hour'),
-  defaultHours: integer('default_hours'),
+  defaultHours: doublePrecision('default_hours'),
 
   createdAt: defaultNow(myTimestamp('created_at')).notNull(),
 
@@ -205,8 +205,8 @@ export const timeSheetRelations = relations(timeSheetSchema, ({ one, many }) => 
 export const timeSheetEntrySchema = pgTable(
   'time_sheet_entry',
   {
-    hours: integer('hours').notNull(),
-    pricePerHour: doublePrecision('pricePerHour').notNull(),
+    hours: doublePrecision('hours').notNull(),
+    pricePerHour: doublePrecision('price_per_hour').notNull(),
 
     date: date('date', { mode: 'string' }).notNull(),
 

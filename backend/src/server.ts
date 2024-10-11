@@ -5,6 +5,8 @@ import { fastifyTRPCPlugin, type FastifyTRPCPluginOptions } from '@trpc/server/a
 import { createContext } from './trpc';
 import { appRouter, type AppRouter } from './trpc/routers/app';
 import { isDevelopment } from './helpers/environment';
+import { getFastifyPlugin } from 'trpc-playground/handlers/fastify';
+import { renderTrpcPanel } from 'trpc-panel';
 
 export const server = fastify({ logger: isDevelopment, maxParamLength: 5000 });
 
@@ -19,3 +21,26 @@ server.register(fastifyTRPCPlugin, {
     createContext
   } satisfies FastifyTRPCPluginOptions<AppRouter>['trpcOptions']
 });
+
+if (isDevelopment) {
+  server.register(
+    await getFastifyPlugin({
+      trpcApiEndpoint: '/trpc',
+      playgroundEndpoint: '/playground',
+      router: appRouter
+    }),
+    {
+      prefix: '/playground',
+      logLevel: 'silent'
+    }
+  );
+
+  server.route({
+    url: '/panel',
+    method: 'GET',
+    handler: (_, reply) => {
+      reply.header('Content-Type', 'text/html');
+      reply.send(renderTrpcPanel(appRouter, { url: '/trpc' }));
+    }
+  });
+}

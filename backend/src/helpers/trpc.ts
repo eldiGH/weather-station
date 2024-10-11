@@ -80,6 +80,7 @@ export const convertToTRPCService = <T extends { [key: string]: (...args: never[
         return await service[method](...args);
       } catch (error) {
         if (!isApiError(error)) {
+          console.error(error);
           throw error;
         }
 

@@ -24,11 +24,7 @@
 		<div class="summary-title">{label}</div>
 		<div class="summary-details">
 			<IconInfo gap={0.3} size={40} icon="calendar_month">
-				{pluralizePl(monthData.entriesCount, [
-					'dzień roboczy',
-					'dni robocze',
-					'dni roboczych'
-				])}</IconInfo>
+				{pluralizePl(monthData.count, ['dzień roboczy', 'dni robocze', 'dni roboczych'])}</IconInfo>
 			<IconInfo gap={0.3} size={40} icon="attach_money">
 				{monthData.totalPrice} zł</IconInfo>
 			<IconInfo gap={0.3} size={40} icon="schedule">
@@ -38,7 +34,7 @@
 {/snippet}
 
 {#snippet timeSheetCard(timeSheet: TimeSheet)}
-	<Link noColor href="/${timeSheet.id}">
+	<Link noColor href="/{timeSheet.id}">
 		<Card>
 			<div class="card">
 				<div class="title">{timeSheet.name}</div>

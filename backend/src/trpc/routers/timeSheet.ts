@@ -1,5 +1,9 @@
 import { authedProcedure, router } from '..';
-import { createTimeSheetInputSchema, getTimeSheetInputSchema } from '../../schemas/timeSheet';
+import {
+  createTimeSheetInputSchema,
+  getTimeSheetInputSchema,
+  setTimeSheetEntryInputSchema
+} from '../../schemas/timeSheet';
 import { TimeSheetServiceTRPC } from '../services';
 
 export const timeSheetRouter = router({
@@ -13,5 +17,9 @@ export const timeSheetRouter = router({
 
   getTimeSheets: authedProcedure.query(({ ctx }) =>
     TimeSheetServiceTRPC.getTimeSheetsForUser(ctx.user)
-  )
+  ),
+
+  setTimeSheetEntry: authedProcedure
+    .input(setTimeSheetEntryInputSchema)
+    .mutation(({ input, ctx }) => TimeSheetServiceTRPC.setTimeSheetEntry(input, ctx.user))
 });

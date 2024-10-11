@@ -40,6 +40,7 @@
 		"prettier-plugin-svelte": "^3.2.7",
 		"sass-embedded": "^1.79.4",
 		"svelte": "^5.0.0-next.262",
+		"trpc-client-devtools-link": "0.2.1-next",
 		"tslib": "^2.7.0",
 		"typescript": "^5.6.2",
 		"typescript-eslint": "^8.8.1",
