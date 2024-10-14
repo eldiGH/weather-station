@@ -1,21 +1,33 @@
 import { and, count, desc, eq, gte, inArray, lt, sql, sum } from 'drizzle-orm';
 import { db } from '../db/drizzle';
-import { timeSheetEntrySchema, timeSheetSchema, type UserModel } from '../db/drizzle/schema';
+import { timeSheetEntry, timeSheet, type UserModel } from '../db/drizzle/schema';
 import type {
   CreateTimeSheetInput,
   DeleteTimeSheetEntryBulkInput,
   DeleteTimeSheetEntryInput,
   GetTimeSheetInput,
   SetTimeSheetEntryBulkInput,
+  SetTimeSheetEntryForMonthInput,
   SetTimeSheetEntryInput
 } from '../schemas/timeSheet';
 import { TimeSheetNameAlreadyUsed } from '../errors/TimeSheetNameAlreadyUsed';
-import { getSQLForDates } from '../helpers/db';
+import { dateTruncate, dbConstants, dbOps, getSQLForDates, timeInterval } from '../helpers/db';
 import { TimeSheetNotFound } from '../errors/TimeSheetNotFound';
 import { AccessDenied } from '../errors/AccessDenied';
 import { TimeSheetEntryNotFound } from '../errors/TimeSheetEntryNotFound';
+import { dateStringComparatorDesc, formatToStringDate } from '../helpers/dates';
+import { format, getDaysInMonth } from 'date-fns';
+import { convertArrayToDict } from '../helpers';
 
-const validateTimeSheet = <T extends typeof timeSheetSchema.$inferSelect>(
+const timeSheetEntryOnConflictUpdateConfig = {
+  target: [timeSheetEntry.date, timeSheetEntry.timeSheetId],
+  set: {
+    hours: sql.raw(`excluded.${timeSheetEntry.hours.name}`),
+    pricePerHour: sql.raw(`excluded.${timeSheetEntry.pricePerHour.name}`)
+  }
+};
+
+const validateTimeSheet = <T extends typeof timeSheet.$inferSelect>(
   timeSheet: T | undefined,
   user: UserModel
 ) => {
@@ -32,7 +44,7 @@ const validateTimeSheet = <T extends typeof timeSheetSchema.$inferSelect>(
 
 const getAndValidateTimeSheet = async (timeSheetId: string, user: UserModel) =>
   validateTimeSheet(
-    (await db.select().from(timeSheetSchema).where(eq(timeSheetSchema.id, timeSheetId))).at(0),
+    (await db.select().from(timeSheet).where(eq(timeSheet.id, timeSheetId))).at(0),
     user
   );
 
@@ -41,8 +53,8 @@ export const TimeSheetService = {
     const existingTimeSheetWithSameNameForUser = (
       await db
         .select()
-        .from(timeSheetSchema)
-        .where(and(eq(timeSheetSchema.ownerId, user.id), eq(timeSheetSchema.name, data.name)))
+        .from(timeSheet)
+        .where(and(eq(timeSheet.ownerId, user.id), eq(timeSheet.name, data.name)))
     ).at(0);
 
     if (existingTimeSheetWithSameNameForUser) {
@@ -51,7 +63,7 @@ export const TimeSheetService = {
 
     const { id } = (
       await db
-        .insert(timeSheetSchema)
+        .insert(timeSheet)
         .values({ ...data, ownerId: user.id })
         .returning()
     )[0];
@@ -60,12 +72,12 @@ export const TimeSheetService = {
   },
 
   getTimeSheet: async (data: GetTimeSheetInput, user: UserModel) => {
-    const timeSheet = await db.query.timeSheetSchema.findFirst({
+    const timeSheet = await db.query.timeSheet.findFirst({
       where: (timeSheet, { eq }) => eq(timeSheet.id, data.id),
       with: {
         entries: {
-          where: getSQLForDates(timeSheetEntrySchema.date, data.dates),
-          orderBy: desc(timeSheetEntrySchema.date)
+          where: getSQLForDates(timeSheetEntry.date, data.dates),
+          orderBy: desc(timeSheetEntry.date)
         }
       }
     });
@@ -101,21 +113,25 @@ export const TimeSheetService = {
   },
 
   getTimeSheetsForUser: async (user: UserModel) => {
-    const lastMonthDate = sql<string>`(DATE_TRUNC('month', CURRENT_DATE) - INTERVAL '1 month')::date`;
-    const currentMonthDate = sql<string>`DATE_TRUNC('month', CURRENT_DATE)::date`;
+    const truncatedTodayDate = dateTruncate(dbConstants.currentDate, 'month');
 
     const timeSheetEntriesQuery = db.$with('entries').as(
       db
         .select({
-          timeSheet: { ...timeSheetSchema },
+          timeSheet: { ...timeSheet },
           timeSheetEntry: {
-            ...timeSheetEntrySchema,
-            createdAt: sql`${timeSheetEntrySchema.createdAt}`.as('entryCreatedAt')
+            ...timeSheetEntry,
+            createdAt: sql`${timeSheetEntry.createdAt}`.as('entryCreatedAt')
           }
         })
-        .from(timeSheetSchema)
-        .innerJoin(timeSheetEntrySchema, eq(timeSheetSchema.id, timeSheetEntrySchema.timeSheetId))
-        .where(and(eq(timeSheetSchema.ownerId, 1), gte(timeSheetEntrySchema.date, lastMonthDate)))
+        .from(timeSheet)
+        .innerJoin(timeSheetEntry, eq(timeSheet.id, timeSheetEntry.timeSheetId))
+        .where(
+          and(
+            eq(timeSheet.ownerId, 1),
+            gte(timeSheetEntry.date, dbOps.subtract(truncatedTodayDate, timeInterval('1 months')))
+          )
+        )
     );
 
     const currentMonthEntriesQuery = db
@@ -128,7 +144,7 @@ export const TimeSheetService = {
         timeSheetId: timeSheetEntriesQuery.timeSheet.id
       })
       .from(timeSheetEntriesQuery)
-      .where(gte(timeSheetEntriesQuery.timeSheetEntry.date, currentMonthDate))
+      .where(gte(timeSheetEntriesQuery.timeSheetEntry.date, truncatedTodayDate))
       .groupBy(timeSheetEntriesQuery.timeSheet.id)
       .as('currentMonthEntries');
 
@@ -142,20 +158,17 @@ export const TimeSheetService = {
         timeSheetId: timeSheetEntriesQuery.timeSheet.id
       })
       .from(timeSheetEntriesQuery)
-      .where(lt(timeSheetEntriesQuery.timeSheetEntry.date, currentMonthDate))
+      .where(lt(timeSheetEntriesQuery.timeSheetEntry.date, truncatedTodayDate))
       .groupBy(timeSheetEntriesQuery.timeSheet.id)
       .as('lastMonthEntries');
 
     const data = await db
       .with(timeSheetEntriesQuery)
       .select()
-      .from(timeSheetSchema)
-      .leftJoin(
-        currentMonthEntriesQuery,
-        eq(currentMonthEntriesQuery.timeSheetId, timeSheetSchema.id)
-      )
-      .leftJoin(lastMonthEntriesQuery, eq(lastMonthEntriesQuery.timeSheetId, timeSheetSchema.id))
-      .where(eq(timeSheetSchema.ownerId, user.id));
+      .from(timeSheet)
+      .leftJoin(currentMonthEntriesQuery, eq(currentMonthEntriesQuery.timeSheetId, timeSheet.id))
+      .leftJoin(lastMonthEntriesQuery, eq(lastMonthEntriesQuery.timeSheetId, timeSheet.id))
+      .where(eq(timeSheet.ownerId, user.id));
 
     return data.map((d) => ({
       id: d.time_sheet.id,
@@ -180,39 +193,89 @@ export const TimeSheetService = {
     await getAndValidateTimeSheet(input.timeSheetId, user);
 
     await db
-      .insert(timeSheetEntrySchema)
+      .insert(timeSheetEntry)
       .values(input)
-      .onConflictDoUpdate({
-        target: [timeSheetEntrySchema.date, timeSheetEntrySchema.timeSheetId],
-        set: { hours: input.hours, pricePerHour: input.pricePerHour }
-      });
+      .onConflictDoUpdate(timeSheetEntryOnConflictUpdateConfig);
   },
 
   setTimeSheetEntryBulk: async (input: SetTimeSheetEntryBulkInput, user: UserModel) => {
     await getAndValidateTimeSheet(input.timeSheetId, user);
 
     await db
-      .insert(timeSheetEntrySchema)
+      .insert(timeSheetEntry)
       .values(input.entries.map((entry) => ({ ...entry, timeSheetId: input.timeSheetId })))
-      .onConflictDoUpdate({
-        target: [timeSheetEntrySchema.date, timeSheetEntrySchema.timeSheetId],
-        set: {
-          hours: sql.raw(`excluded.${timeSheetEntrySchema.hours.name}`),
-          pricePerHour: sql.raw(`excluded.${timeSheetEntrySchema.pricePerHour.name}`)
-        }
-      });
+      .onConflictDoUpdate(timeSheetEntryOnConflictUpdateConfig);
+  },
+
+  setTimeSheetEntryForMonth: async (input: SetTimeSheetEntryForMonthInput, user: UserModel) => {
+    await getAndValidateTimeSheet(input.timeSheetId, user);
+
+    const formattedDate = formatToStringDate(input.date);
+
+    const yearAndMonth = format(formattedDate, 'yyyy-MM');
+
+    const filteredEntries = input.entries.filter(
+      (entry) => format(entry.date, 'yyyy-MM') === yearAndMonth
+    );
+    const mappedEntries = filteredEntries.map((entry) => ({
+      ...entry,
+      date: formatToStringDate(entry.date),
+      timeSheetId: input.timeSheetId
+    }));
+    const sortedEntries = mappedEntries.toSorted((a, b) =>
+      dateStringComparatorDesc(a.date, b.date)
+    );
+
+    if (sortedEntries.length === 0) {
+      await db
+        .delete(timeSheetEntry)
+        .where(
+          and(
+            sql`DATE_TRUNC('month', ${timeSheetEntry.date}::date) = DATE_TRUNC('month', ${formattedDate}::date)`,
+            eq(timeSheetEntry.timeSheetId, input.timeSheetId)
+          )
+        );
+      return;
+    }
+
+    const entriesDict = convertArrayToDict(sortedEntries, 'date');
+    const entriesToDelete: string[] = [];
+
+    const daysInMonth = getDaysInMonth(formattedDate);
+    for (let i = daysInMonth; i >= 1; i--) {
+      const date = format(
+        formattedDate,
+        `yyyy-MM-${i.toLocaleString('en-US', { minimumIntegerDigits: 2 })}`
+      );
+
+      if (!entriesDict[date]) {
+        entriesToDelete.push(date);
+      }
+    }
+
+    await db.transaction(async (tx) => {
+      await tx
+        .delete(timeSheetEntry)
+        .where(
+          and(
+            inArray(timeSheetEntry.date, entriesToDelete),
+            eq(timeSheetEntry.timeSheetId, input.timeSheetId)
+          )
+        );
+      await tx
+        .insert(timeSheetEntry)
+        .values(sortedEntries)
+        .onConflictDoUpdate(timeSheetEntryOnConflictUpdateConfig);
+    });
   },
 
   deleteTimeSheetEntry: async (input: DeleteTimeSheetEntryInput, user: UserModel) => {
     await getAndValidateTimeSheet(input.timeSheetId, user);
 
     const { rowCount } = await db
-      .delete(timeSheetEntrySchema)
+      .delete(timeSheetEntry)
       .where(
-        and(
-          eq(timeSheetEntrySchema.timeSheetId, input.timeSheetId),
-          eq(timeSheetEntrySchema.date, input.date)
-        )
+        and(eq(timeSheetEntry.timeSheetId, input.timeSheetId), eq(timeSheetEntry.date, input.date))
       );
 
     if (rowCount === 0) {
@@ -224,11 +287,11 @@ export const TimeSheetService = {
     await getAndValidateTimeSheet(input.timeSheetId, user);
 
     await db
-      .delete(timeSheetEntrySchema)
+      .delete(timeSheetEntry)
       .where(
         and(
-          eq(timeSheetEntrySchema.timeSheetId, input.timeSheetId),
-          inArray(timeSheetEntrySchema.date, input.dates)
+          eq(timeSheetEntry.timeSheetId, input.timeSheetId),
+          inArray(timeSheetEntry.date, input.dates)
         )
       );
   }

@@ -7,7 +7,8 @@
     "./schemas": "./src/schemas/index.ts",
     "./trpc": "./src/clientExports.ts",
     "./types": "./src/types/index.ts",
-    "./errors": "./src/errors/index.ts"
+    "./errors": "./src/errors/index.ts",
+    "./helpers": "./src/helpers/index.ts"
   },
   "scripts": {
     "dev": "tsx watch src/index.ts",

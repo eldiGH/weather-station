@@ -1,4 +1,9 @@
+import { format, getDaysInMonth, set } from 'date-fns';
+
 export const dateComparatorDesc = (a: Date, b: Date) => b.getTime() - a.getTime();
+
+export const dateStringComparatorDesc = (a: string, b: string) =>
+  dateComparatorDesc(new Date(a), new Date(b));
 
 export const calculateAvgDiffSeconds = (dates: Date[]) => {
   if (dates.length < 2) {
@@ -14,3 +19,10 @@ export const calculateAvgDiffSeconds = (dates: Date[]) => {
 
   return differenceTimes.reduce((a, b) => a + b) / sortedDates.length;
 };
+
+export const formatToStringDate = (date: Date | string) => format(date, 'yyyy-MM-dd');
+
+export const getMonthsBoundaries = (date: Date | string) => ({
+  from: formatToStringDate(set(date, { date: 1 })),
+  to: formatToStringDate(set(date, { date: getDaysInMonth(date) }))
+});

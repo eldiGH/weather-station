@@ -8,6 +8,8 @@
 		value?: string;
 		error?: string | false;
 		required?: boolean;
+		centerText?: boolean;
+		short?: boolean;
 	}
 
 	let {
@@ -16,13 +18,21 @@
 		label = '',
 		value = $bindable(''),
 		required,
+		centerText,
+		short,
 		...restProps
 	}: Props = $props();
 </script>
 
 <div class="container">
 	<div class="input__container">
-		<input {...restProps} {id} class="input" bind:value />
+		<input
+			{...restProps}
+			{id}
+			class="input"
+			bind:value
+			class:center-text={centerText}
+			class:short />
 		{#if label}
 			<label for={id} class:raised={!!value}
 				>{label}
@@ -49,6 +59,14 @@
 		transition: border-color $animationOpts;
 		font-size: 1rem;
 		color: var(--input-text-color) !important;
+
+		&.center-text {
+			text-align: center;
+		}
+
+		&.short {
+			width: 75px;
+		}
 
 		&:focus {
 			outline: none;

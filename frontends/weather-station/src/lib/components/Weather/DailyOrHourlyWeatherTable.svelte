@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { capitalize } from '$lib/helpers/string';
+	import { capitalize } from '@shared/helpers/string';
 	import { format, fromUnixTime } from 'date-fns';
 	import IconInfo from '@shared/components/IconInfo.svelte';
 	import { getWeatherIcon } from '$lib/helpers/weatherHelper';

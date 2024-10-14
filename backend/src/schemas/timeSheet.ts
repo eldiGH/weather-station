@@ -40,6 +40,20 @@ export const setTimeSheetEntryBulkInputSchema = object({
 
 export type SetTimeSheetEntryBulkInput = z.infer<typeof setTimeSheetEntryBulkInputSchema>;
 
+export const setTimeSheetEntryForMonthInputSchema = object({
+  timeSheetId: string().uuid(),
+  date: string().date(),
+  entries: array(
+    object({
+      date: string().date(),
+      hours: timeSheetHours,
+      pricePerHour: number().gt(0)
+    })
+  )
+});
+
+export type SetTimeSheetEntryForMonthInput = z.infer<typeof setTimeSheetEntryForMonthInputSchema>;
+
 export const deleteTimeSheetEntryInputSchema = object({
   date: string().date(),
   timeSheetId: string().uuid()

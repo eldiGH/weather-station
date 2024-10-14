@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { formatTemperature } from '$lib/helpers/formatters';
-	import { capitalize } from '$lib/helpers/string';
+	import { capitalize } from '@shared/helpers/string';
 	import { getWeatherIcon } from '$lib/helpers/weatherHelper';
 	import IconInfo from '@shared/components/IconInfo.svelte';
 	import { format, fromUnixTime } from 'date-fns';

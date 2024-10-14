@@ -3,18 +3,20 @@
 	import Icon from './Icon.svelte';
 	import Button from './Button.svelte';
 
-	interface $$Props extends ComponentProps<Icon> {
+	interface Props
+		extends ComponentProps<Icon>,
+			Pick<ComponentProps<Button>, 'onclick' | 'disabled'> {
 		size?: number;
+		iconSize?: number;
+		disabled?: boolean;
 	}
 
-	$: restProps = $$restProps as $$Props;
-
-	export let size = 16;
+	const { size = 16, iconSize, onclick, disabled, ...restProps }: Props = $props();
 </script>
 
 <div class="icon-button">
-	<Button style="width: {size * 2}px; height: {size * 2}px;" on:click>
-		<Icon {size} {...restProps} />
+	<Button {disabled} style="width: {size * 2}px; height: {size * 2}px;" {onclick}>
+		<Icon size={iconSize ?? size} {...restProps} />
 	</Button>
 </div>
 

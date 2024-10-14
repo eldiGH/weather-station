@@ -1,15 +1,15 @@
 <script lang="ts">
 	import Card from '@shared/components/Card.svelte';
-	import type { LayoutData } from './$types';
+	import type { PageData } from './$types';
 	import IconInfo from '@shared/components/IconInfo.svelte';
 	import { pluralizePl } from '@shared/helpers/language';
 	import Link from '@shared/components/Link.svelte';
 
 	interface Props {
-		data: LayoutData;
+		data: PageData;
 	}
 
-	type TimeSheet = LayoutData['timeSheets'][number];
+	type TimeSheet = PageData['timeSheets'][number];
 	type TimeSheetMonthData = TimeSheet['currentMonth'] & TimeSheet['lastMonth'];
 
 	const { data }: Props = $props();

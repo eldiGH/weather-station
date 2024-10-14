@@ -24,13 +24,16 @@ $themes: (
 		sidebar-color: $dirt,
 
 		top-bar-background: var(--primary-color),
-		link-color: #709dd4
+		link-color: #709dd4,
+
+		spinner-color: white,
+		loader-overlay-color: rgba(255, 255, 255, 0.1)
 	),
 	time-sheet: (
-		background-color: #d3d9d4,
-		text-color: $white,
+		background-color: #fff,
+		text-color: #000,
 		// primary-color: #124e66,
-		primary-color: #004761,
+		primary-color: #0078a3,
 
 		error: #ffa293,
 
@@ -43,13 +46,16 @@ $themes: (
 
 		input-border: var(--primary-color),
 		input-inactive-border: #cacaca,
-		input-text-color: $white,
+		input-text-color: #000,
 		input-required-asterisk: #ffa293,
 
 		sidebar-color: $dirt,
 
 		top-bar-background: var(--primary-color),
-		link-color: #73b2ff
+		link-color: #73b2ff,
+
+		spinner-color: var(--primary-color),
+		loader-overlay-color: rgba(0, 0, 0, 0.1)
 	)
 );
 

@@ -23,8 +23,7 @@
 			cy={size}
 			r={radius}
 			fill="none"
-			stroke-width={thickness}
-			stroke="#fff" />
+			stroke-width={thickness} />
 	</svg>
 </span>
 
@@ -39,6 +38,8 @@
 		circle {
 			stroke-dasharray: calc(var(--total-path-len) * 0.7), var(--total-path-len);
 			stroke-dashoffset: calc(-1 * ((var(--total-path-len) * 0.1) + var(--total-path-len)));
+
+			stroke: var(--spinner-color);
 
 			animation: stroke-len 1.4s ease-in-out infinite;
 		}

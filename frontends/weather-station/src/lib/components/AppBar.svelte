@@ -9,7 +9,7 @@
 
 <TopBar>
 	<div slot="left" class="left">
-		<IconButton on:click={sidebarStore.toggle} icon="menu" size={24} />
+		<IconButton onclick={sidebarStore.toggle} icon="menu" size={24} />
 		<Link noColor class="header" href="/">Weather station app</Link>
 	</div>
 	<Button slot="right" on:click={() => logout()}>Wyloguj</Button>

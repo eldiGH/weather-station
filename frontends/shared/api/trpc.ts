@@ -54,8 +54,9 @@ export const trpcWs = () => {
 };
 
 type HandledError<Data> =
-	| { success: true; data: Data; error: null }
-	| { success: false; error: ApiError; data: null };
+	| { success: true; data: Data; error: null; wasAborted: false }
+	| { success: false; error: ApiError; data: null; wasAborted: false }
+	| { success: false; error: null; data: null; wasAborted: true };
 
 export const handleTRCPErrors = async <T, O, D>(
 	procedure: (input: T, opts?: O) => Promise<D>,
@@ -63,12 +64,15 @@ export const handleTRCPErrors = async <T, O, D>(
 	opts?: O
 ): Promise<HandledError<D>> => {
 	try {
-		return { success: true, data: await procedure(input, opts), error: null };
+		return { success: true, data: await procedure(input, opts), error: null, wasAborted: false };
 	} catch (error) {
+		if (isTrpcClientError(error) && error.cause?.name === 'ObservableAbortError') {
+			return { success: false, error: null, data: null, wasAborted: true };
+		}
 		if (!(isTrpcClientError(error) && isApiError(error.data))) {
-			return { success: false, error: InternalServerError(), data: null };
+			return { success: false, error: InternalServerError(), data: null, wasAborted: false };
 		}
 
-		return { success: false, error: error.data, data: null };
+		return { success: false, error: error.data, data: null, wasAborted: false };
 	}
 };

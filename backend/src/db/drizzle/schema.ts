@@ -58,7 +58,7 @@ export const userRelations = relations(userSchema, ({ many }) => ({
   sensors: many(sensorSchema),
   refreshTokens: many(refreshTokenSchema),
   kiosks: many(kioskSchema),
-  timeSheets: many(timeSheetSchema)
+  timeSheets: many(timeSheet)
 }));
 
 export const kioskSchema = pgTable('kiosk', {
@@ -179,7 +179,7 @@ export const kioskToSensorRelations = relations(kioskToSensorSchema, ({ one }) =
   })
 }));
 
-export const timeSheetSchema = pgTable('time_sheet', {
+export const timeSheet = pgTable('time_sheet', {
   id: uuid('id').defaultRandom().primaryKey().unique().notNull(),
 
   name: text().notNull(),
@@ -193,16 +193,16 @@ export const timeSheetSchema = pgTable('time_sheet', {
     .notNull()
 });
 
-export const timeSheetRelations = relations(timeSheetSchema, ({ one, many }) => ({
+export const timeSheetRelations = relations(timeSheet, ({ one, many }) => ({
   owner: one(userSchema, {
-    fields: [timeSheetSchema.ownerId],
+    fields: [timeSheet.ownerId],
     references: [userSchema.id]
   }),
 
-  entries: many(timeSheetEntrySchema)
+  entries: many(timeSheetEntry)
 }));
 
-export const timeSheetEntrySchema = pgTable(
+export const timeSheetEntry = pgTable(
   'time_sheet_entry',
   {
     hours: doublePrecision('hours').notNull(),
@@ -214,16 +214,16 @@ export const timeSheetEntrySchema = pgTable(
 
     timeSheetId: uuid('time_sheet_id')
       .notNull()
-      .references(() => timeSheetSchema.id)
+      .references(() => timeSheet.id)
   },
   (t) => ({
     pk: primaryKey({ columns: [t.date, t.timeSheetId] })
   })
 );
 
-export const timeSheetEntryRelations = relations(timeSheetEntrySchema, ({ one }) => ({
-  timeSheet: one(timeSheetSchema, {
-    fields: [timeSheetEntrySchema.timeSheetId],
-    references: [timeSheetSchema.id]
+export const timeSheetEntryRelations = relations(timeSheetEntry, ({ one }) => ({
+  timeSheet: one(timeSheet, {
+    fields: [timeSheetEntry.timeSheetId],
+    references: [timeSheet.id]
   })
 }));
