@@ -18,7 +18,6 @@ import {
 } from '../repositories/refreshToken';
 import type { JwtPayload } from '../types/JwtPayload';
 import type { userSchema } from '../db/drizzle/schema';
-import { isApiError } from '../types';
 
 const jwtSecret = process.env.JWT_SECRET;
 if (!jwtSecret) {

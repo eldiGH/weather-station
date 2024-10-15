@@ -7,6 +7,7 @@ import { HttpStatus } from 'backend/types';
 import { parse } from 'devalue';
 import { isDevelopment } from './environment';
 import type { SerializeOptions } from 'cookie';
+import type { TokensData } from '@shared/types/Token';
 
 const NOT_AUTHED_ROUTES = ['/login', '/register', '/kiosk'];
 const AUTHED_NOT_ALLOWED_ROUTES = ['/login', '/register'];
@@ -55,32 +56,37 @@ const parseCookieOptions = (
 	return [name, value, options];
 };
 
-const refreshTokens = async (event: RequestEvent, refreshToken: string): Promise<boolean> => {
+const refreshTokens = async (
+	{ fetch, cookies }: RequestEvent,
+	refreshToken: string
+): Promise<boolean> => {
 	try {
-		const resp = await event.fetch(urljoin(config.serverAddress, '/auth.refresh'), {
+		const resp = await fetch(urljoin(config.serverAddress, '/auth.refresh'), {
 			headers: { cookie: `refreshToken=${refreshToken}`, 'Content-Type': 'application/json' },
 			method: 'POST'
 		});
 
-		if (!resp.ok) {
-			return false;
-		}
-
 		for (const setCookieString of resp.headers.getSetCookie()) {
-			event.cookies.set(...parseCookieOptions(setCookieString));
+			cookies.set(...parseCookieOptions(setCookieString));
 		}
 
-		const accessToken: { token: string; expires: Date } = parse((await resp.json()).result.data);
+		const tokens: TokensData = parse((await resp.json()).result.data);
 
 		const cookieOptions = {
 			sameSite: 'lax',
 			secure: !isDevelopment,
 			httpOnly: false,
-			path: '/',
-			expires: accessToken.expires
+			path: '/'
 		} satisfies SerializeOptions;
 
-		event.cookies.set('accessToken', accessToken.token, cookieOptions);
+		cookies.set('accessToken', tokens.accessToken.token, {
+			...cookieOptions,
+			expires: tokens.accessToken.expires
+		});
+		cookies.set('refreshTokenExpiry', tokens.refreshTokenExpiry.toISOString(), {
+			...cookieOptions,
+			expires: tokens.refreshTokenExpiry
+		});
 		return true;
 	} catch (_) {
 		return false;

@@ -4,7 +4,7 @@
 	import { format, getDaysInMonth } from 'date-fns';
 	import { convertArrayToDict, formatToStringDate, getMonthsBoundaries } from 'backend/helpers';
 	import Button from '@shared/components/Button.svelte';
-	import { handleTRCPErrors, trpc } from '@shared/api/trpc';
+	import { handleAuthedTRPCErrors, trpc } from '@shared/api/trpc';
 	import { capitalize } from '@shared/helpers/string';
 	import IconButton from '@shared/components/IconButton.svelte';
 	import { addMonths } from 'date-fns/addMonths';
@@ -72,13 +72,21 @@
 
 		isSavingTimeSheet = true;
 
-		await trpc(fetch).timeSheet.setTimeSheetEntryForMonth.mutate({
-			timeSheetId: $timeSheetEntries.id,
-			date: formatToStringDate(currentDate),
-			entries: filteredEntries
-		});
+		const { error } = await handleAuthedTRPCErrors(
+			trpc(fetch).timeSheet.setTimeSheetEntryForMonth.mutate,
+			{
+				timeSheetId: $timeSheetEntries.id,
+				date: formatToStringDate(currentDate),
+				entries: filteredEntries
+			}
+		);
 
 		isSavingTimeSheet = false;
+		if (error) {
+			snackbar.pushError('Coś poszło nie tak, spróbuj ponownie później');
+			return;
+		}
+
 		invalidate(CacheIdentifiers.API_TIME_SHEETS_LIST);
 		snackbar.pushSuccess('Zapisano');
 
@@ -89,8 +97,6 @@
 			entries: monthlyEntries.filter((entry) => entry.hours > 0)
 		}));
 	};
-
-	$inspect(monthlyEntries);
 
 	let isTimeSheetModified = $derived.by(() => {
 		for (let i = 0; i < monthlyEntries.length; i++) {
@@ -117,7 +123,7 @@
 		timeSheetFetchAbort = new AbortController();
 
 		isRefetchingTimeSheet = true;
-		const { data, wasAborted } = await handleTRCPErrors(
+		const { data, wasAborted } = await handleAuthedTRPCErrors(
 			trpc(fetch).timeSheet.getTimeSheet.query,
 			{
 				id: $timeSheetEntries.id,

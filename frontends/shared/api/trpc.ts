@@ -13,6 +13,7 @@ import { isDevelopment } from '../helpers/environment';
 import { browser } from '$app/environment';
 import { InternalServerError } from 'backend/errors';
 import { devtoolsLink } from 'trpc-client-devtools-link';
+import { handleFrontendRefresh } from '@shared/helpers/auth';
 
 export type FetchFunc = (
 	input: RequestInfo | URL,
@@ -61,7 +62,7 @@ type HandledRequest<Data, Abortable extends boolean> = Abortable extends true
 	? HandledRequestSuccess<Data> | HandledRequestFail | HandledRequestAborted
 	: HandledRequestSuccess<Data> | HandledRequestFail;
 
-export const handleTRCPErrors = async <
+export const handleTRPCErrors = async <
 	T,
 	O,
 	D,
@@ -86,4 +87,37 @@ export const handleTRCPErrors = async <
 
 		return { success: false, error: error.data, data: null, wasAborted: false };
 	}
+};
+
+let refetchPromise: Promise<ApiError | undefined> | null = null;
+export const handleAuthedTRPCErrors = async <
+	T,
+	O extends { signal?: AbortSignal },
+	D,
+	Abortable extends O extends { signal: AbortSignal } ? true : false
+>(
+	procedure: (input: T, opts?: O) => Promise<D>,
+	input: T,
+	opts?: O
+): Promise<HandledRequest<D, Abortable>> => {
+	if (browser) {
+		let error: ApiError | undefined;
+		if (refetchPromise) {
+			error = await refetchPromise;
+		} else {
+			refetchPromise = handleFrontendRefresh();
+			error = await refetchPromise;
+		}
+		refetchPromise = null;
+
+		if (error) {
+			throw error;
+		}
+	}
+
+	if (opts?.signal?.aborted) {
+		return { data: null, error: null, wasAborted: true } as HandledRequest<D, Abortable>;
+	}
+
+	return handleTRPCErrors(procedure, input, opts);
 };

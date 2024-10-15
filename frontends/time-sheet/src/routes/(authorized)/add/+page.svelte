@@ -5,7 +5,7 @@
 	import Button from '@shared/components/Button.svelte';
 	import NumericInput from '@shared/components/NumericInput.svelte';
 	import { createTimeSheetInputSchema, type CreateTimeSheetInput } from 'backend/schemas';
-	import { handleTRCPErrors, trpc } from '@shared/api/trpc';
+	import { handleAuthedTRPCErrors, trpc } from '@shared/api/trpc';
 	import { goto } from '$app/navigation';
 	import { ApiErrorCode } from 'backend/types';
 
@@ -15,7 +15,7 @@
 	);
 
 	const handleSubmit = async (formData: CreateTimeSheetInput) => {
-		const { data, error, success } = await handleTRCPErrors(
+		const { data, error, success } = await handleAuthedTRPCErrors(
 			trpc(fetch).timeSheet.createTimeSheet.mutate,
 			formData
 		);

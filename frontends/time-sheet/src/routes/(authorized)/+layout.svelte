@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Container from '@shared/components/Container.svelte';
-	import { isLoggedIn } from '@shared/helpers/auth';
+	import { getTokensDataCookies, isLoggedIn } from '@shared/helpers/auth';
 	import { onMount } from 'svelte';
 	import AppBar from '@shared/components/AppBar.svelte';
 	import SnackbarProvider from '@shared/components/SnackbarProvider.svelte';
 
 	onMount(() => {
-		if (!isLoggedIn()) {
+		if (!isLoggedIn(getTokensDataCookies())) {
 			goto('/login', { replaceState: true });
 		}
 	});
