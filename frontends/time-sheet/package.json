@@ -27,5 +27,8 @@
 		"svelte-check": "^4.0.4",
 		"vite": "^5.4.8",
 		"vitest": "^2.1.2"
+	},
+	"dependencies": {
+		"dotenv": "^16.4.5"
 	}
 }
