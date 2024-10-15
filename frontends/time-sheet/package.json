@@ -17,6 +17,7 @@
 		"start": "node -r dotenv/config server.js"
 	},
 	"devDependencies": {
+		"@sveltejs/adapter-node": "^5.2.7",
 		"@sveltejs/kit": "^2.6.3",
 		"@sveltejs/vite-plugin-svelte": "4.0.0-next.7",
 		"backend": "workspace:^",

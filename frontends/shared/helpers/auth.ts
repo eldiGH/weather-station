@@ -7,7 +7,7 @@ import type { ApiError } from 'backend/types';
 import { isDevelopment } from './environment';
 
 const saveToken = (accessToken: { token: string; expires: Date }) => {
-	const baseCookieConfig: cookie.CookieSerializeOptions = {
+	const baseCookieConfig: cookie.SerializeOptions = {
 		sameSite: 'lax',
 		secure: !isDevelopment
 	};

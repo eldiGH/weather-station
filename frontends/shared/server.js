@@ -1,5 +1,5 @@
 import httpProxy from 'http-proxy';
-import config from '../weather-station/src/config.json' with { type: 'json' };
+import config from './config.json' with { type: 'json' };
 import { createServer } from 'http';
 
 /**

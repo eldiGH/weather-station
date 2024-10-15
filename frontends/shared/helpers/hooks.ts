@@ -5,20 +5,20 @@ import config from '../config.json';
 import { jwt } from '../helpers/jwt';
 import { HttpStatus } from 'backend/types';
 import { parse } from 'devalue';
-import type { CookieSerializeOptions } from 'cookie';
 import { isDevelopment } from './environment';
+import type { SerializeOptions } from 'cookie';
 
 const NOT_AUTHED_ROUTES = ['/login', '/register', '/kiosk'];
 const AUTHED_NOT_ALLOWED_ROUTES = ['/login', '/register'];
 
 const parseCookieOptions = (
 	setCookieString: string
-): [string, string, CookieSerializeOptions & { path: string }] => {
+): [string, string, SerializeOptions & { path: string }] => {
 	const splitted = setCookieString.split(';');
 
 	const [name, value] = splitted.shift()?.split('=') ?? [];
 
-	const options: CookieSerializeOptions & { path: string } = { path: '/', secure: !isDevelopment };
+	const options: SerializeOptions & { path: string } = { path: '/', secure: !isDevelopment };
 
 	for (const property of splitted) {
 		const trimmedProp = property.trim();
@@ -46,7 +46,7 @@ const parseCookieOptions = (
 				continue;
 			}
 			case 'SameSite': {
-				options.sameSite = val as CookieSerializeOptions['sameSite'];
+				options.sameSite = val as SerializeOptions['sameSite'];
 				continue;
 			}
 		}
@@ -78,7 +78,7 @@ const refreshTokens = async (event: RequestEvent, refreshToken: string): Promise
 			httpOnly: false,
 			path: '/',
 			expires: accessToken.expires
-		} satisfies CookieSerializeOptions;
+		} satisfies SerializeOptions;
 
 		event.cookies.set('accessToken', accessToken.token, cookieOptions);
 		return true;

@@ -17,11 +17,7 @@ export const createContext = (opts: CreateFastifyContextOptions | CreateWSSConte
 
   const isHttp = !(res instanceof WebSocket);
 
-  const setCookie = (
-    name: string,
-    value: string,
-    cookieOptions?: cookie.CookieSerializeOptions
-  ) => {
+  const setCookie = (name: string, value: string, cookieOptions?: cookie.SerializeOptions) => {
     if (!isHttp) {
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
@@ -29,7 +25,7 @@ export const createContext = (opts: CreateFastifyContextOptions | CreateWSSConte
       });
     }
 
-    const options: cookie.CookieSerializeOptions = {
+    const options: cookie.SerializeOptions = {
       httpOnly: true,
       sameSite: 'lax',
       secure: !isDevelopment,
