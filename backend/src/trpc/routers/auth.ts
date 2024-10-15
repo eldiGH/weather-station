@@ -24,8 +24,8 @@ export const authRouter = router({
     return tokens.accessToken;
   }),
 
-  logout: publicProcedure.mutation(({ ctx }) => {
-    AuthServiceTRPC.logout(ctx.getRefreshToken());
+  logout: publicProcedure.mutation(async ({ ctx }) => {
+    await AuthServiceTRPC.logout(ctx.getRefreshToken());
 
     ctx.deleteRefreshToken();
   })

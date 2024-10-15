@@ -104,7 +104,7 @@ export const AuthService = {
       throw EmailOrPasswordNotValid();
     }
 
-    return generateNewTokens(user.id, uuid());
+    return await generateNewTokens(user.id, uuid());
   },
 
   logout: async (refreshToken?: string) => {
@@ -118,7 +118,7 @@ export const AuthService = {
 
     await updateRevokedOnToken(true, dbToken.id);
 
-    return generateNewTokens(dbToken.userId, dbToken.sessionId);
+    return await generateNewTokens(dbToken.userId, dbToken.sessionId);
   },
 
   authorize: async (authHeader?: string) => {

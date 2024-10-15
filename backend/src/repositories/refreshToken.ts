@@ -6,7 +6,7 @@ export const createRefreshToken = (data: typeof refreshTokenSchema.$inferInsert)
   db.insert(refreshTokenSchema).values(data);
 
 export const getRefreshTokenByToken = async (token: string) =>
-  (await db.select().from(refreshTokenSchema).where(eq(refreshTokenSchema.token, token))).shift();
+  (await db.select().from(refreshTokenSchema).where(eq(refreshTokenSchema.token, token))).at(0);
 
 export const updateRevokedInTokenSession = (revoked: boolean, sessionId: string) =>
   db

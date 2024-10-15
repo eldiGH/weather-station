@@ -18,7 +18,7 @@ const parseCookieOptions = (
 
 	const [name, value] = splitted.shift()?.split('=') ?? [];
 
-	const options: CookieSerializeOptions & { path: string } = { path: '/' };
+	const options: CookieSerializeOptions & { path: string } = { path: '/', secure: !isDevelopment };
 
 	for (const property of splitted) {
 		const trimmedProp = property.trim();
@@ -29,7 +29,7 @@ const parseCookieOptions = (
 				continue;
 			}
 			case 'Secure': {
-				options.secure = !isDevelopment;
+				options.secure = true;
 				continue;
 			}
 		}
