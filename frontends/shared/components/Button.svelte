@@ -43,7 +43,9 @@
 		border-radius: 5px;
 		font-size: 1.2rem;
 		cursor: pointer;
-		transition: filter 100ms ease-in-out;
+		transition:
+			filter 100ms ease-in-out,
+			background-color 100ms ease-in-out;
 		position: relative;
 		user-select: none;
 

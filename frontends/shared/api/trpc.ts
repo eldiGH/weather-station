@@ -53,21 +53,32 @@ export const trpcWs = () => {
 	return trpcWsClient;
 };
 
-type HandledError<Data> =
-	| { success: true; data: Data; error: null; wasAborted: false }
-	| { success: false; error: ApiError; data: null; wasAborted: false }
-	| { success: false; error: null; data: null; wasAborted: true };
+type HandledRequestSuccess<Data> = { success: true; data: Data; error: null; wasAborted: false };
+type HandledRequestFail = { success: false; error: ApiError; data: null; wasAborted: false };
+type HandledRequestAborted = { success: false; error: null; data: null; wasAborted: true };
 
-export const handleTRCPErrors = async <T, O, D>(
+type HandledRequest<Data, Abortable extends boolean> = Abortable extends true
+	? HandledRequestSuccess<Data> | HandledRequestFail | HandledRequestAborted
+	: HandledRequestSuccess<Data> | HandledRequestFail;
+
+export const handleTRCPErrors = async <
+	T,
+	O,
+	D,
+	Abortable extends O extends { signal: AbortSignal } ? true : false
+>(
 	procedure: (input: T, opts?: O) => Promise<D>,
 	input: T,
 	opts?: O
-): Promise<HandledError<D>> => {
+): Promise<HandledRequest<D, Abortable>> => {
 	try {
 		return { success: true, data: await procedure(input, opts), error: null, wasAborted: false };
 	} catch (error) {
 		if (isTrpcClientError(error) && error.cause?.name === 'ObservableAbortError') {
-			return { success: false, error: null, data: null, wasAborted: true };
+			return { success: false, error: null, data: null, wasAborted: true } as HandledRequest<
+				D,
+				Abortable
+			>;
 		}
 		if (!(isTrpcClientError(error) && isApiError(error.data))) {
 			return { success: false, error: InternalServerError(), data: null, wasAborted: false };

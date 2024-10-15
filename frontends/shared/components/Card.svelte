@@ -23,5 +23,7 @@
 		box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
 		background-color: var(--card-background);
 		color: var(--card-text-color);
+
+		--input-text-color: white;
 	}
 </style>

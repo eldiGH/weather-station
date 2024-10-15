@@ -6,6 +6,7 @@ import { jwt } from '../helpers/jwt';
 import { HttpStatus } from 'backend/types';
 import { parse } from 'devalue';
 import type { CookieSerializeOptions } from 'cookie';
+import { isDevelopment } from './environment';
 
 const NOT_AUTHED_ROUTES = ['/login', '/register', '/kiosk'];
 const AUTHED_NOT_ALLOWED_ROUTES = ['/login', '/register'];
@@ -28,7 +29,7 @@ const parseCookieOptions = (
 				continue;
 			}
 			case 'Secure': {
-				options.secure = true;
+				options.secure = !isDevelopment;
 				continue;
 			}
 		}
@@ -73,7 +74,7 @@ const refreshTokens = async (event: RequestEvent, refreshToken: string): Promise
 
 		const cookieOptions = {
 			sameSite: 'lax',
-			secure: true,
+			secure: !isDevelopment,
 			httpOnly: false,
 			path: '/',
 			expires: accessToken.expires

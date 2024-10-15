@@ -1,5 +1,5 @@
 <div class="root">
-	<div class="topbar">
+	<div class="top-bar">
 		<div class="left-slot"><slot name="left" /></div>
 		<div class="center-slot"><slot name="center" /></div>
 		<div class="right-slot"><slot name="right" /></div>
@@ -10,24 +10,26 @@
 </div>
 
 <style lang="scss">
+	@use '@shared/styles/vars' as v;
+
 	.root {
 		min-height: 100%;
 		display: flex;
 		flex-direction: column;
 
-		.topbar {
+		.top-bar {
 			width: 100%;
 			background-color: var(--top-bar-background);
-			min-height: 4rem;
+			height: v.$topBarHeight;
 			position: sticky;
 			top: 0;
 			box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 			padding: 0.5rem 1rem 0.5rem 0.5rem;
 			display: flex;
 			z-index: 1000;
+			color: var(--top-bar-text-color);
 
 			> div {
-				flex-basis: 33%;
 				flex-grow: 1;
 				display: flex;
 				align-items: center;

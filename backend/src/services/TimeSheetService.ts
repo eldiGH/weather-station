@@ -128,7 +128,7 @@ export const TimeSheetService = {
         .innerJoin(timeSheetEntry, eq(timeSheet.id, timeSheetEntry.timeSheetId))
         .where(
           and(
-            eq(timeSheet.ownerId, 1),
+            eq(timeSheet.ownerId, user.id),
             gte(timeSheetEntry.date, dbOps.subtract(truncatedTodayDate, timeInterval('1 months')))
           )
         )

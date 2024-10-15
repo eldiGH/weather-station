@@ -112,13 +112,22 @@
 
 		value--;
 	};
+
+	const handleFocus: FormEventHandler<HTMLInputElement> = (e) => {
+		e.currentTarget.select();
+	};
 </script>
 
 <div class="root">
 	{#if decButton}
 		<IconButton {disabled} onclick={handleDecrement} icon="remove" />
 	{/if}
-	<Input {...inputProps} {disabled} bind:value={inputValue} oninput={handleInput} />
+	<Input
+		{...inputProps}
+		{disabled}
+		bind:value={inputValue}
+		oninput={handleInput}
+		onfocus={handleFocus} />
 	{#if incButton}
 		<IconButton {disabled} onclick={handleIncrement} icon="add" />
 	{/if}

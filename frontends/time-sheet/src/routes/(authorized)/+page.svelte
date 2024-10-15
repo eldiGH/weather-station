@@ -63,6 +63,7 @@
 		justify-content: center;
 		gap: 2rem;
 		flex-wrap: wrap;
+		padding: 2rem 0;
 	}
 
 	.card {

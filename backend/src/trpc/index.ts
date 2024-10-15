@@ -8,6 +8,7 @@ import { WebSocket } from 'ws';
 import { fromUnixTime } from 'date-fns';
 import { ZodError } from 'zod';
 import { isApiError } from '../types';
+import { isDevelopment } from '../helpers/environment';
 
 const REFRESH_TOKEN_COOKIE_NAME = 'refreshToken';
 
@@ -31,7 +32,7 @@ export const createContext = (opts: CreateFastifyContextOptions | CreateWSSConte
     const options: cookie.CookieSerializeOptions = {
       httpOnly: true,
       sameSite: 'lax',
-      secure: true,
+      secure: !isDevelopment,
       ...cookieOptions
     };
 

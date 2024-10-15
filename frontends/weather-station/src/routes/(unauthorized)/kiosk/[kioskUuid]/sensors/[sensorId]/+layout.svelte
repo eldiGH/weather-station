@@ -2,7 +2,7 @@
 	import Icon from '@shared/components/Icon.svelte';
 	import Link from '@shared/components/Link.svelte';
 	import Tabs, { type Tab } from '$lib/components/Tabs.svelte';
-	import TopBar from '$lib/components/TopBar.svelte';
+	import TopBar from '@shared/components/TopBar.svelte';
 	import type { LayoutData } from './$types';
 	import { page } from '$app/stores';
 	import Container from '@shared/components/Container.svelte';

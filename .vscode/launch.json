@@ -5,11 +5,18 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Frontend",
+      "name": "Frontend:time-sheet",
       "request": "launch",
       "type": "chrome",
       "url": "http://localhost:5173",
-      "webRoot": "${workspaceFolder}/frontend/src"
+      "webRoot": "${workspaceFolder}/frontends/time-sheet/src"
+    },
+    {
+      "name": "Frontend:weather-station",
+      "request": "launch",
+      "type": "chrome",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/frontends/weather-station/src"
     },
     {
       "name": "Backend",
@@ -26,8 +33,8 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["fe:weather-station:dev"],
       "skipFiles": ["<node_internals>/**"],
-      "type": "node",
-      "console": "integratedTerminal"
+      "type": "node"
+      // "console": "integratedTerminal"
     },
     {
       "name": "SSR:time-sheet",
@@ -35,29 +42,33 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["fe:time-sheet:dev"],
       "skipFiles": ["<node_internals>/**"],
-      "type": "node",
-      "console": "integratedTerminal"
+      "type": "node"
+      // "console": "integratedTerminal"
     }
   ],
   "compounds": [
     {
       "name": "Fullstack (weather-station)",
-      "configurations": ["Backend", "SSR:weather-station", "Frontend"],
+      "configurations": [
+        "Backend",
+        "SSR:weather-station",
+        "Frontend:weather-station"
+      ],
       "stopAll": true
     },
     {
       "name": "SSR+Frontend (weather-station)",
-      "configurations": ["SSR:weather-station", "Frontend"],
+      "configurations": ["SSR:weather-station", "Frontend:weather-station"],
       "stopAll": true
     },
     {
       "name": "Fullstack (time-sheet)",
-      "configurations": ["Backend", "SSR:time-sheet", "Frontend"],
+      "configurations": ["Backend", "SSR:time-sheet", "Frontend:time-sheet"],
       "stopAll": true
     },
     {
       "name": "SSR+Frontend (time-sheet)",
-      "configurations": ["SSR:time-sheet", "Frontend"],
+      "configurations": ["SSR:time-sheet", "Frontend:time-sheet"],
       "stopAll": true
     }
   ]

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import AppBar from '$lib/components/AppBar.svelte';
+	import AppBar from '@shared/components/AppBar.svelte';
 	import AuthAgent from '@shared/components/AuthAgent.svelte';
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { onMount } from 'svelte';
@@ -13,7 +13,7 @@
 	});
 </script>
 
-<AppBar>
+<AppBar appName="Weather station">
 	<Sidebar>
 		<slot />
 	</Sidebar>

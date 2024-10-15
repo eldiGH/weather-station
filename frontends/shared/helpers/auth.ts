@@ -4,9 +4,13 @@ import { goto } from '$app/navigation';
 import { handleTRCPErrors, trpc } from '../api/trpc';
 import type { LoginInput, RegisterInput } from 'backend/schemas';
 import type { ApiError } from 'backend/types';
+import { isDevelopment } from './environment';
 
 const saveToken = (accessToken: { token: string; expires: Date }) => {
-	const baseCookieConfig: cookie.CookieSerializeOptions = { sameSite: 'lax', secure: true };
+	const baseCookieConfig: cookie.CookieSerializeOptions = {
+		sameSite: 'lax',
+		secure: !isDevelopment
+	};
 
 	const { token, expires } = accessToken;
 

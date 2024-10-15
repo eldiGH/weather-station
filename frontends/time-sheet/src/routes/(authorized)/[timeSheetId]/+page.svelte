@@ -11,6 +11,8 @@
 	import Loader from '@shared/components/Loader.svelte';
 	import { invalidate } from '$app/navigation';
 	import { CacheIdentifiers } from '$lib/constants/cache';
+	import { snackbar } from '@shared/components/SnackbarProvider.svelte';
+	import { writable } from 'svelte/store';
 
 	interface Props {
 		data: PageData;
@@ -20,19 +22,21 @@
 
 	const { data }: Props = $props();
 
-	let refreshedData: TimeSheet | null = $state(null);
-	let timeSheetData: TimeSheet = $derived(refreshedData ?? data.timeSheet);
-
 	interface MonthlyCalendarEntry {
 		date: string;
 		hours?: number;
 		pricePerHour?: number;
+		createdAt?: Date;
 	}
+
+	const timeSheetData = writable<TimeSheet>(data.timeSheet);
 
 	let currentDate = $state(new Date());
 	const daysInMonth = $derived(getDaysInMonth(currentDate));
 
-	const getInitialMonthlyEntries = () => {
+	let currentEntriesDict = $derived(convertArrayToDict($timeSheetData.entries, 'date'));
+
+	let initialMonthlyEntries = $derived.by(() => {
 		const initialMonthlyEntries = [];
 
 		for (let i = daysInMonth; i >= 1; i--) {
@@ -45,18 +49,17 @@
 			initialMonthlyEntries.push({
 				date,
 				hours: currentEntry?.hours ?? 0,
-				pricePerHour: currentEntry?.pricePerHour ?? timeSheetData.defaultPricePerHour ?? 0
+				pricePerHour: currentEntry?.pricePerHour ?? $timeSheetData.defaultPricePerHour ?? 0,
+				createdAt: currentEntry?.createdAt
 			} satisfies MonthlyCalendarEntry);
 		}
 
 		return initialMonthlyEntries;
-	};
+	});
 
-	let currentEntriesDict = $derived(convertArrayToDict(timeSheetData.entries, 'date'));
 	let monthlyEntries = $derived.by(() => {
-		const initialMonths = $state(getInitialMonthlyEntries());
-
-		return initialMonths;
+		const entries = $state(initialMonthlyEntries);
+		return entries;
 	});
 
 	let isSavingTimeSheet = $state(false);
@@ -64,14 +67,39 @@
 		const filteredEntries = monthlyEntries.filter(({ hours }) => hours > 0);
 
 		isSavingTimeSheet = true;
+
 		await trpc(fetch).timeSheet.setTimeSheetEntryForMonth.mutate({
-			timeSheetId: timeSheetData.id,
+			timeSheetId: $timeSheetData.id,
 			date: formatToStringDate(currentDate),
 			entries: filteredEntries
 		});
+
 		isSavingTimeSheet = false;
 		invalidate(CacheIdentifiers.API_TIME_SHEETS_LIST);
+		snackbar.pushSuccess('Zapisano');
+
+		timeSheetData.update(
+			(t) =>
+				({
+					...t,
+					entries: monthlyEntries.filter(
+						(entry) => entry.hours > 0 && entry.createdAt !== undefined
+					)
+				}) as TimeSheet
+		);
 	};
+
+	let isTimeSheetModified = $derived.by(() => {
+		for (let i = 0; i < monthlyEntries.length; i++) {
+			if (
+				monthlyEntries[i].hours !== initialMonthlyEntries[i].hours ||
+				monthlyEntries[i].pricePerHour !== initialMonthlyEntries[i].pricePerHour
+			) {
+				return true;
+			}
+		}
+		return false;
+	});
 
 	let isRefetchingTimeSheet = $state(false);
 	let timeSheetFetchAbort: AbortController | null = null;
@@ -89,14 +117,14 @@
 		const { data, wasAborted } = await handleTRCPErrors(
 			trpc(fetch).timeSheet.getTimeSheet.query,
 			{
-				id: timeSheetData.id,
+				id: $timeSheetData.id,
 				dates: getMonthsBoundaries(currentDate)
 			},
 			{ signal: timeSheetFetchAbort.signal }
 		);
 
 		if (data) {
-			refreshedData = data;
+			timeSheetData.set(data);
 		}
 
 		if (!wasAborted) {
@@ -140,14 +168,17 @@
 			onclick={() => changeCurrentMonth(1)}
 			disabled={isSavingTimeSheet} />
 	</div>
-	<div class="timesheet">
+	<div class="time-sheet">
 		{#each monthlyEntries as entry}
 			{@render timeEntry(entry)}
 		{/each}
 		<Loader sticky overlay show={shouldDisableTimeSheetInputs} delayMs={500} />
 	</div>
 	<div class="footer">
-		<Button disabled={isSavingTimeSheet} on:click={handleSave}>Zapisz</Button>
+		<Button
+			busy={isSavingTimeSheet}
+			disabled={shouldDisableTimeSheetInputs || !isTimeSheetModified}
+			on:click={handleSave}>Zapisz</Button>
 	</div>
 </div>
 
@@ -162,14 +193,14 @@
 		& .header {
 			border-bottom: 1px solid black;
 			width: 100%;
-			padding: 2rem 1rem;
+			padding: 1rem 1rem;
 			font-size: 2rem;
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
 			gap: 0.5rem;
 			position: sticky;
-			top: 0;
+			top: v.$topBarHeight;
 			z-index: 1;
 			background-color: white;
 			z-index: v.$loaderZIndex + 1;
@@ -188,7 +219,7 @@
 			z-index: v.$loaderZIndex + 1;
 		}
 
-		.timesheet {
+		.time-sheet {
 			position: relative;
 			width: 100%;
 		}

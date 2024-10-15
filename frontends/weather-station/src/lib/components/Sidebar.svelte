@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { sidebarStore } from '$lib/stores/sidebar';
+	import { sidebarStore } from '@shared/stores/sidebar';
 	import { onMount } from 'svelte';
 	import IconButton from '@shared/components/IconButton.svelte';
 	import type { IconType } from '@shared/types/IconType';
