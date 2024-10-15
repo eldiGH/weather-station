@@ -1,4 +1,4 @@
-import cookie from 'cookie';
+import * as cookie from 'cookie';
 import { fromUnixTime } from 'date-fns';
 import { goto } from '$app/navigation';
 import { handleTRCPErrors, trpc } from '../api/trpc';

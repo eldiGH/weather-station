@@ -19,6 +19,10 @@
 	}
 
 	type TimeSheet = PageData['timeSheet'];
+	type TimeSheetEntry = TimeSheet['entries'][number];
+
+	type CurrentTimeSheetEntry = Omit<TimeSheetEntry, 'createdAt'> & { createdAt?: Date };
+	type CurrentTimeSheet = Omit<TimeSheet, 'entries'> & { entries: CurrentTimeSheetEntry[] };
 
 	const { data }: Props = $props();
 
@@ -29,12 +33,12 @@
 		createdAt?: Date;
 	}
 
-	const timeSheetData = writable<TimeSheet>(data.timeSheet);
+	const timeSheetEntries = writable<CurrentTimeSheet>(data.timeSheet);
 
 	let currentDate = $state(new Date());
 	const daysInMonth = $derived(getDaysInMonth(currentDate));
 
-	let currentEntriesDict = $derived(convertArrayToDict($timeSheetData.entries, 'date'));
+	let currentEntriesDict = $derived(convertArrayToDict($timeSheetEntries.entries, 'date'));
 
 	let initialMonthlyEntries = $derived.by(() => {
 		const initialMonthlyEntries = [];
@@ -49,7 +53,7 @@
 			initialMonthlyEntries.push({
 				date,
 				hours: currentEntry?.hours ?? 0,
-				pricePerHour: currentEntry?.pricePerHour ?? $timeSheetData.defaultPricePerHour ?? 0,
+				pricePerHour: currentEntry?.pricePerHour ?? $timeSheetEntries.defaultPricePerHour ?? 0,
 				createdAt: currentEntry?.createdAt
 			} satisfies MonthlyCalendarEntry);
 		}
@@ -69,7 +73,7 @@
 		isSavingTimeSheet = true;
 
 		await trpc(fetch).timeSheet.setTimeSheetEntryForMonth.mutate({
-			timeSheetId: $timeSheetData.id,
+			timeSheetId: $timeSheetEntries.id,
 			date: formatToStringDate(currentDate),
 			entries: filteredEntries
 		});
@@ -78,16 +82,15 @@
 		invalidate(CacheIdentifiers.API_TIME_SHEETS_LIST);
 		snackbar.pushSuccess('Zapisano');
 
-		timeSheetData.update(
-			(t) =>
-				({
-					...t,
-					entries: monthlyEntries.filter(
-						(entry) => entry.hours > 0 && entry.createdAt !== undefined
-					)
-				}) as TimeSheet
-		);
+		console.log({ monthlyEntries });
+
+		timeSheetEntries.update((t) => ({
+			...t,
+			entries: monthlyEntries.filter((entry) => entry.hours > 0)
+		}));
 	};
+
+	$inspect(monthlyEntries);
 
 	let isTimeSheetModified = $derived.by(() => {
 		for (let i = 0; i < monthlyEntries.length; i++) {
@@ -117,14 +120,14 @@
 		const { data, wasAborted } = await handleTRCPErrors(
 			trpc(fetch).timeSheet.getTimeSheet.query,
 			{
-				id: $timeSheetData.id,
+				id: $timeSheetEntries.id,
 				dates: getMonthsBoundaries(currentDate)
 			},
 			{ signal: timeSheetFetchAbort.signal }
 		);
 
 		if (data) {
-			timeSheetData.set(data);
+			timeSheetEntries.set(data);
 		}
 
 		if (!wasAborted) {

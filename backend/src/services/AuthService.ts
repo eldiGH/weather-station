@@ -18,6 +18,7 @@ import {
 } from '../repositories/refreshToken';
 import type { JwtPayload } from '../types/JwtPayload';
 import type { userSchema } from '../db/drizzle/schema';
+import { isApiError } from '../types';
 
 const jwtSecret = process.env.JWT_SECRET;
 if (!jwtSecret) {
@@ -132,13 +133,21 @@ export const AuthService = {
       throw NotAuthorized();
     }
 
-    const decodedJwt = jwt.verify(token, jwtSecret) as JwtPayload;
+    try {
+      const decodedJwt = jwt.verify(token, jwtSecret) as JwtPayload;
 
-    const user = await getUserById(decodedJwt.id);
-    if (!user) {
-      throw NotAuthorized();
+      const user = await getUserById(decodedJwt.id);
+      if (!user) {
+        throw NotAuthorized();
+      }
+
+      return user;
+    } catch (e) {
+      if (e instanceof jwt.JsonWebTokenError) {
+        throw NotAuthorized();
+      }
+
+      throw e;
     }
-
-    return user;
   }
 };
