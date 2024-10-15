@@ -85,7 +85,7 @@ export const AuthService = {
 
     const hashedPassword = await bcryptjs.hash(password, 10);
 
-    const finalUser = { email, password: hashedPassword };
+    const finalUser = { email: email.trim().toLowerCase(), password: hashedPassword };
 
     const createdUser = await createUserReturning(finalUser);
 
