@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
 	export type RippleEvent = MouseEvent & {
-		currentTarget: EventTarget & HTMLButtonElement;
+		currentTarget: EventTarget & HTMLElement;
 	};
 
 	export type ShowRippleFn = (event: RippleEvent) => void;

@@ -90,8 +90,6 @@
 		invalidate(CacheIdentifiers.API_TIME_SHEETS_LIST);
 		snackbar.pushSuccess('Zapisano');
 
-		console.log({ monthlyEntries });
-
 		timeSheetEntries.update((t) => ({
 			...t,
 			entries: monthlyEntries.filter((entry) => entry.hours > 0)
@@ -187,7 +185,7 @@
 		<Button
 			busy={isSavingTimeSheet}
 			disabled={shouldDisableTimeSheetInputs || !isTimeSheetModified}
-			on:click={handleSave}>Zapisz</Button>
+			onclick={handleSave}>Zapisz</Button>
 	</div>
 </div>
 

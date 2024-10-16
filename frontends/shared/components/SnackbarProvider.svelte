@@ -17,8 +17,9 @@
 	export const snackbar = {
 		pushSuccess: (message: string) =>
 			snackbarStore.update((s) => [...s, { severity: 'success', message, uuid: uuid() }]),
-		pushError: (message: string) =>
-			snackbarStore.update((s) => [...s, { severity: 'error', message, uuid: uuid() }])
+		pushError: (
+			message: string = 'Coś poszło nie tak. Odśwież stronę i spróbuj ponownie później.'
+		) => snackbarStore.update((s) => [...s, { severity: 'error', message, uuid: uuid() }])
 	};
 </script>
 

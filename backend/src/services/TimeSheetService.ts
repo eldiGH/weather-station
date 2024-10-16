@@ -5,6 +5,7 @@ import type {
   CreateTimeSheetInput,
   DeleteTimeSheetEntryBulkInput,
   DeleteTimeSheetEntryInput,
+  DeleteTimeSheetInput,
   GetTimeSheetInput,
   SetTimeSheetEntryBulkInput,
   SetTimeSheetEntryForMonthInput,
@@ -187,6 +188,15 @@ export const TimeSheetService = {
         hours: parseFloat(d.lastMonthEntries?.hours ?? '0')
       }
     }));
+  },
+
+  deleteTimeSheet: async (input: DeleteTimeSheetInput, user: UserModel) => {
+    await getAndValidateTimeSheet(input.timeSheetId, user);
+
+    await db.transaction(async (tx) => {
+      await tx.delete(timeSheetEntry).where(eq(timeSheetEntry.timeSheetId, input.timeSheetId));
+      await tx.delete(timeSheet).where(eq(timeSheet.id, input.timeSheetId));
+    });
   },
 
   setTimeSheetEntry: async (input: SetTimeSheetEntryInput, user: UserModel) => {

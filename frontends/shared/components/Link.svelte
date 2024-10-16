@@ -1,15 +1,38 @@
 <script lang="ts">
-	let className: string | undefined = undefined;
-	export { className as class };
+	import type { Snippet } from 'svelte';
+	import type { MouseEventHandler } from 'svelte/elements';
 
-	export let ref: HTMLAnchorElement | HTMLElement | undefined = undefined;
+	interface Props {
+		class?: string;
+		ref?: HTMLAnchorElement | HTMLElement;
+		noColor?: boolean;
+		href: string;
+		children: Snippet;
+		button?: boolean;
+		onclick?: MouseEventHandler<HTMLAnchorElement>;
+	}
 
-	export let noColor: undefined | boolean = undefined;
-	export let href: string;
+	let {
+		children,
+		href,
+		class: className,
+		noColor = false,
+		ref = $bindable(),
+		onclick,
+		button
+	}: Props = $props();
 </script>
 
-<a bind:this={ref} class:color={!noColor} class:without-color={noColor} class={className} {href}
-	><slot /></a>
+<a
+	bind:this={ref}
+	{onclick}
+	class:color={!noColor}
+	class:without-color={noColor}
+	class={className}
+	class:button
+	{href}>
+	{@render children()}
+</a>
 
 <style lang="scss">
 	a,
@@ -30,5 +53,12 @@
 
 	.without-color {
 		color: inherit;
+	}
+
+	.button {
+		background-color: var(--primary-color);
+		color: var(--button-text-color);
+		padding: 1rem 2rem;
+		border-radius: 15px;
 	}
 </style>

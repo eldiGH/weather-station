@@ -19,14 +19,9 @@
 
 		&__root {
 			min-height: 100%;
-			padding: 0 2rem;
 			width: 100%;
 			display: flex;
 			justify-content: center;
-
-			@media screen and (max-width: 500px) {
-				padding: 0;
-			}
 		}
 	}
 </style>

@@ -20,7 +20,7 @@
 		<IconButton onclick={sidebarStore.toggle} icon="menu" size={24} />
 		<Link noColor class="header" href="/">{appName}</Link>
 	</div>
-	<Button slot="right" on:click={() => logout()}>Wyloguj</Button>
+	<Button slot="right" onclick={() => logout()}>Wyloguj</Button>
 	{@render children()}
 </TopBar>
 

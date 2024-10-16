@@ -93,7 +93,7 @@ export const AuthService = {
   },
 
   login: async (data: LoginInput) => {
-    const user = await getUserByEmail(data.email);
+    const user = await getUserByEmail(data.email.trim().toLowerCase());
 
     if (!user) {
       throw EmailOrPasswordNotValid();

@@ -101,8 +101,6 @@
 
 	let dashoffset = $derived(hasValueFrom ? totalLength * percentageFrom : 0);
 
-	$inspect(circleIndicatorAngle, circleIndicatorFromAngle);
-
 	let finalColor = $derived.by(() => {
 		if (color) {
 			return color;

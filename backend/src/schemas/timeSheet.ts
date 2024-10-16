@@ -54,6 +54,12 @@ export const setTimeSheetEntryForMonthInputSchema = object({
 
 export type SetTimeSheetEntryForMonthInput = z.infer<typeof setTimeSheetEntryForMonthInputSchema>;
 
+export const deleteTimeSheetInputSchema = object({
+  timeSheetId: string().uuid()
+});
+
+export type DeleteTimeSheetInput = z.infer<typeof deleteTimeSheetInputSchema>;
+
 export const deleteTimeSheetEntryInputSchema = object({
   date: string().date(),
   timeSheetId: string().uuid()

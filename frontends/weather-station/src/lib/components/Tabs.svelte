@@ -120,11 +120,11 @@
 						href={tab.to ?? tab.value}
 						bind:ref={tabItems[i]}
 						class={`tab ${tab.active ? 'active' : ''}`}
-						on:click={() => handleTabChange(i, tab, true)}>{tab.label}</Link>
+						onclick={() => handleTabChange(i, tab, true)}>{tab.label}</Link>
 				{:else}
 					<div
 						bind:this={tabItems[i]}
-						on:click={() => handleTabChange(i, tab, true)}
+						onclick={() => handleTabChange(i, tab, true)}
 						class="tab"
 						class:active={tab.active}>
 						{tab.label}

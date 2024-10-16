@@ -1,104 +1,200 @@
 <script lang="ts">
-	import Card from '@shared/components/Card.svelte';
 	import type { PageData } from './$types';
 	import IconInfo from '@shared/components/IconInfo.svelte';
 	import { pluralizePl } from '@shared/helpers/language';
-	import Link from '@shared/components/Link.svelte';
+	import { addMonths, format } from 'date-fns';
+	import { capitalize } from '@shared/helpers/string';
+	import Button from '@shared/components/Button.svelte';
+	import ConfirmationDialog from '@shared/components/ConfirmationDialog.svelte';
+	import { snackbar } from '@shared/components/SnackbarProvider.svelte';
+	import { fade, slide } from 'svelte/transition';
+	import { handleTRPCErrors, trpc } from '@shared/api/trpc';
+	import { invalidate } from '$app/navigation';
+	import { CacheIdentifiers } from '$lib/constants/cache';
 
 	interface Props {
 		data: PageData;
 	}
 
-	type TimeSheet = PageData['timeSheets'][number];
+	type TimeSheet = (typeof $timeSheets)[number];
 	type TimeSheetMonthData = TimeSheet['currentMonth'] & TimeSheet['lastMonth'];
 
 	const { data }: Props = $props();
+	let { timeSheets } = $derived(data);
 
-	$effect(() => {
-		console.log(data);
-	});
+	let currentDate = new Date();
+
+	let timeSheetToDelete: TimeSheet | null = $state(null);
+	let showDeleteDialog = $state(false);
+
+	const handleTimeSheetDelete = (timeSheet: TimeSheet) => {
+		timeSheetToDelete = timeSheet;
+		showDeleteDialog = true;
+	};
+
+	const handleDeleteTimeSheet = async () => {
+		if (!timeSheetToDelete) {
+			snackbar.pushError();
+			return false;
+		}
+
+		const success = await timeSheets.delete(timeSheetToDelete.id);
+
+		if (!success) {
+			return false;
+		}
+
+		timeSheetToDelete = null;
+		return true;
+	};
 </script>
 
 {#snippet summaryMonth(monthData: TimeSheetMonthData, label: string)}
 	<div class="summary-table">
 		<div class="summary-title">{label}</div>
 		<div class="summary-details">
-			<IconInfo gap={0.3} size={40} icon="calendar_month">
+			<IconInfo gap={0.4} size={25} icon="calendar_month">
 				{pluralizePl(monthData.count, ['dzień roboczy', 'dni robocze', 'dni roboczych'])}</IconInfo>
-			<IconInfo gap={0.3} size={40} icon="attach_money">
-				{monthData.totalPrice} zł</IconInfo>
-			<IconInfo gap={0.3} size={40} icon="schedule">
+			<IconInfo gap={0.4} size={25} icon="schedule">
 				{pluralizePl(monthData.hours, ['godzina', 'godziny', 'godzin'])}</IconInfo>
+			<IconInfo gap={0.4} size={25} icon="attach_money">
+				{monthData.totalPrice} zł</IconInfo>
 		</div>
 	</div>
 {/snippet}
 
 {#snippet timeSheetCard(timeSheet: TimeSheet)}
-	<Link noColor href="/{timeSheet.id}">
-		<Card>
-			<div class="card">
-				<div class="title">{timeSheet.name}</div>
-				<div class="month-summaries">
-					{@render summaryMonth(timeSheet.currentMonth, 'Obecny miesiąc')}
-					{@render summaryMonth(timeSheet.lastMonth, 'Poprzedni miesiąc')}
-				</div>
+	<div class="card">
+		<div class="title">{timeSheet.name}</div>
+		<div class="months-summaries">
+			{@render summaryMonth(
+				timeSheet.lastMonth,
+				capitalize(format(addMonths(currentDate, -1), 'LLLL'))
+			)}
+			<div class="separator"></div>
+			{@render summaryMonth(timeSheet.currentMonth, capitalize(format(currentDate, 'LLLL')))}
+		</div>
+		<div class="actions">
+			<div>
+				<Button icon="calendar_month" href="/{timeSheet.id}">Widok miesiąca</Button>
 			</div>
-		</Card>
-	</Link>
+			<div>
+				<Button icon="calendar_view_day" href="/{timeSheet.id}">Widok wpisów</Button>
+			</div>
+			<div>
+				<Button icon="delete" onclick={() => handleTimeSheetDelete(timeSheet)}>Usuń</Button>
+				<Button icon="edit" href="/{timeSheet.id}/edit">Edytuj</Button>
+			</div>
+		</div>
+	</div>
 {/snippet}
 
 <div class="root">
-	{#if data.timeSheets.length === 0}
-		Nie masz żadnej karty czasu.
-	{:else}
-		{#each data.timeSheets as timeSheet}
+	{#each $timeSheets as timeSheet (timeSheet.id)}
+		<div class="card-container" transition:slide>
 			{@render timeSheetCard(timeSheet)}
-		{/each}
+			<div class="separator"></div>
+		</div>
+	{/each}
+	{#if $timeSheets.length === 0}
+		<div in:fade={{ duration: 100 }} class="no-time-sheets">Nie masz żadnej karty czasu.</div>
 	{/if}
 </div>
 
+<ConfirmationDialog
+	onConfirm={handleDeleteTimeSheet}
+	bind:show={showDeleteDialog}
+	title="Usunięcie karty czasu"
+	>Czy na pewno chcesz trwale usunąć kartę czasu pracy&nbsp;<b>{timeSheetToDelete?.name}</b
+	>?</ConfirmationDialog>
+
 <style lang="scss">
+	@use '@shared/styles/vars' as v;
+
 	.root {
-		display: flex;
-		justify-content: center;
-		gap: 2rem;
-		flex-wrap: wrap;
-		padding: 2rem 0;
-	}
-
-	.card {
-		padding: 1rem 1.5rem 2rem;
-		display: inline-block;
-		font-size: 1.5rem;
-		user-select: none;
-
-		.title {
-			text-align: center;
+		.no-time-sheets {
 			font-size: 3rem;
-		}
-
-		.month-summaries {
-			display: flex;
-			flex-direction: column;
-			gap: 1rem;
-			margin-top: 1rem;
-		}
-	}
-
-	.summary-table {
-		border: 5px solid white;
-		border-radius: 15px;
-
-		.summary-title {
-			padding: 0.5rem 1rem;
-			border-bottom: 2px solid white;
+			padding: 1rem;
 			text-align: center;
 		}
 
-		.summary-details {
-			padding: 1rem;
-			display: flex;
+		> .separator {
+			border-bottom: solid 5px black;
+			width: 100%;
+		}
+
+		> .separator:last-child {
+			border-bottom: none;
+		}
+
+		.card {
+			padding: 1rem 0 2rem;
+			display: inline-flex;
+			font-size: 1.5rem;
 			flex-direction: column;
+			align-items: center;
+			width: 100%;
+
+			&-container {
+				display: flex;
+				justify-content: center;
+				gap: 2rem;
+				flex-wrap: wrap;
+			}
+
+			.title {
+				text-align: center;
+				font-size: 3rem;
+				font-weight: bold;
+			}
+
+			.months-summaries {
+				display: flex;
+				margin: 1rem 0;
+				width: 100%;
+
+				> .separator {
+					border-left: 3px solid black;
+				}
+
+				.summary-table {
+					display: flex;
+					flex-direction: column;
+					align-items: center;
+					flex-basis: 50%;
+
+					.summary-title {
+						text-align: center;
+						font-size: 2rem;
+						margin-bottom: 0.2rem;
+					}
+
+					.summary-details {
+						display: flex;
+						flex-direction: column;
+						font-size: 1.2rem;
+					}
+				}
+			}
+
+			.actions {
+				display: flex;
+				flex-direction: column;
+				width: 100%;
+				gap: 1rem;
+				align-items: end;
+				padding: 0 2rem;
+
+				> div {
+					display: flex;
+					gap: 1rem;
+				}
+
+				@media screen and (min-width: 768px) {
+					flex-direction: row;
+					justify-content: center;
+				}
+			}
 		}
 	}
 </style>

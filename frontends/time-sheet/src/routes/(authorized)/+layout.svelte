@@ -14,7 +14,6 @@
 </script>
 
 <AppBar appName="Time sheet app">
-	<div></div>
 	<Container>
 		<slot />
 	</Container>
