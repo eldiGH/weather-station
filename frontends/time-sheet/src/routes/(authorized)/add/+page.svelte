@@ -52,7 +52,9 @@
 				name="defaultHours"
 				onblur={handleBlur}
 				disabled={$isSubmitting}
-				inputmode="numeric" />
+				inputmode="numeric"
+				min={0}
+				max={24} />
 			<NumericInput
 				bind:value={$values.defaultPricePerHour}
 				error={$touched.defaultPricePerHour && $errors.defaultPricePerHour}
@@ -60,7 +62,8 @@
 				name="defaultPricePerHour"
 				onblur={handleBlur}
 				disabled={$isSubmitting}
-				inputmode="numeric" />
+				inputmode="numeric"
+				min={0} />
 			<Button busy={$isSubmitting} disabled={!$isValid} type="submit">Dodaj</Button>
 		</form>
 	</Card>

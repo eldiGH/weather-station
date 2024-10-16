@@ -8,9 +8,7 @@
 	import ConfirmationDialog from '@shared/components/ConfirmationDialog.svelte';
 	import { snackbar } from '@shared/components/SnackbarProvider.svelte';
 	import { fade, slide } from 'svelte/transition';
-	import { handleTRPCErrors, trpc } from '@shared/api/trpc';
-	import { invalidate } from '$app/navigation';
-	import { CacheIdentifiers } from '$lib/constants/cache';
+	import IconButton from '@shared/components/IconButton.svelte';
 
 	interface Props {
 		data: PageData;
@@ -99,6 +97,10 @@
 	{#if $timeSheets.length === 0}
 		<div in:fade={{ duration: 100 }} class="no-time-sheets">Nie masz żadnej karty czasu.</div>
 	{/if}
+</div>
+
+<div class="add-time-sheet-button">
+	<IconButton icon="add" size={40} iconSize={40} href="/add" />
 </div>
 
 <ConfirmationDialog
@@ -196,5 +198,11 @@
 				}
 			}
 		}
+	}
+
+	.add-time-sheet-button {
+		position: fixed;
+		right: 1rem;
+		bottom: 1rem;
 	}
 </style>

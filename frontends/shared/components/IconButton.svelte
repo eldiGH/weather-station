@@ -10,13 +10,14 @@
 		iconSize?: number;
 		disabled?: boolean;
 		square?: boolean;
+		href?: string;
 	}
 
-	const { size = 16, iconSize, onclick, disabled, square, ...restProps }: Props = $props();
+	const { size = 16, iconSize, onclick, disabled, square, href, ...restProps }: Props = $props();
 </script>
 
 <div class="icon-button" class:round={!square}>
-	<Button {disabled} style="width: {size * 2}px; height: {size * 2}px;" {onclick}>
+	<Button {href} {disabled} style="width: {size * 2}px; height: {size * 2}px;" {onclick}>
 		<Icon size={iconSize ?? size} {...restProps} />
 	</Button>
 </div>
