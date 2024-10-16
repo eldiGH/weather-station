@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts">
-	import type { IconType } from '@shared/types/IconType';
+	import type { IconType } from '../types/IconType';
 
 	export let variant: IconVariant = 'outlined';
 	export let icon: IconType;

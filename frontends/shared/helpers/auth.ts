@@ -6,7 +6,7 @@ import type { LoginInput, RegisterInput } from 'backend/schemas';
 import type { ApiError } from 'backend/types';
 import { isDevelopment } from './environment';
 import { jwtDecode } from 'jwt-decode';
-import type { CookieTokensData, TokensData } from '@shared/types/Token';
+import type { CookieTokensData, TokensData } from '../types/Token';
 
 const saveToken = (tokens: TokensData) => {
 	const baseCookieConfig: cookie.SerializeOptions = {
@@ -110,7 +110,7 @@ export const hasValidAccessToken = (data: CookieTokensData) => {
 		}
 
 		return true;
-	} catch (e) {
+	} catch (_) {
 		return false;
 	}
 };

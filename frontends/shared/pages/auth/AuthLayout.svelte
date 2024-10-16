@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import Container from '@shared/components/Container.svelte';
-	import { getTokensDataCookies, isLoggedIn } from '@shared/helpers/auth';
+	import Container from '../../components/Container.svelte';
+	import { getTokensDataCookies, isLoggedIn } from '../../helpers/auth';
 	import { onMount } from 'svelte';
 
 	onMount(() => {

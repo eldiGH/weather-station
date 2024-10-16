@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Timeout } from '@shared/types/Timeout';
+	import type { Timeout } from '../types/Timeout';
 	import Spinner from './Spinner.svelte';
 
 	interface Props {

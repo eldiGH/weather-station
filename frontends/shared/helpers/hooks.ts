@@ -7,7 +7,7 @@ import { HttpStatus } from 'backend/types';
 import { parse } from 'devalue';
 import { isDevelopment } from './environment';
 import type { SerializeOptions } from 'cookie';
-import type { TokensData } from '@shared/types/Token';
+import type { TokensData } from '../types/Token';
 
 const NOT_AUTHED_ROUTES = ['/login', '/register', '/kiosk'];
 const AUTHED_NOT_ALLOWED_ROUTES = ['/login', '/register'];

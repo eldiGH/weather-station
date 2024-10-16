@@ -2,6 +2,8 @@ import httpProxy from 'http-proxy';
 import config from './config.json' with { type: 'json' };
 import { createServer } from 'http';
 
+/** @import { IncomingMessage, ServerResponse } from 'http' */
+
 /**
  * @param {(req: IncomingMessage, res: ServerResponse<IncomingMessage>) => void} handler
  */

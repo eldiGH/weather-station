@@ -1,10 +1,10 @@
 <script lang="ts">
-	import Button from '@shared/components/Button.svelte';
-	import Card from '@shared/components/Card.svelte';
-	import Input from '@shared/components/Input.svelte';
-	import Link from '@shared/components/Link.svelte';
-	import { login } from '@shared/helpers/auth';
-	import { createForm } from '@shared/stores/form';
+	import Button from '../../components/Button.svelte';
+	import Card from '../../components/Card.svelte';
+	import Input from '../../components/Input.svelte';
+	import Link from '../../components/Link.svelte';
+	import { login } from '../../helpers/auth';
+	import { createForm } from '../../stores/form';
 	import { loginInputSchema, type LoginInput } from 'backend/schemas';
 	import { ApiErrorCode } from 'backend/types';
 

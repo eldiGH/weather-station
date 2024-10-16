@@ -13,7 +13,7 @@ import { isDevelopment } from '../helpers/environment';
 import { browser } from '$app/environment';
 import { InternalServerError } from 'backend/errors';
 import { devtoolsLink } from 'trpc-client-devtools-link';
-import { handleFrontendRefresh } from '@shared/helpers/auth';
+import { handleFrontendRefresh } from '../helpers/auth';
 
 export type FetchFunc = (
 	input: RequestInfo | URL,

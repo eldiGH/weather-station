@@ -24,7 +24,7 @@
 </div>
 
 <style lang="scss">
-	@use '@shared/styles/vars' as v;
+	@use '../styles/vars' as v;
 
 	.snackbar {
 		color: white;
