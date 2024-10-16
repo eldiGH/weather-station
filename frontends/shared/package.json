@@ -7,7 +7,6 @@
 		"format": "prettier --write ."
 	},
 	"exports": {
-		"./tsconfig.json": "./tsconfig-shared.json",
 		"./.prettierrc.mjs": "./.prettierrc.mjs",
 		"./server.js": "./server.js",
 		"./eslint.config.js": "./eslint.config.js",

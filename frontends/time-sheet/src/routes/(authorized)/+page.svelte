@@ -80,7 +80,8 @@
 				<Button icon="calendar_view_day" href="/{timeSheet.id}">Widok wpisów</Button>
 			</div>
 			<div>
-				<Button icon="delete" onclick={() => handleTimeSheetDelete(timeSheet)}>Usuń</Button>
+				<Button icon="delete" variant="danger" onclick={() => handleTimeSheetDelete(timeSheet)}
+					>Usuń</Button>
 				<Button icon="edit" href="/{timeSheet.id}/edit">Edytuj</Button>
 			</div>
 		</div>

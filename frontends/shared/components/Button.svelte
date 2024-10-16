@@ -3,7 +3,7 @@
 	import Ripple, { type ShowRippleFn } from './Ripple.svelte';
 	import Spinner from './Spinner.svelte';
 	import type { Snippet } from 'svelte';
-	import type { IconType } from '@shared/types/IconType';
+	import type { IconType } from '../types/IconType';
 	import Icon from './Icon.svelte';
 
 	interface Props extends HTMLButtonAttributes {
@@ -14,6 +14,7 @@
 		children: Snippet;
 		href?: string;
 		icon?: IconType;
+		variant?: 'normal' | 'danger';
 	}
 
 	let {
@@ -25,6 +26,7 @@
 		children,
 		href,
 		icon,
+		variant = 'normal',
 		...restProps
 	}: Props = $props();
 
@@ -58,7 +60,7 @@
 
 {#if href}
 	<a
-		class="btn"
+		class="btn {variant}"
 		{style}
 		{href}
 		onclick={(e) => {
@@ -71,7 +73,7 @@
 {:else}
 	<button
 		{...restProps as HTMLButtonAttributes}
-		class="btn"
+		class="btn {variant}"
 		{style}
 		onclick={handleClick}
 		class:busy
@@ -97,6 +99,10 @@
 		height: 3rem;
 		display: inline-flex;
 		align-items: center;
+
+		&.danger {
+			background-color: #d30000;
+		}
 
 		&:hover {
 			filter: brightness(90%);
