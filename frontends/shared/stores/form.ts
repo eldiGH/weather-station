@@ -123,10 +123,16 @@ export const createForm = <
 		errors.set(newErrors);
 	};
 
+	let preventNextValidation = false;
 	const validate = (
 		schema
 			? async () => {
-					const response = parseZodResponse(await schema.spa(get(values)));
+					if (preventNextValidation) {
+						preventNextValidation = false;
+						return undefined;
+					}
+
+					const response = parseZodResponse(schema.safeParse(get(values)));
 
 					if (response.success) {
 						clearErrors();
@@ -188,8 +194,8 @@ export const createForm = <
 	};
 
 	if (validate) {
-		values.subscribe(() => {
-			validate();
+		values.subscribe(async () => {
+			await validate();
 		});
 	}
 

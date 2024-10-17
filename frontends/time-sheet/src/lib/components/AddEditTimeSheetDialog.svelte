@@ -12,6 +12,8 @@
 	import type { AppRouterOutputs } from 'backend/trpc';
 	import { isApiError, type ApiError } from 'backend/types';
 
+	const NAME_TAKEN_ERROR_LABEL = 'Ta nazwa jest już przez Ciebie używana.';
+
 	type TimeSheet = AppRouterOutputs['timeSheet']['getTimeSheets'][number];
 
 	interface Props {
@@ -20,9 +22,10 @@
 		onEdit: (data: EditTimeSheetInput) => Promise<boolean | ApiError>;
 		editTimeSheet?: TimeSheet;
 		onClosed?: () => void;
+		timeSheets?: TimeSheet[];
 	}
 
-	let { open = $bindable(), onSave, onEdit, editTimeSheet, onClosed }: Props = $props();
+	let { open = $bindable(), onSave, onEdit, editTimeSheet, onClosed, timeSheets }: Props = $props();
 	let isEdit = $derived(Boolean(editTimeSheet));
 
 	const form = $derived(
@@ -49,12 +52,24 @@
 		const result = await onEdit({ ...data, timeSheetId: editTimeSheet?.id });
 
 		if (isApiError(result)) {
-			$errors.name = 'Ta nazwa jest już przez Ciebie używana.';
+			$errors.name = NAME_TAKEN_ERROR_LABEL;
 			return false;
 		}
 
 		return result;
 	};
+
+	let timeSheetNamesUsed = $derived(
+		new Set(timeSheets?.filter((t) => t.id !== editTimeSheet?.id).map((t) => t.name))
+	);
+
+	$effect(() => {
+		if (timeSheetNamesUsed.has($values.name)) {
+			$errors.name = NAME_TAKEN_ERROR_LABEL;
+		}
+	});
+
+	$inspect($errors);
 </script>
 
 <FormDialog

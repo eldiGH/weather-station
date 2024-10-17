@@ -121,7 +121,8 @@
 	bind:open={openAddEditTimeSheetDialog}
 	onSave={timeSheets.add}
 	onEdit={timeSheets.edit}
-	editTimeSheet={selectedTimeSheet ?? undefined} />
+	editTimeSheet={selectedTimeSheet ?? undefined}
+	timeSheets={$timeSheets} />
 
 <ConfirmationDialog
 	onConfirm={handleDeleteTimeSheet}
@@ -134,6 +135,8 @@
 	@use '@shared/styles/vars' as v;
 
 	.root {
+		padding-bottom: 4rem;
+
 		.no-time-sheets {
 			font-size: 3rem;
 			padding: 1rem;
