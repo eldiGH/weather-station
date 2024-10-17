@@ -179,7 +179,7 @@
 		{#each monthlyEntries as entry}
 			{@render timeEntry(entry)}
 		{/each}
-		<Loader sticky overlay show={shouldDisableTimeSheetInputs} delayMs={500} />
+		<Loader sticky overlay show={shouldDisableTimeSheetInputs} />
 	</div>
 	<div class="footer">
 		<Button

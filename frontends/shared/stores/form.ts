@@ -10,12 +10,15 @@ export type FormSubmitEventObject = SubmitEvent & {
 	currentTarget: EventTarget & HTMLFormElement;
 };
 
-export type FormSubmit = <
-	T extends Record<string, unknown>,
+export type FormSubmit<T extends Record<string, unknown>> = <
 	R extends Promise<void> | void | Promise<boolean> | boolean = Promise<void>
 >(
 	onSubmit: (data: T) => R
 ) => (e: FormSubmitEventObject) => R;
+
+type ValidateResponse<T extends Record<string, unknown>> =
+	| { data: T; errors?: undefined }
+	| { data?: undefined; errors: ChangePropsType<T, string> };
 
 export type FormReturn<
 	Values extends Record<string, unknown>,
@@ -27,10 +30,11 @@ export type FormReturn<
 	values: Writable<InferredValues>;
 	errors: Writable<ChangePropsType<InferredValues, string>>;
 	touched: Readable<ChangePropsType<InferredValues, boolean>>;
-	validate: MySchema extends Schema ? () => Promise<InferredValues> : undefined;
+	touchedErrors: Readable<ChangePropsType<InferredValues, string>>;
+	validate: MySchema extends Schema ? () => ValidateResponse<InferredValues> : undefined;
 	isSubmitting: Readable<boolean>;
 	isValid: Readable<boolean>;
-	submit: FormSubmit;
+	submit: FormSubmit<InferredValues>;
 	handleBlur: (event: FocusEvent) => void;
 	reset: () => void;
 };
@@ -95,7 +99,8 @@ const getInitialTouched = <T extends Record<string, unknown>>(
 export const createForm = <
 	T extends MySchema extends Schema ? z.infer<MySchema> : Record<string, unknown>,
 	MySchema extends Schema | undefined = undefined,
-	InferredValues extends Record<string, unknown> = MySchema extends Schema ? z.infer<MySchema> : T
+	InferredValues extends Record<string, unknown> = MySchema extends Schema ? z.infer<MySchema> : T,
+	R extends FormReturn<T, MySchema, InferredValues> = FormReturn<T, MySchema, InferredValues>
 >(
 	initialValues: T,
 	schema?: MySchema
@@ -105,60 +110,78 @@ export const createForm = <
 	const errors = writable(getInitialErrors(initialValues, schema));
 	const isSubmitting = writable(false);
 
+	const touchedErrors = derived([errors, touched], ([$errors, $touched]) => {
+		const touchedErrors = { ...$errors };
+
+		for (const key in $errors) {
+			if (!$touched[key]) {
+				touchedErrors[key] = '';
+			}
+		}
+
+		return touchedErrors;
+	});
+
 	const isValid = derived(
 		[errors, values],
 		([$errors, $values]) =>
 			Object.values($errors).every((error) => !error) && !shallowEqual($values, initialValues)
 	);
 
-	const hasAnyErrors = () => Object.values(get(errors)).some((error) => !!error);
-
 	const clearErrors = () => {
-		const newErrors = get(errors);
+		const newErrors = { ...get(errors) };
 
+		let modified = false;
 		for (const key in newErrors) {
+			if (newErrors[key].length > 0) {
+				modified = true;
+			}
 			newErrors[key] = '';
 		}
 
-		errors.set(newErrors);
+		if (modified) {
+			errors.set(newErrors);
+		}
 	};
 
-	let preventNextValidation = false;
 	const validate = (
 		schema
-			? async () => {
-					if (preventNextValidation) {
-						preventNextValidation = false;
-						return undefined;
-					}
-
+			? () => {
 					const response = parseZodResponse(schema.safeParse(get(values)));
 
 					if (response.success) {
 						clearErrors();
-						return response.data;
+						return { data: response.data };
+					}
+
+					const currentErrors = get(errors);
+					if (shallowEqual(currentErrors, response.errors)) {
+						return { errors: response.errors };
 					}
 
 					errors.set(response.errors as ChangePropsType<T, string>);
+					return { errors: response.errors };
 				}
 			: undefined
-	) as MySchema extends Schema ? () => Promise<T> : undefined;
+	) as R['validate'];
 
 	const submit = ((onSubmit) => async (e) => {
 		e.preventDefault();
 
-		let parsedValues: T = get(values);
+		let parsedData: InferredValues = get(values);
 
 		if (validate) {
-			parsedValues = await validate();
-		}
+			const { data, errors } = validate();
 
-		if (hasAnyErrors()) {
-			return false;
+			if (errors || !data) {
+				return false;
+			}
+
+			parsedData = data;
 		}
 
 		isSubmitting.set(true);
-		const result = await onSubmit(parsedValues);
+		const result = await onSubmit(parsedData);
 		isSubmitting.set(false);
 
 		if (typeof result === 'boolean') {
@@ -166,7 +189,7 @@ export const createForm = <
 		}
 
 		return true;
-	}) as FormSubmit;
+	}) as FormSubmit<InferredValues>;
 
 	const handleBlur = (e: FocusEvent) => {
 		const target = e.target as HTMLInputElement;
@@ -194,14 +217,15 @@ export const createForm = <
 	};
 
 	if (validate) {
-		values.subscribe(async () => {
-			await validate();
+		values.subscribe(() => {
+			validate();
 		});
 	}
 
 	return {
 		values,
 		errors,
+		touchedErrors,
 		submit,
 		validate,
 		isSubmitting: { subscribe: isSubmitting.subscribe },

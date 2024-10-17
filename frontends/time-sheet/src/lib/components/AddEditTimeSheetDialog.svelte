@@ -41,7 +41,7 @@
 		)
 	);
 
-	const { errors, handleBlur, isSubmitting, submit, touched, values } = $derived(form);
+	const { errors, handleBlur, isSubmitting, submit, values, touchedErrors } = $derived(form);
 
 	const handleEdit = async (data: CreateTimeSheetInput) => {
 		if (!editTimeSheet) {
@@ -81,7 +81,7 @@
 	{form}>
 	<Input
 		bind:value={$values.name}
-		error={$touched.name && $errors.name}
+		error={$touchedErrors.name}
 		label="Nazwa"
 		name="name"
 		onblur={handleBlur}
@@ -89,7 +89,7 @@
 		required />
 	<NumericInput
 		bind:value={$values.defaultHours}
-		error={$touched.defaultHours && $errors.defaultHours}
+		error={$touchedErrors.defaultHours}
 		label="Godziny przyszłych wpisów"
 		name="defaultHours"
 		onblur={handleBlur}
@@ -99,7 +99,7 @@
 		max={24} />
 	<NumericInput
 		bind:value={$values.defaultPricePerHour}
-		error={$touched.defaultPricePerHour && $errors.defaultPricePerHour}
+		error={$touchedErrors.defaultPricePerHour}
 		label="Cena przyszłych wpisów"
 		name="defaultPricePerHour"
 		onblur={handleBlur}
