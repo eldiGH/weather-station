@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Timeout } from '../types/Timeout';
+	import { fade } from 'svelte/transition';
 	import Spinner from './Spinner.svelte';
 
 	interface Props {
@@ -7,7 +7,7 @@
 		show?: boolean;
 		spinnerSize?: number;
 		sticky?: boolean;
-		delayMs?: number;
+		fullScreen?: boolean;
 	}
 
 	const {
@@ -15,36 +15,18 @@
 		show = false,
 		spinnerSize = 128,
 		sticky = false,
-		delayMs
+		fullScreen
 	}: Props = $props();
-
-	let delayTimeout: Timeout | null = null;
-	$effect(() => {
-		if (delayMs === undefined) {
-			return;
-		}
-
-		if (show === false) {
-			if (delayTimeout) {
-				clearTimeout(delayTimeout);
-			}
-
-			delayPassed = false;
-			return;
-		}
-
-		delayTimeout = setTimeout(() => {
-			delayTimeout = null;
-			delayPassed = true;
-		}, delayMs);
-	});
-
-	let delayPassed = $state(false);
-	let shouldShowLoader = $derived(delayMs !== undefined ? show && delayPassed : show);
 </script>
 
-{#if shouldShowLoader}
-	<div class:overlay class="loader-container" class:sticky>
+{#if show}
+	<div
+		in:fade={{ duration: 400 }}
+		out:fade={{ duration: 200 }}
+		class:full-screen={fullScreen}
+		class:overlay
+		class="loader-container"
+		class:sticky>
 		<div class="spinner" class:sticky>
 			<Spinner size={spinnerSize} />
 		</div>
@@ -52,6 +34,8 @@
 {/if}
 
 <style lang="scss">
+	@use '@shared/styles/vars' as v;
+
 	.loader-container {
 		position: absolute;
 		inset: 0;
@@ -59,18 +43,23 @@
 		align-items: center;
 		justify-content: center;
 
+		&.full-screen {
+			position: fixed;
+			z-index: v.$loaderZIndex + 1;
+		}
+
 		&.sticky {
 			align-items: baseline;
 		}
 	}
 
 	.overlay {
-		z-index: 99999;
+		z-index: v.$loaderZIndex;
 		background-color: var(--loader-overlay-color);
 	}
 
 	.spinner {
-		z-index: 99999;
+		z-index: v.$loaderZIndex;
 
 		&.sticky {
 			position: sticky;

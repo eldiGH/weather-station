@@ -5,8 +5,11 @@
 	import NavigationLoader from '@shared/components/NavigationLoader.svelte';
 	import { setDefaultOptions } from 'date-fns';
 	import { pl } from 'date-fns/locale';
+	import type { LayoutProps } from '@shared/types/LayoutProps';
 
 	setDefaultOptions({ locale: pl });
+
+	const { children }: LayoutProps = $props();
 </script>
 
 {#if browser}
@@ -14,7 +17,8 @@
 {/if}
 
 <ActionPoller />
-<slot />
+
+{@render children()}
 
 <style lang="scss">
 	@use '@shared/styles/theme' as t;

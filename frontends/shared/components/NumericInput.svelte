@@ -8,7 +8,7 @@
 	import type { FormEventHandler } from 'svelte/elements';
 	import IconButton from './IconButton.svelte';
 
-	type Props = Omit<ComponentProps<typeof Input>, 'value' | 'diabled'> & {
+	type Props = Omit<ComponentProps<typeof Input>, 'value' | 'disabled'> & {
 		value?: number | undefined;
 		min?: number;
 		max?: number;

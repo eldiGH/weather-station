@@ -20,7 +20,9 @@ export const calculateAvgDiffSeconds = (dates: Date[]) => {
   return differenceTimes.reduce((a, b) => a + b) / sortedDates.length;
 };
 
-export const formatToStringDate = (date: Date | string) => format(date, 'yyyy-MM-dd');
+export const formatToStringDate = (date: Date | string) => {
+  return format(date, 'yyyy-MM-dd');
+};
 
 export const getMonthsBoundaries = (date: Date | string) => ({
   from: formatToStringDate(set(date, { date: 1 })),

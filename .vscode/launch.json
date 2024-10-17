@@ -9,14 +9,20 @@
       "request": "launch",
       "type": "chrome",
       "url": "http://localhost:5173",
-      "webRoot": "${workspaceFolder}/frontends/time-sheet/src"
+      "webRoot": "${workspaceFolder}/frontends/time-sheet",
+      "pathMapping": {
+        "@fs/": ""
+      }
     },
     {
       "name": "Frontend:weather-station",
       "request": "launch",
       "type": "chrome",
       "url": "http://localhost:5173",
-      "webRoot": "${workspaceFolder}/frontends/weahter-station/src"
+      "webRoot": "${workspaceFolder}/frontends/weather-station",
+      "pathMapping": {
+        "@fs/": ""
+      }
     },
     {
       "name": "Backend",

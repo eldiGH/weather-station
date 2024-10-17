@@ -22,16 +22,4 @@
 	}
 </script>
 
-{#if show}
-	<div class="container">
-		<Loader show={true} overlay />
-	</div>
-{/if}
-
-<style lang="scss">
-	.container {
-		position: fixed;
-		inset: 0;
-		z-index: 9999999;
-	}
-</style>
+<Loader {show} overlay fullScreen />
