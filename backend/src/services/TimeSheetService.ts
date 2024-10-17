@@ -1,4 +1,4 @@
-import { and, count, desc, eq, gte, inArray, lt, sql, sum } from 'drizzle-orm';
+import { and, count, desc, eq, gte, inArray, lt, ne, sql, sum } from 'drizzle-orm';
 import { db } from '../db/drizzle';
 import { timeSheetEntry, timeSheet, type UserModel } from '../db/drizzle/schema';
 import type {
@@ -6,6 +6,7 @@ import type {
   DeleteTimeSheetEntryBulkInput,
   DeleteTimeSheetEntryInput,
   DeleteTimeSheetInput,
+  EditTimeSheetInput,
   GetTimeSheetInput,
   SetTimeSheetEntryBulkInput,
   SetTimeSheetEntryForMonthInput,
@@ -62,19 +63,50 @@ export const TimeSheetService = {
       throw TimeSheetNameAlreadyUsed(data.name);
     }
 
-    const { id } = (
+    const { id, name, defaultHours, defaultPricePerHour, createdAt } = (
       await db
         .insert(timeSheet)
         .values({ ...data, ownerId: user.id })
         .returning()
     )[0];
 
-    return { id };
+    return { id, name, defaultHours, defaultPricePerHour, createdAt };
+  },
+
+  editTimeSheet: async (data: EditTimeSheetInput, user: UserModel) => {
+    await getAndValidateTimeSheet(data.timeSheetId, user);
+
+    const existingTimeSheetWithSameNameForUser = (
+      await db
+        .select()
+        .from(timeSheet)
+        .where(
+          and(
+            eq(timeSheet.ownerId, user.id),
+            eq(timeSheet.name, data.name),
+            ne(timeSheet.id, data.timeSheetId)
+          )
+        )
+    ).at(0);
+
+    if (existingTimeSheetWithSameNameForUser) {
+      throw TimeSheetNameAlreadyUsed(data.name);
+    }
+
+    await db
+      .update(timeSheet)
+      .set({
+        name: data.name,
+        defaultPricePerHour: data.defaultPricePerHour,
+        defaultHours: data.defaultHours
+      })
+      .where(eq(timeSheet.id, data.timeSheetId));
   },
 
   getTimeSheet: async (data: GetTimeSheetInput, user: UserModel) => {
     const timeSheet = await db.query.timeSheet.findFirst({
-      where: (timeSheet, { eq }) => eq(timeSheet.id, data.id),
+      where: (timeSheet, { eq, and }) =>
+        and(eq(timeSheet.id, data.id), eq(timeSheet.ownerId, user.id)),
       with: {
         entries: {
           where: getSQLForDates(timeSheetEntry.date, data.dates),

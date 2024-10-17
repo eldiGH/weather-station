@@ -9,6 +9,12 @@ export const createTimeSheetInputSchema = object({
 
 export type CreateTimeSheetInput = z.infer<typeof createTimeSheetInputSchema>;
 
+export const editTimeSheetInputSchema = createTimeSheetInputSchema.extend({
+  timeSheetId: string().uuid()
+});
+
+export type EditTimeSheetInput = z.infer<typeof editTimeSheetInputSchema>;
+
 export const getTimeSheetInputSchema = object({
   id: string().uuid(),
   dates: dateRangeQuerySchema.optional()

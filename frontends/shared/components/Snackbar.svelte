@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { Snackbar } from './SnackbarProvider.svelte';
+	import type { Snackbar } from '../helpers/snackbar';
 	import { slide } from 'svelte/transition';
 
 	interface Props {

@@ -1,24 +1,43 @@
 <script lang="ts">
 	import type { ComponentProps } from 'svelte';
-	import Icon from './Icon.svelte';
+	import Icon, { type IconVariant } from './Icon.svelte';
 	import Button from './Button.svelte';
 
 	interface Props
-		extends ComponentProps<Icon>,
-			Pick<ComponentProps<typeof Button>, 'onclick' | 'disabled'> {
+		extends Omit<ComponentProps<typeof Button>, 'icon'>,
+			Omit<ComponentProps<Icon>, 'variant'> {
 		size?: number;
 		iconSize?: number;
-		disabled?: boolean;
 		square?: boolean;
-		href?: string;
+		iconVariant?: IconVariant;
 	}
 
-	const { size = 16, iconSize, onclick, disabled, square, href, ...restProps }: Props = $props();
+	const {
+		size = 16,
+		iconSize,
+		icon,
+		disabled,
+		square,
+		href,
+		iconVariant,
+		filled,
+		grade,
+		opticalSize,
+		weight,
+		...restProps
+	}: Props = $props();
 </script>
 
 <div class="icon-button" class:round={!square}>
-	<Button {href} {disabled} style="width: {size * 2}px; height: {size * 2}px;" {onclick}>
-		<Icon size={iconSize ?? size} {...restProps} />
+	<Button {...restProps} style="width: {size * 2}px; height: {size * 2}px;">
+		<Icon
+			{icon}
+			variant={iconVariant}
+			size={iconSize ?? size}
+			{filled}
+			{grade}
+			{opticalSize}
+			{weight} />
 	</Button>
 </div>
 

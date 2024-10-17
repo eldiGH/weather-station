@@ -3,8 +3,8 @@
 	import Container from '@shared/components/Container.svelte';
 	import { getTokensDataCookies, isLoggedIn } from '@shared/helpers/auth';
 	import { onMount } from 'svelte';
-	import AppBar from '@shared/components/AppBar.svelte';
 	import SnackbarProvider from '@shared/components/SnackbarProvider.svelte';
+	import AppBar from '$lib/components/AppBar.svelte';
 
 	onMount(() => {
 		if (!isLoggedIn(getTokensDataCookies())) {
@@ -13,9 +13,8 @@
 	});
 </script>
 
-<AppBar appName="Time sheet app">
-	<Container>
-		<slot />
-	</Container>
-</AppBar>
+<AppBar />
+<Container>
+	<slot />
+</Container>
 <SnackbarProvider />

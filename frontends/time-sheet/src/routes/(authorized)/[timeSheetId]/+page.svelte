@@ -11,8 +11,8 @@
 	import Loader from '@shared/components/Loader.svelte';
 	import { invalidate } from '$app/navigation';
 	import { CacheIdentifiers } from '$lib/constants/cache';
-	import { snackbar } from '@shared/components/SnackbarProvider.svelte';
 	import { writable } from 'svelte/store';
+	import { snackbar } from '@shared/helpers/snackbar';
 
 	interface Props {
 		data: PageData;

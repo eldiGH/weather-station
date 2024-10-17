@@ -69,7 +69,7 @@
 
 			if (targetValue === '') {
 				wasUpdateScheduled = true;
-				value = 0;
+				value = undefined;
 			} else if (!isNaN(parsedValue)) {
 				wasUpdateScheduled = true;
 				if (max !== undefined && parsedValue > max) {

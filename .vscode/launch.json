@@ -16,7 +16,7 @@
       "request": "launch",
       "type": "chrome",
       "url": "http://localhost:5173",
-      "webRoot": "${workspaceFolder}/frontends/weather-station/src"
+      "webRoot": "${workspaceFolder}/frontends/weahter-station/src"
     },
     {
       "name": "Backend",

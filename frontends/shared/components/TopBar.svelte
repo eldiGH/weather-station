@@ -1,61 +1,56 @@
-<div class="root">
-	<div class="top-bar">
-		<div class="left-slot"><slot name="left" /></div>
-		<div class="center-slot"><slot name="center" /></div>
-		<div class="right-slot"><slot name="right" /></div>
-	</div>
-	<div class="content">
-		<slot />
-	</div>
+<script lang="ts">
+	import type { Snippet } from 'svelte';
+
+	interface Props {
+		left?: Snippet;
+		center?: Snippet;
+		right?: Snippet;
+	}
+
+	const { center, left, right }: Props = $props();
+</script>
+
+<div class="top-bar">
+	<div class="left-slot">{@render left?.()}</div>
+	<div class="center-slot">{@render center?.()}</div>
+	<div class="right-slot">{@render right?.()}</div>
 </div>
 
 <style lang="scss">
 	@use '../styles/vars' as v;
 
-	.root {
-		min-height: 100%;
+	.top-bar {
+		width: 100%;
+		background-color: var(--top-bar-background);
+		height: v.$topBarHeight;
+		position: sticky;
+		top: 0;
+		box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+		padding: 0.5rem 1rem 0.5rem 0.5rem;
 		display: flex;
-		flex-direction: column;
+		z-index: 1000;
+		color: var(--top-bar-text-color);
 
-		.top-bar {
-			width: 100%;
-			background-color: var(--top-bar-background);
-			height: v.$topBarHeight;
-			position: sticky;
-			top: 0;
-			box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-			padding: 0.5rem 1rem 0.5rem 0.5rem;
+		> div {
+			flex-grow: 1;
 			display: flex;
-			z-index: 1000;
-			color: var(--top-bar-text-color);
+			align-items: center;
 
-			> div {
-				flex-grow: 1;
-				display: flex;
-				align-items: center;
-
-				&.left-slot {
-					justify-content: flex-start;
-				}
-
-				&.center-slot {
-					justify-content: center;
-				}
-
-				&.right-slot {
-					justify-content: flex-end;
-				}
+			&.left-slot {
+				justify-content: flex-start;
 			}
 
-			:global(.header) {
-				font-size: 1.3rem;
+			&.center-slot {
+				justify-content: center;
+			}
+
+			&.right-slot {
+				justify-content: flex-end;
 			}
 		}
 
-		.content {
-			min-height: 0;
-			display: flex;
-			flex-grow: 1;
+		:global(.header) {
+			font-size: 1.3rem;
 		}
 	}
 </style>

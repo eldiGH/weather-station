@@ -1,34 +1,75 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import IconButton from './IconButton.svelte';
-	import { fade, slide } from 'svelte/transition';
+	import { fade, type TransitionConfig } from 'svelte/transition';
 	import Button from './Button.svelte';
 	import type { MouseEventHandler } from 'svelte/elements';
+	import { cubicInOut } from 'svelte/easing';
 
 	interface Props {
 		title?: string;
 		children?: Snippet;
 		footer?: Snippet;
-		show?: boolean;
+		open?: () => void;
+		close?: () => void;
 		textContent?: string;
 		closeButtonLabel?: string;
-		variant?: 'info' | 'warning' | 'danger';
+		variant?: 'normal' | 'warning' | 'danger';
 		disableCloseButtons?: boolean;
+		onClose?: () => void;
+		onClosed?: () => void;
+		onOpen?: () => void;
 	}
 
 	let {
 		children,
 		title,
-		show = $bindable(),
+		open = $bindable(),
+		close = $bindable(),
 		footer,
-		closeButtonLabel,
-		variant = 'info',
-		disableCloseButtons
+		closeButtonLabel = 'Zamknij',
+		variant = 'normal',
+		disableCloseButtons,
+		onClose,
+		onClosed,
+		onOpen
 	}: Props = $props();
+
+	let show = $state(false);
+
+	open = () => {
+		onOpen?.();
+		show = true;
+	};
+
+	close = () => {
+		onClose?.();
+		show = false;
+	};
 
 	const handleClose: MouseEventHandler<HTMLElement> = (e) => {
 		e.preventDefault();
 		show = false;
+	};
+
+	const dialogSlide = (node: HTMLDivElement): TransitionConfig => {
+		const height = node.clientHeight;
+		const viewportHeight = window.innerHeight - node.offsetTop;
+
+		const translatePercentage = (viewportHeight / height) * 100;
+
+		return {
+			duration: 400,
+			css: (_, u) => `transform: translateY(${translatePercentage * cubicInOut(u)}%)`
+		};
+	};
+
+	const emitOnClosed = (_: Element) => {
+		return {
+			destroy: () => {
+				onClosed?.();
+			}
+		};
 	};
 </script>
 
@@ -38,8 +79,8 @@
 
 {#if show}
 	<div transition:fade class="overlay"></div>
-	<div transition:slide class="dialog-container">
-		<div class="dialog {variant}">
+	<div class="dialog-container">
+		<div transition:dialogSlide class="dialog {variant}" use:emitOnClosed>
 			<div class="title">
 				<div>{title}</div>
 				<IconButton
@@ -55,11 +96,9 @@
 				</div>
 			{/if}
 			<div class="footer">
-				<Button disabled={disableCloseButtons} onclick={handleClose}>
+				<Button outlined disabled={disableCloseButtons} onclick={handleClose}>
 					{#if closeButtonLabel}
 						{closeButtonLabel}
-					{:else}
-						Zamknij
 					{/if}
 				</Button>
 				{#if footer}
@@ -76,7 +115,7 @@
 	.overlay {
 		position: fixed;
 		inset: 0;
-		background-color: rgba(0, 0, 0, 0.1);
+		background-color: rgba(0, 0, 0, 0.3);
 		z-index: v.$loaderZIndex - 1;
 	}
 
@@ -86,10 +125,7 @@
 
 	.dialog {
 		background-color: white;
-		border-radius: 15px;
-		overflow: hidden;
-
-		width: 400px;
+		width: min(100%, 600px);
 
 		&-container {
 			z-index: v.$loaderZIndex - 1;

@@ -6,9 +6,10 @@
 	import { capitalize } from '@shared/helpers/string';
 	import Button from '@shared/components/Button.svelte';
 	import ConfirmationDialog from '@shared/components/ConfirmationDialog.svelte';
-	import { snackbar } from '@shared/components/SnackbarProvider.svelte';
 	import { fade, slide } from 'svelte/transition';
 	import IconButton from '@shared/components/IconButton.svelte';
+	import AddEditTimeSheetDialog from '$lib/components/AddEditTimeSheetDialog.svelte';
+	import { snackbar } from '@shared/helpers/snackbar';
 
 	interface Props {
 		data: PageData;
@@ -22,28 +23,40 @@
 
 	let currentDate = new Date();
 
-	let timeSheetToDelete: TimeSheet | null = $state(null);
-	let showDeleteDialog = $state(false);
+	let selectedTimeSheet: TimeSheet | null = $state(null);
+
+	let openDeleteTimeSheetDialog: undefined | (() => void) = $state();
+	let openAddEditTimeSheetDialog: undefined | (() => void) = $state();
 
 	const handleTimeSheetDelete = (timeSheet: TimeSheet) => {
-		timeSheetToDelete = timeSheet;
-		showDeleteDialog = true;
+		selectedTimeSheet = timeSheet;
+		openDeleteTimeSheetDialog?.();
 	};
 
 	const handleDeleteTimeSheet = async () => {
-		if (!timeSheetToDelete) {
+		if (!selectedTimeSheet) {
 			snackbar.pushError();
 			return false;
 		}
 
-		const success = await timeSheets.delete(timeSheetToDelete.id);
+		const success = await timeSheets.delete(selectedTimeSheet.id);
 
 		if (!success) {
 			return false;
 		}
 
-		timeSheetToDelete = null;
+		selectedTimeSheet = null;
 		return true;
+	};
+
+	const addTimeSheet = () => {
+		selectedTimeSheet = null;
+		openAddEditTimeSheetDialog?.();
+	};
+
+	const editTimeSheet = (timeSheet: TimeSheet) => {
+		selectedTimeSheet = timeSheet;
+		openAddEditTimeSheetDialog?.();
 	};
 </script>
 
@@ -82,7 +95,7 @@
 			<div>
 				<Button icon="delete" variant="danger" onclick={() => handleTimeSheetDelete(timeSheet)}
 					>Usuń</Button>
-				<Button icon="edit" href="/{timeSheet.id}/edit">Edytuj</Button>
+				<Button icon="edit" onclick={() => editTimeSheet(timeSheet)}>Edytuj</Button>
 			</div>
 		</div>
 	</div>
@@ -101,14 +114,20 @@
 </div>
 
 <div class="add-time-sheet-button">
-	<IconButton icon="add" size={40} iconSize={40} href="/add" />
+	<IconButton icon="add" size={40} iconSize={40} shadow onclick={addTimeSheet} />
 </div>
+
+<AddEditTimeSheetDialog
+	bind:open={openAddEditTimeSheetDialog}
+	onSave={timeSheets.add}
+	onEdit={timeSheets.edit}
+	editTimeSheet={selectedTimeSheet ?? undefined} />
 
 <ConfirmationDialog
 	onConfirm={handleDeleteTimeSheet}
-	bind:show={showDeleteDialog}
+	bind:open={openDeleteTimeSheetDialog}
 	title="Usunięcie karty czasu"
-	>Czy na pewno chcesz trwale usunąć kartę czasu pracy&nbsp;<b>{timeSheetToDelete?.name}</b
+	>Czy na pewno chcesz trwale usunąć kartę czasu pracy&nbsp;<b>{selectedTimeSheet?.name}</b
 	>?</ConfirmationDialog>
 
 <style lang="scss">

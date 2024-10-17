@@ -20,3 +20,17 @@ export const convertArrayToDict = <
 
   return result as Record<R, T | undefined>;
 };
+
+export const shallowEqual = (a: Record<string, unknown>, b: Record<string, unknown>) => {
+  if (Object.keys(a).length !== Object.keys(b).length) {
+    return false;
+  }
+
+  for (const key in a) {
+    if (a[key] !== b[key]) {
+      return false;
+    }
+  }
+
+  return true;
+};

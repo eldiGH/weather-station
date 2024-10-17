@@ -11,10 +11,12 @@
 		ripple?: boolean;
 		style?: string;
 		disabled?: boolean;
-		children: Snippet;
+		children?: Snippet;
 		href?: string;
 		icon?: IconType;
 		variant?: 'normal' | 'danger';
+		shadow?: boolean;
+		outlined?: boolean;
 	}
 
 	let {
@@ -27,6 +29,8 @@
 		href,
 		icon,
 		variant = 'normal',
+		shadow,
+		outlined,
 		...restProps
 	}: Props = $props();
 
@@ -48,7 +52,7 @@
 				<Icon {icon} />
 			</span>
 		{/if}
-		{@render children()}
+		{@render children?.()}
 	</div>
 	{#if busy}
 		<div class="spinner">
@@ -67,7 +71,9 @@
 			showRipple?.(e);
 		}}
 		class:busy
-		class:disabled={busy || disabled}>
+		class:shadow
+		class:disabled={busy || disabled}
+		class:outlined>
 		{@render buttonContent()}
 	</a>
 {:else}
@@ -77,14 +83,26 @@
 		{style}
 		onclick={handleClick}
 		class:busy
-		disabled={busy || disabled}>
+		class:shadow
+		disabled={busy || disabled}
+		class:outlined>
 		{@render buttonContent()}
 	</button>
 {/if}
 
 <style lang="scss">
 	.btn {
-		background-color: var(--button-color);
+		@mixin outline-shadow($color: var(--color)) {
+			$outlineShadow: inset 0px 0px 0px 3px $color;
+
+			-webkit-box-shadow: $outlineShadow;
+			-moz-box-shadow: $outlineShadow;
+			box-shadow: $outlineShadow;
+		}
+
+		--color: var(--button-color);
+
+		background-color: var(--color);
 		border: none;
 		color: var(--button-text-color);
 		padding: 0 1em;
@@ -93,19 +111,40 @@
 		cursor: pointer;
 		transition:
 			filter 100ms ease-in-out,
-			background-color 100ms ease-in-out;
+			background-color 100ms ease-in-out,
+			color 100ms ease-in-out;
 		position: relative;
 		user-select: none;
 		height: 3rem;
 		display: inline-flex;
 		align-items: center;
 
+		&.shadow {
+			-webkit-box-shadow: 0px 0px 6px 1px rgba(66, 68, 90, 1);
+			-moz-box-shadow: 0px 0px 6px 1px rgba(66, 68, 90, 1);
+			box-shadow: 0px 0px 6px 1px rgba(66, 68, 90, 1);
+		}
+
 		&.danger {
-			background-color: #d30000;
+			--color: #d30000;
 		}
 
 		&:hover {
 			filter: brightness(90%);
+		}
+
+		&.outlined {
+			background-color: transparent;
+
+			@include outline-shadow();
+
+			color: var(--color);
+
+			&:hover {
+				filter: none;
+				background-color: var(--color);
+				color: var(--button-text-color);
+			}
 		}
 
 		&:disabled,
@@ -115,6 +154,14 @@
 
 			&:hover {
 				filter: none;
+			}
+
+			&.outlined {
+				background-color: transparent;
+
+				@include outline-shadow(var(--button-disabled));
+
+				color: var(--button-disabled);
 			}
 		}
 

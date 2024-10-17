@@ -21,17 +21,22 @@
 	];
 </script>
 
-<TopBar>
-	<Link slot="left" noColor class="back-button" href={baseRoute.replace(`/${sensorId}`, '')}
+{#snippet left()}
+	<Link noColor class="back-button" href={baseRoute.replace(`/${sensorId}`, '')}
 		><Icon weight={200} opticalSize={48} icon="arrow_back" /></Link>
-	<div slot="center" class="sensor-name">{data.sensor.name}</div>
-	<Container pt={2} pb={2}>
-		<div class="tabs-container">
-			<Tabs navigation {tabs} />
-		</div>
-		<slot />
-	</Container>
-</TopBar>
+{/snippet}
+
+{#snippet center()}
+	<div class="sensor-name">{data.sensor.name}</div>
+{/snippet}
+
+<TopBar {left} {center} />
+<Container pt={2} pb={2}>
+	<div class="tabs-container">
+		<Tabs navigation {tabs} />
+	</div>
+	<slot />
+</Container>
 
 <style lang="scss">
 	:global(.back-button) {

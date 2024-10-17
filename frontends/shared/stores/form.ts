@@ -1,9 +1,21 @@
+import { shallowEqual } from 'backend/helpers';
 import { derived, get, writable, type Readable, type Writable } from 'svelte/store';
 import { type z, type Schema } from 'zod';
 
 type ChangePropsType<T extends Record<string, unknown>, NewType> = {
 	[key in keyof T]: NewType;
 };
+
+export type FormSubmitEventObject = SubmitEvent & {
+	currentTarget: EventTarget & HTMLFormElement;
+};
+
+export type FormSubmit = <
+	T extends Record<string, unknown>,
+	R extends Promise<void> | void | Promise<boolean> | boolean = Promise<void>
+>(
+	onSubmit: (data: T) => R
+) => (e: FormSubmitEventObject) => R;
 
 export type FormReturn<
 	Values extends Record<string, unknown>,
@@ -18,10 +30,9 @@ export type FormReturn<
 	validate: MySchema extends Schema ? () => Promise<InferredValues> : undefined;
 	isSubmitting: Readable<boolean>;
 	isValid: Readable<boolean>;
-	submit: (
-		onSubmit: (data: InferredValues) => Promise<void> | void
-	) => (e: SubmitEvent) => Promise<void> | void;
+	submit: FormSubmit;
 	handleBlur: (event: FocusEvent) => void;
+	reset: () => void;
 };
 
 const parseZodResponse = (
@@ -89,12 +100,16 @@ export const createForm = <
 	initialValues: T,
 	schema?: MySchema
 ): FormReturn<T, MySchema, InferredValues> => {
-	const values = writable(initialValues);
+	const values = writable({ ...initialValues });
 	const touched = writable(getInitialTouched(initialValues));
 	const errors = writable(getInitialErrors(initialValues, schema));
 	const isSubmitting = writable(false);
 
-	const isValid = derived(errors, ($errors) => Object.values($errors).every((error) => !error));
+	const isValid = derived(
+		[errors, values],
+		([$errors, $values]) =>
+			Object.values($errors).every((error) => !error) && !shallowEqual($values, initialValues)
+	);
 
 	const hasAnyErrors = () => Object.values(get(errors)).some((error) => !!error);
 
@@ -123,7 +138,7 @@ export const createForm = <
 			: undefined
 	) as MySchema extends Schema ? () => Promise<T> : undefined;
 
-	const submit = (onSubmit: (data: T) => Promise<void> | void) => async (e: SubmitEvent) => {
+	const submit = ((onSubmit) => async (e) => {
 		e.preventDefault();
 
 		let parsedValues: T = get(values);
@@ -133,13 +148,19 @@ export const createForm = <
 		}
 
 		if (hasAnyErrors()) {
-			return;
+			return false;
 		}
 
 		isSubmitting.set(true);
-		await onSubmit(parsedValues);
+		const result = await onSubmit(parsedValues);
 		isSubmitting.set(false);
-	};
+
+		if (typeof result === 'boolean') {
+			return result;
+		}
+
+		return true;
+	}) as FormSubmit;
 
 	const handleBlur = (e: FocusEvent) => {
 		const target = e.target as HTMLInputElement;
@@ -159,6 +180,13 @@ export const createForm = <
 		});
 	};
 
+	const reset = () => {
+		values.set({ ...initialValues });
+		touched.set(getInitialTouched(initialValues));
+		isSubmitting.set(false);
+		clearErrors();
+	};
+
 	if (validate) {
 		values.subscribe(() => {
 			validate();
@@ -173,6 +201,7 @@ export const createForm = <
 		isSubmitting: { subscribe: isSubmitting.subscribe },
 		isValid: { subscribe: isValid.subscribe },
 		touched: { subscribe: touched.subscribe },
-		handleBlur
+		handleBlur,
+		reset
 	};
 };
