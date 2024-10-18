@@ -3,7 +3,16 @@
 	import IconButton from '@shared/components/IconButton.svelte';
 	import TopBar from '@shared/components/TopBar.svelte';
 	import { logout } from '@shared/helpers/auth';
+	import { page } from '$app/stores';
+
+	let isRootPage = $derived($page.url.pathname === '/');
 </script>
+
+{#snippet left()}
+	{#if !isRootPage}
+		<IconButton fade icon="arrow_back" size={25} iconSize={40} href="../" />
+	{/if}
+{/snippet}
 
 {#snippet right()}
 	<Button
@@ -12,8 +21,15 @@
 		}}>Wyloguj</Button>
 {/snippet}
 
-{#snippet left()}
-	<IconButton icon="arrow_back" size={25} iconSize={40} />
-{/snippet}
-
 <TopBar {right} {left} />
+
+{#if !isRootPage}
+	<IconButton
+		fade
+		icon="arrow_back"
+		floating={{ left: 'calc(50% - 9rem)', bottom: '0.3rem' }}
+		onTop
+		size={35}
+		iconSize={40}
+		href="../" />
+{/if}

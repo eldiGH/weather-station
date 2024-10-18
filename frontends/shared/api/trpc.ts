@@ -13,7 +13,8 @@ import { isDevelopment } from '../helpers/environment';
 import { browser } from '$app/environment';
 import { InternalServerError } from 'backend/errors';
 import { devtoolsLink } from 'trpc-client-devtools-link';
-import { handleFrontendRefresh } from '../helpers/auth';
+import { getTokensDataCookies, hasValidAccessToken, isLoggedIn, refresh } from '../helpers/auth';
+import { goto } from '$app/navigation';
 
 export type FetchFunc = (
 	input: RequestInfo | URL,
@@ -101,17 +102,27 @@ export const handleAuthedTRPCErrors = async <
 	opts?: O
 ): Promise<HandledRequest<D, Abortable>> => {
 	if (browser) {
-		let error: ApiError | undefined;
-		if (refetchPromise) {
-			error = await refetchPromise;
-		} else {
-			refetchPromise = handleFrontendRefresh();
-			error = await refetchPromise;
-		}
-		refetchPromise = null;
+		const tokensData = getTokensDataCookies();
 
-		if (error) {
-			throw error;
+		if (!isLoggedIn(tokensData)) {
+			await goto('/login');
+			throw Error('Not authorized');
+		}
+
+		if (!hasValidAccessToken(tokensData)) {
+			let error: ApiError | undefined;
+			if (refetchPromise) {
+				error = await refetchPromise;
+			} else {
+				refetchPromise = refresh();
+				error = await refetchPromise;
+			}
+			refetchPromise = null;
+
+			if (error) {
+				goto('/login');
+				throw error;
+			}
 		}
 	}
 

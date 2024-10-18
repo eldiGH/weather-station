@@ -1,12 +1,10 @@
-<script lang="ts" module>
-	const INPUT_REGEX = /^-$|^-?0[.,]\d*$|^-?0[.,]?$|^-?[1-9]\d*[,.]?\d*$|^$/;
-</script>
-
 <script lang="ts">
 	import { untrack, type ComponentProps } from 'svelte';
 	import Input from './Input.svelte';
 	import type { FormEventHandler } from 'svelte/elements';
 	import IconButton from './IconButton.svelte';
+
+	const INPUT_REGEX = /^-$|^-?0[.,]\d*$|^-?0[.,]?$|^-?[1-9]\d*[,.]?\d*$|^$/;
 
 	type Props = Omit<ComponentProps<typeof Input>, 'value' | 'disabled'> & {
 		value?: number | undefined;
@@ -120,16 +118,17 @@
 
 <div class="root">
 	{#if decButton}
-		<IconButton {disabled} onclick={handleDecrement} icon="remove" />
+		<IconButton size={20} iconSize={25} {disabled} onclick={handleDecrement} icon="remove" />
 	{/if}
 	<Input
+		inputmode="numeric"
 		{...inputProps}
 		{disabled}
 		bind:value={inputValue}
 		oninput={handleInput}
 		onfocus={handleFocus} />
 	{#if incButton}
-		<IconButton {disabled} onclick={handleIncrement} icon="add" />
+		<IconButton size={20} iconSize={25} {disabled} onclick={handleIncrement} icon="add" />
 	{/if}
 </div>
 

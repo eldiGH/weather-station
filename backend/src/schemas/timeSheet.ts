@@ -1,26 +1,25 @@
-import { array, number, object, string, type z } from 'zod';
-import { dateRangeQuerySchema } from './helpers';
+import { array, date, number, object, string, type z } from 'zod';
 
-export const createTimeSheetInputSchema = object({
+export const addTimeSheetInputSchema = object({
   name: string().min(3).max(30),
   defaultPricePerHour: number().gt(0).optional(),
   defaultHours: number().gt(0).lte(24).optional()
 });
 
-export type CreateTimeSheetInput = z.infer<typeof createTimeSheetInputSchema>;
+export type AddTimeSheetInput = z.infer<typeof addTimeSheetInputSchema>;
 
-export const editTimeSheetInputSchema = createTimeSheetInputSchema.extend({
+export const editTimeSheetInputSchema = addTimeSheetInputSchema.extend({
   timeSheetId: string().uuid()
 });
 
 export type EditTimeSheetInput = z.infer<typeof editTimeSheetInputSchema>;
 
-export const getTimeSheetInputSchema = object({
-  id: string().uuid(),
-  dates: dateRangeQuerySchema.optional()
+export const getTimeSheetForMonthInputSchema = object({
+  timeSheetId: string().uuid(),
+  date: string().date().or(date())
 });
 
-export type GetTimeSheetInput = z.infer<typeof getTimeSheetInputSchema>;
+export type GetTimeSheetForMonthInput = z.infer<typeof getTimeSheetForMonthInputSchema>;
 
 const timeSheetHours = number().gt(0).lte(24);
 
@@ -48,7 +47,7 @@ export type SetTimeSheetEntryBulkInput = z.infer<typeof setTimeSheetEntryBulkInp
 
 export const setTimeSheetEntryForMonthInputSchema = object({
   timeSheetId: string().uuid(),
-  date: string().date(),
+  date: string().date().or(date()),
   entries: array(
     object({
       date: string().date(),

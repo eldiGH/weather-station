@@ -2,13 +2,18 @@
 	import { roundToPrecision } from '../helpers/math';
 	import { onMount } from 'svelte';
 
-	export let size = 40;
-	export let thickness = roundToPrecision(size / 11.111, 3);
-	$: radius = roundToPrecision((size - thickness) / 2, 3);
+	interface Props {
+		size?: number;
+		thickness?: number;
+	}
+
+	const { size = 40, thickness = roundToPrecision(size / 11.111, 3) }: Props = $props();
+
+	let radius = $derived(roundToPrecision((size - thickness) / 2, 3));
 
 	let circle: SVGCircleElement;
 
-	let totalPathLen = 0;
+	let totalPathLen = $state(0);
 
 	onMount(() => {
 		totalPathLen = roundToPrecision(circle.getTotalLength(), 3);

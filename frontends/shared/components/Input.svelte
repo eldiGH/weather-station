@@ -60,6 +60,8 @@
 		font-size: 1rem;
 		color: var(--input-text-color) !important;
 
+		touch-action: manipulation;
+
 		&.center-text {
 			text-align: center;
 		}

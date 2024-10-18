@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { HTMLButtonAttributes, MouseEventHandler } from 'svelte/elements';
-	import Ripple, { type ShowRippleFn } from './Ripple.svelte';
+	import Ripple from './Ripple.svelte';
 	import Spinner from './Spinner.svelte';
 	import type { Snippet } from 'svelte';
 	import type { IconType } from '../types/IconType';
@@ -36,13 +36,13 @@
 
 	const handleClick: MouseEventHandler<HTMLButtonElement> = (e) => {
 		if (ripple) {
-			showRipple?.(e);
+			rippleRef.showRipple(e);
 		}
 
 		onclick?.(e);
 	};
 
-	let showRipple: ShowRippleFn | undefined = $state();
+	let rippleRef: Ripple;
 </script>
 
 {#snippet buttonContent()}
@@ -59,7 +59,7 @@
 			<Spinner size={32} />
 		</div>
 	{/if}
-	<Ripple bind:showRipple />
+	<Ripple bind:this={rippleRef} />
 {/snippet}
 
 {#if href}
@@ -68,7 +68,7 @@
 		{style}
 		{href}
 		onclick={(e) => {
-			showRipple?.(e);
+			rippleRef.showRipple(e);
 		}}
 		class:busy
 		class:shadow
@@ -118,6 +118,8 @@
 		height: 3rem;
 		display: inline-flex;
 		align-items: center;
+
+		touch-action: manipulation;
 
 		&.shadow {
 			-webkit-box-shadow: 0px 0px 6px 1px rgba(66, 68, 90, 1);

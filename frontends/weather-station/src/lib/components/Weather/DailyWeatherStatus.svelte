@@ -12,7 +12,9 @@
 
 	$: formattedUvi = formatUVI(data.uvi);
 
-	let generalInfoCard: ComponentProps<IconInfo>[];
+	type IconInfoProps = ComponentProps<typeof IconInfo>;
+
+	let generalInfoCard: IconInfoProps[];
 	$: generalInfoCard = [
 		{ icon: 'thermometer', content: `Temperatura max: ${formatTemperature(data.temp.max)}` },
 		{ icon: 'thermometer', content: `Temperatura min: ${formatTemperature(data.temp.min)}` },
@@ -24,31 +26,31 @@
 		{ icon: 'water_do', content: `Temp. skraplania rosy: ${formatTemperature(data.dew_point)}` }
 	];
 
-	let morningInfoCard: ComponentProps<IconInfo>[];
+	let morningInfoCard: IconInfoProps[];
 	$: morningInfoCard = [
 		{ icon: 'thermometer', content: `Temperatura: ${formatTemperature(data.temp.morn)}` },
 		{ icon: 'thermometer', content: `Odczuwalna: ${formatTemperature(data.feels_like.morn)}` }
 	];
 
-	let dayInfoCard: ComponentProps<IconInfo>[];
+	let dayInfoCard: IconInfoProps[];
 	$: dayInfoCard = [
 		{ icon: 'thermometer', content: `Temperatura: ${formatTemperature(data.temp.day)}` },
 		{ icon: 'thermometer', content: `Odczuwalna: ${formatTemperature(data.feels_like.day)}` }
 	];
 
-	let eveningInfoCard: ComponentProps<IconInfo>[];
+	let eveningInfoCard: IconInfoProps[];
 	$: eveningInfoCard = [
 		{ icon: 'thermometer', content: `Temperatura: ${formatTemperature(data.temp.eve)}` },
 		{ icon: 'thermometer', content: `Odczuwalna: ${formatTemperature(data.feels_like.eve)}` }
 	];
 
-	let nightInfoCard: ComponentProps<IconInfo>[];
+	let nightInfoCard: IconInfoProps[];
 	$: nightInfoCard = [
 		{ icon: 'thermometer', content: `Temperatura: ${formatTemperature(data.temp.night)}` },
 		{ icon: 'thermometer', content: `Odczuwalna: ${formatTemperature(data.feels_like.night)}` }
 	];
 
-	let sunInfoCard: ComponentProps<IconInfo>[];
+	let sunInfoCard: IconInfoProps[];
 	$: sunInfoCard = [
 		{ icon: 'wb_twilight', content: `Wschód słońca: ${formatUnixTimestamp(data.sunrise)}` },
 		{ icon: 'wb_twilight', content: `Zachód słońca: ${formatUnixTimestamp(data.sunset)}` },

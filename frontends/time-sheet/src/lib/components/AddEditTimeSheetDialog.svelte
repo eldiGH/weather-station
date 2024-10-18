@@ -5,8 +5,8 @@
 	import { snackbar } from '@shared/helpers/snackbar';
 	import { createForm } from '@shared/stores/form';
 	import {
-		createTimeSheetInputSchema,
-		type CreateTimeSheetInput,
+		addTimeSheetInputSchema,
+		type AddTimeSheetInput,
 		type EditTimeSheetInput
 	} from 'backend/schemas';
 	import type { AppRouterOutputs } from 'backend/trpc';
@@ -18,14 +18,14 @@
 
 	interface Props {
 		open?: () => void;
-		onSave: (data: CreateTimeSheetInput) => Promise<boolean>;
+		onAdd: (data: AddTimeSheetInput) => Promise<boolean>;
 		onEdit: (data: EditTimeSheetInput) => Promise<boolean | ApiError>;
 		editTimeSheet?: TimeSheet;
 		onClosed?: () => void;
 		timeSheets?: TimeSheet[];
 	}
 
-	let { open = $bindable(), onSave, onEdit, editTimeSheet, onClosed, timeSheets }: Props = $props();
+	let { open = $bindable(), onAdd, onEdit, editTimeSheet, onClosed, timeSheets }: Props = $props();
 	let isEdit = $derived(Boolean(editTimeSheet));
 
 	const form = $derived(
@@ -37,13 +37,13 @@
 						defaultPricePerHour: editTimeSheet.defaultPricePerHour ?? undefined
 					}
 				: { name: '', defaultHours: undefined, defaultPricePerHour: undefined },
-			createTimeSheetInputSchema
+			addTimeSheetInputSchema
 		)
 	);
 
 	const { errors, handleBlur, isSubmitting, submit, values, touchedErrors } = $derived(form);
 
-	const handleEdit = async (data: CreateTimeSheetInput) => {
+	const handleEdit = async (data: AddTimeSheetInput) => {
 		if (!editTimeSheet) {
 			snackbar.pushError();
 			return false;
@@ -74,9 +74,9 @@
 
 <FormDialog
 	bind:open
-	title={isEdit ? 'Edytuj kartę czasu pracy' : 'Dodaj kartę czasu pracy'}
+	title={isEdit ? `Edytuj kartę czasu ${editTimeSheet?.name}` : 'Dodaj kartę czasu'}
 	submitButtonLabel={isEdit ? 'Zapisz' : 'Dodaj'}
-	onSubmit={submit(isEdit ? handleEdit : onSave)}
+	onSubmit={submit(isEdit ? handleEdit : onAdd)}
 	{onClosed}
 	{form}>
 	<Input

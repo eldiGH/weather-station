@@ -1,21 +1,16 @@
 <script lang="ts">
-	import type { ComponentProps } from 'svelte';
+	import type { ComponentProps, Snippet } from 'svelte';
 	import Icon from './Icon.svelte';
 
-	interface $$Props extends ComponentProps<Icon> {
-		class?: string | undefined;
-		gap?: number | undefined;
-		color?: string | undefined;
-		content?: string | undefined;
+	interface Props extends ComponentProps<typeof Icon> {
+		class?: string;
+		gap?: number;
+		color?: string;
+		content?: string;
+		children?: Snippet;
 	}
 
-	let className: string | undefined = undefined;
-	export { className as class };
-	export let gap: number | undefined = undefined;
-	export let color: string | undefined = undefined;
-	export let content: string | undefined = undefined;
-
-	let iconProps = $$restProps as ComponentProps<Icon>;
+	let { class: className, gap, color, content, children, ...iconProps }: Props = $props();
 </script>
 
 <div
@@ -25,7 +20,7 @@
 	{#if content}
 		{content}
 	{:else}
-		<slot />
+		{@render children?.()}
 	{/if}
 </div>
 

@@ -3,7 +3,7 @@
 	import type { ComponentProps } from 'svelte';
 	import IconInfo from '@shared/components/IconInfo.svelte';
 
-	export let data: ComponentProps<IconInfo>[];
+	export let data: ComponentProps<typeof IconInfo>[];
 	export let header: string;
 </script>
 

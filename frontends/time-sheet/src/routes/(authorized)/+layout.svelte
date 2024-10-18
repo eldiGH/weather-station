@@ -6,6 +6,8 @@
 	import SnackbarProvider from '@shared/components/SnackbarProvider.svelte';
 	import AppBar from '$lib/components/AppBar.svelte';
 
+	const { children } = $props();
+
 	onMount(() => {
 		if (!isLoggedIn(getTokensDataCookies())) {
 			goto('/login', { replaceState: true });
@@ -15,6 +17,6 @@
 
 <AppBar />
 <Container>
-	<slot />
+	{@render children?.()}
 </Container>
 <SnackbarProvider />

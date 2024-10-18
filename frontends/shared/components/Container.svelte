@@ -1,12 +1,19 @@
 <script lang="ts">
-	export let pt: number | undefined = undefined;
-	export let pb: number | undefined = undefined;
+	import type { Snippet } from 'svelte';
+
+	interface Props {
+		pt?: number;
+		pb?: number;
+		children?: Snippet;
+	}
+
+	const { pt, pb, children }: Props = $props();
 </script>
 
 <div
 	style={`padding-top: ${pt ?? 'inherit'}rem; padding-bottom: ${pb ?? 'inherit'}rem`}
 	class="container__root">
-	<div class="container"><slot /></div>
+	<div class="container">{@render children?.()}</div>
 </div>
 
 <style lang="scss">

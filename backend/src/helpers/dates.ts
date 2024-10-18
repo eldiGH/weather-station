@@ -1,4 +1,4 @@
-import { format, getDaysInMonth, set } from 'date-fns';
+import { format, getDaysInMonth, lastDayOfMonth, set } from 'date-fns';
 
 export const dateComparatorDesc = (a: Date, b: Date) => b.getTime() - a.getTime();
 
@@ -28,3 +28,7 @@ export const getMonthsBoundaries = (date: Date | string) => ({
   from: formatToStringDate(set(date, { date: 1 })),
   to: formatToStringDate(set(date, { date: getDaysInMonth(date) }))
 });
+
+export const getFirstDateOfMonth = (date: string | Date) => format(date, 'yyyy-MM-01');
+export const getLastDateOfMonth = (date: string | Date) =>
+  format(lastDayOfMonth(date), `yyyy-MM-dd`);

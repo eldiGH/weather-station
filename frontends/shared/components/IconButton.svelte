@@ -2,33 +2,55 @@
 	import type { ComponentProps } from 'svelte';
 	import Icon, { type IconVariant } from './Icon.svelte';
 	import Button from './Button.svelte';
+	import { fade as fadeAnimation } from 'svelte/transition';
 
 	interface Props
 		extends Omit<ComponentProps<typeof Button>, 'icon'>,
-			Omit<ComponentProps<Icon>, 'variant'> {
+			Omit<ComponentProps<typeof Icon>, 'variant'> {
 		size?: number;
 		iconSize?: number;
 		square?: boolean;
 		iconVariant?: IconVariant;
+		fade?: boolean;
+		floating?: { top?: string; bottom?: string; left?: string; right?: string };
+		onTop?: boolean;
 	}
 
 	const {
 		size = 16,
 		iconSize,
 		icon,
-		disabled,
 		square,
-		href,
 		iconVariant,
 		filled,
 		grade,
 		opticalSize,
 		weight,
+		fade,
+		floating,
+		onTop,
 		...restProps
 	}: Props = $props();
+
+	const a: typeof fadeAnimation = (node: Element) => {
+		if (!fade) {
+			return {};
+		}
+
+		return fadeAnimation(node, { duration: 150 });
+	};
 </script>
 
-<div class="icon-button" class:round={!square}>
+<div
+	transition:a
+	class={`icon-button`}
+	class:on-top={onTop}
+	class:floating
+	class:round={!square}
+	style:top={floating?.top}
+	style:bottom={floating?.bottom}
+	style:left={floating?.left}
+	style:right={floating?.right}>
 	<Button {...restProps} style="width: {size * 2}px; height: {size * 2}px;">
 		<Icon
 			{icon}
@@ -42,6 +64,8 @@
 </div>
 
 <style lang="scss">
+	@use '@shared/styles/vars' as v;
+
 	.icon-button {
 		:global(.btn) {
 			padding: 0;
@@ -55,6 +79,14 @@
 			:global(.btn) {
 				border-radius: 50%;
 			}
+		}
+
+		&.floating {
+			position: fixed;
+		}
+
+		&.on-top {
+			z-index: v.$loaderZIndex;
 		}
 	}
 </style>

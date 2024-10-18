@@ -1,19 +1,29 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
 	export type IconVariant = 'outlined' | 'sharp' | 'rounded';
 </script>
 
 <script lang="ts">
 	import type { IconType } from '../types/IconType';
 
-	export let variant: IconVariant = 'outlined';
-	export let icon: IconType;
+	interface Props {
+		variant?: IconVariant;
+		icon: IconType;
+		filled?: boolean;
+		weight?: number;
+		grade?: number;
+		opticalSize?: number;
+		size?: number;
+	}
 
-	export let filled = false;
-	export let weight = 400;
-	export let grade = 0;
-	export let opticalSize = 24;
-
-	export let size: number | undefined = undefined;
+	const {
+		variant = 'outlined',
+		icon,
+		filled = false,
+		weight = 400,
+		grade = 0,
+		opticalSize = 24,
+		size
+	}: Props = $props();
 </script>
 
 <i

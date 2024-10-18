@@ -12,7 +12,7 @@
 
 	$: formattedUvi = formatUVI(data.uvi);
 
-	let generalInfoCard: ComponentProps<IconInfo>[];
+	let generalInfoCard: ComponentProps<typeof IconInfo>[];
 	$: generalInfoCard = [
 		{ icon: 'humidity_percentage', content: `Wilgotność: ${data.humidity}%` },
 		{ icon: 'compress', content: `Ciśnienie: ${data.pressure} hPa` },
@@ -25,7 +25,7 @@
 		{ icon: 'water_do', content: `Temp. skraplania rosy: ${formatTemperature(data.dew_point)}` }
 	];
 
-	let sunInfoCard: ComponentProps<IconInfo>[];
+	let sunInfoCard: ComponentProps<typeof IconInfo>[];
 	$: sunInfoCard = [
 		{ icon: 'wb_twilight', content: `Wschód słońca: ${formatUnixTimestamp(data.sunrise)}` },
 		{ icon: 'wb_twilight', content: `Zachód słońca: ${formatUnixTimestamp(data.sunset)}` },

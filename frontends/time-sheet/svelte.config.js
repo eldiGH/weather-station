@@ -30,6 +30,10 @@ export const svelteConfig = {
 			'@shared/styles/vars': varsPath,
 			'@shared/*': sharedPath
 		}
+	},
+
+	compilerOptions: {
+		runes: true
 	}
 };
 

@@ -87,10 +87,10 @@
 		</div>
 		<div class="actions">
 			<div>
-				<Button icon="calendar_month" href="/{timeSheet.id}">Widok miesiąca</Button>
+				<Button icon="calendar_month" href="/{timeSheet.id}/monthly">Widok miesiąca</Button>
 			</div>
 			<div>
-				<Button icon="calendar_view_day" href="/{timeSheet.id}">Widok wpisów</Button>
+				<Button icon="calendar_view_day" href="/{timeSheet.id}/monthly">Widok wpisów</Button>
 			</div>
 			<div>
 				<Button icon="delete" variant="danger" onclick={() => handleTimeSheetDelete(timeSheet)}
@@ -114,12 +114,18 @@
 </div>
 
 <div class="add-time-sheet-button">
-	<IconButton icon="add" size={40} iconSize={40} shadow onclick={addTimeSheet} />
+	<IconButton
+		icon="add"
+		size={40}
+		iconSize={40}
+		shadow
+		onclick={addTimeSheet}
+		floating={{ right: '1rem', bottom: '1rem' }} />
 </div>
 
 <AddEditTimeSheetDialog
 	bind:open={openAddEditTimeSheetDialog}
-	onSave={timeSheets.add}
+	onAdd={timeSheets.add}
 	onEdit={timeSheets.edit}
 	editTimeSheet={selectedTimeSheet ?? undefined}
 	timeSheets={$timeSheets} />
@@ -128,15 +134,13 @@
 	onConfirm={handleDeleteTimeSheet}
 	bind:open={openDeleteTimeSheetDialog}
 	title="Usunięcie karty czasu"
-	>Czy na pewno chcesz trwale usunąć kartę czasu pracy&nbsp;<b>{selectedTimeSheet?.name}</b
+	>Czy na pewno chcesz trwale usunąć kartę czasu&nbsp;<b>{selectedTimeSheet?.name}</b
 	>?</ConfirmationDialog>
 
 <style lang="scss">
 	@use '@shared/styles/vars' as v;
 
 	.root {
-		padding-bottom: 4rem;
-
 		.no-time-sheets {
 			font-size: 3rem;
 			padding: 1rem;
@@ -221,11 +225,5 @@
 				}
 			}
 		}
-	}
-
-	.add-time-sheet-button {
-		position: fixed;
-		right: 1rem;
-		bottom: 1rem;
 	}
 </style>

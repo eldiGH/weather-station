@@ -2,11 +2,11 @@
 	import Loader from './Loader.svelte';
 	import { navigating } from '$app/stores';
 
-	let show = false;
+	let show = $state(false);
 
 	const navigatingDebounceMs = 100;
 
-	$: {
+	$effect(() => {
 		const nav = $navigating;
 
 		if (nav) {
@@ -19,7 +19,7 @@
 				clearTimeout(timeout);
 			});
 		}
-	}
+	});
 </script>
 
 <Loader {show} overlay fullScreen />

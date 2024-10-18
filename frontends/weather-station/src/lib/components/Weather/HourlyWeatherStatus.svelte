@@ -12,7 +12,7 @@
 
 	$: formattedUvi = formatUVI(data.uvi);
 
-	let generalInfoCard: ComponentProps<IconInfo>[];
+	let generalInfoCard: ComponentProps<typeof IconInfo>[];
 	$: generalInfoCard = [
 		{ icon: 'humidity_high', content: `Szansa na deszcz: ${Math.round(data.pop * 100)}%` },
 		{ icon: 'humidity_percentage', content: `Wilgotność: ${data.humidity}%` },
@@ -26,7 +26,7 @@
 		{ icon: 'water_do', content: `Temp. skraplania rosy: ${formatTemperature(data.dew_point)}` }
 	];
 
-	let sunInfoCard: ComponentProps<IconInfo>[];
+	let sunInfoCard: ComponentProps<typeof IconInfo>[];
 	$: sunInfoCard = [
 		{
 			icon: 'wb_sunny',

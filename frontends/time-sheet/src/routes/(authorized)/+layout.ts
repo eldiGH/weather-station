@@ -1,12 +1,28 @@
 import { handleAuthedTRPCErrors, trpc } from '@shared/api/trpc';
 import { CacheIdentifiers } from '$lib/constants/cache';
-import type { PageLoad } from './$types';
+import type { LayoutLoad } from './$types';
 import { writable } from 'svelte/store';
-import type { CreateTimeSheetInput, EditTimeSheetInput } from 'backend/schemas';
+import type { AddTimeSheetInput, EditTimeSheetInput } from 'backend/schemas';
 import { snackbar } from '@shared/helpers/snackbar';
 import { ApiErrorCode } from 'backend/types';
+import type { AppRouterOutputs } from 'backend/trpc';
+import { addMonths, isSameMonth } from 'date-fns';
 
-export const load: PageLoad = async ({ fetch, depends }) => {
+type TimeSheetEntry = AppRouterOutputs['timeSheet']['getTimeSheetForMonth'][number];
+
+const getStatsOfTimeSheet = (entries: TimeSheetEntry[]) =>
+	entries
+		.filter((e) => e.hours > 0)
+		.reduce(
+			(acc, e) => ({
+				totalPrice: acc.totalPrice + e.pricePerHour * e.hours,
+				hours: acc.hours + e.hours,
+				count: acc.count + 1
+			}),
+			{ totalPrice: 0, hours: 0, count: 0 }
+		);
+
+export const load: LayoutLoad = async ({ fetch, depends }) => {
 	depends(CacheIdentifiers.API_TIME_SHEETS_LIST);
 
 	const { data, error } = await handleAuthedTRPCErrors(
@@ -40,7 +56,7 @@ export const load: PageLoad = async ({ fetch, depends }) => {
 				snackbar.pushSuccess('Pomyślnie usunięto');
 				return true;
 			},
-			add: async (input: CreateTimeSheetInput) => {
+			add: async (input: AddTimeSheetInput) => {
 				const { error, data } = await handleAuthedTRPCErrors(
 					trpc(fetch).timeSheet.createTimeSheet.mutate,
 					input
@@ -92,6 +108,34 @@ export const load: PageLoad = async ({ fetch, depends }) => {
 				]);
 
 				return true;
+			},
+
+			updateStats: (date: string | Date, timeSheetId: string, entries: TimeSheetEntry[]) => {
+				const currentDate = new Date();
+
+				if (isSameMonth(currentDate, date)) {
+					timeSheets.update((t) =>
+						t.map((timeSheet) =>
+							timeSheet.id === timeSheetId
+								? {
+										...timeSheet,
+										currentMonth: getStatsOfTimeSheet(entries)
+									}
+								: timeSheet
+						)
+					);
+				} else if (isSameMonth(currentDate, addMonths(date, 1))) {
+					timeSheets.update((t) =>
+						t.map((timeSheet) =>
+							timeSheet.id === timeSheetId
+								? {
+										...timeSheet,
+										lastMonth: getStatsOfTimeSheet(entries)
+									}
+								: timeSheet
+						)
+					);
+				}
 			}
 		}
 	};

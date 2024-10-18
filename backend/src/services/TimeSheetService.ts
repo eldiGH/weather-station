@@ -1,23 +1,28 @@
-import { and, count, desc, eq, gte, inArray, lt, ne, sql, sum } from 'drizzle-orm';
+import { and, count, desc, eq, gte, inArray, lt, lte, ne, sql, sum } from 'drizzle-orm';
 import { db } from '../db/drizzle';
 import { timeSheetEntry, timeSheet, type UserModel } from '../db/drizzle/schema';
 import type {
-  CreateTimeSheetInput,
+  AddTimeSheetInput,
   DeleteTimeSheetEntryBulkInput,
   DeleteTimeSheetEntryInput,
   DeleteTimeSheetInput,
   EditTimeSheetInput,
-  GetTimeSheetInput,
+  GetTimeSheetForMonthInput,
   SetTimeSheetEntryBulkInput,
   SetTimeSheetEntryForMonthInput,
   SetTimeSheetEntryInput
 } from '../schemas/timeSheet';
 import { TimeSheetNameAlreadyUsed } from '../errors/TimeSheetNameAlreadyUsed';
-import { dateTruncate, dbConstants, dbOps, getSQLForDates, timeInterval } from '../helpers/db';
+import { dateTruncate, dbConstants, dbOps, timeInterval } from '../helpers/db';
 import { TimeSheetNotFound } from '../errors/TimeSheetNotFound';
 import { AccessDenied } from '../errors/AccessDenied';
 import { TimeSheetEntryNotFound } from '../errors/TimeSheetEntryNotFound';
-import { dateStringComparatorDesc, formatToStringDate } from '../helpers/dates';
+import {
+  dateStringComparatorDesc,
+  formatToStringDate,
+  getFirstDateOfMonth,
+  getLastDateOfMonth
+} from '../helpers/dates';
 import { format, getDaysInMonth } from 'date-fns';
 import { convertArrayToDict } from '../helpers';
 
@@ -51,7 +56,7 @@ const getAndValidateTimeSheet = async (timeSheetId: string, user: UserModel) =>
   );
 
 export const TimeSheetService = {
-  createTimeSheet: async (data: CreateTimeSheetInput, user: UserModel) => {
+  createTimeSheet: async (data: AddTimeSheetInput, user: UserModel) => {
     const existingTimeSheetWithSameNameForUser = (
       await db
         .select()
@@ -103,46 +108,29 @@ export const TimeSheetService = {
       .where(eq(timeSheet.id, data.timeSheetId));
   },
 
-  getTimeSheet: async (data: GetTimeSheetInput, user: UserModel) => {
+  getTimeSheetForMonth: async (data: GetTimeSheetForMonthInput, user: UserModel) => {
     const timeSheet = await db.query.timeSheet.findFirst({
       where: (timeSheet, { eq, and }) =>
-        and(eq(timeSheet.id, data.id), eq(timeSheet.ownerId, user.id)),
+        and(eq(timeSheet.id, data.timeSheetId), eq(timeSheet.ownerId, user.id)),
       with: {
         entries: {
-          where: getSQLForDates(timeSheetEntry.date, data.dates),
+          columns: {
+            date: true,
+            hours: true,
+            pricePerHour: true
+          },
+          where: and(
+            gte(timeSheetEntry.date, getFirstDateOfMonth(data.date)),
+            lte(timeSheetEntry.date, getLastDateOfMonth(data.date))
+          ),
           orderBy: desc(timeSheetEntry.date)
         }
       }
     });
 
-    const { id, name, defaultPricePerHour, defaultHours, createdAt, entries } = validateTimeSheet(
-      timeSheet,
-      user
-    );
+    const { entries } = validateTimeSheet(timeSheet, user);
 
-    const stats = entries.reduce(
-      (acc, { pricePerHour, hours }) => ({
-        ...acc,
-        hours: acc.totalHours + hours,
-        price: acc.totalPrice + pricePerHour
-      }),
-      { totalHours: 0, totalPrice: 0 }
-    );
-
-    return {
-      id,
-      name,
-      defaultPricePerHour,
-      defaultHours,
-      createdAt,
-      entries: entries.map(({ date, hours, pricePerHour, createdAt }) => ({
-        date,
-        hours,
-        pricePerHour,
-        createdAt
-      })),
-      stats
-    };
+    return entries;
   },
 
   getTimeSheetsForUser: async (user: UserModel) => {

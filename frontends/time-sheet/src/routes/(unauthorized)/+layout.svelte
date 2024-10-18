@@ -1,5 +1,7 @@
 <script lang="ts">
 	import AuthLayout from '@shared/pages/auth/AuthLayout.svelte';
+
+	const { children } = $props();
 </script>
 
-<AuthLayout><slot /></AuthLayout>
+<AuthLayout>{@render children?.()}</AuthLayout>

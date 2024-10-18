@@ -39,6 +39,7 @@
 	a:visited,
 	a:hover {
 		text-decoration: none;
+		touch-action: manipulation;
 	}
 
 	.color {

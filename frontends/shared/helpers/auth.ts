@@ -11,7 +11,8 @@ import type { CookieTokensData, TokensData } from '../types/Token';
 const saveToken = (tokens: TokensData) => {
 	const baseCookieConfig: cookie.SerializeOptions = {
 		sameSite: 'lax',
-		secure: !isDevelopment
+		secure: !isDevelopment,
+		path: '/'
 	};
 
 	const { accessToken, refreshTokenExpiry } = tokens;
@@ -112,24 +113,5 @@ export const hasValidAccessToken = (data: CookieTokensData) => {
 		return true;
 	} catch (_) {
 		return false;
-	}
-};
-
-export const handleFrontendRefresh = async () => {
-	const tokensData = getTokensDataCookies();
-
-	if (!isLoggedIn(tokensData)) {
-		goto('/login');
-		return;
-	}
-
-	if (hasValidAccessToken(tokensData)) {
-		return;
-	}
-
-	const error = await refresh();
-	if (error) {
-		goto('/login');
-		return error;
 	}
 };
