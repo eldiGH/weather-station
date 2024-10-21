@@ -1,7 +1,6 @@
 <script lang="ts">
 	import '@shared/styles/global.scss';
 	import { browser } from '$app/environment';
-	import ActionPoller from '@shared/components/ActionPoller.svelte';
 	import NavigationLoader from '@shared/components/NavigationLoader.svelte';
 	import { setDefaultOptions } from 'date-fns';
 	import { pl } from 'date-fns/locale';
@@ -15,8 +14,6 @@
 {#if browser}
 	<NavigationLoader />
 {/if}
-
-<ActionPoller />
 
 {@render children()}
 

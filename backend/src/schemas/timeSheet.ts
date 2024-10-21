@@ -78,3 +78,13 @@ export const deleteTimeSheetEntryBulkInputSchema = object({
 });
 
 export type DeleteTimeSheetEntryBulkInput = z.infer<typeof deleteTimeSheetEntryBulkInputSchema>;
+
+export const getTimeSheetEntriesWithCursorInputSchema = object({
+  cursor: string().date().or(date().optional()).optional(),
+  timeSheetId: string().uuid(),
+  count: number().int().min(1).optional()
+});
+
+export type GetTimeSheetEntriesWithCursorInput = z.infer<
+  typeof getTimeSheetEntriesWithCursorInputSchema
+>;

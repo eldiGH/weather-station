@@ -1,3 +1,5 @@
+const NON_BRAKING_SPACE_CODE = '\xa0';
+
 export const pluralizePl = (count: number, texts: [string, string, string] | [string, string]) => {
 	const absoluteCount = Math.abs(count);
 
@@ -10,5 +12,5 @@ export const pluralizePl = (count: number, texts: [string, string, string] | [st
 		plural = texts[1];
 	}
 
-	return `${count} ${plural}`;
+	return `${count}${NON_BRAKING_SPACE_CODE}${plural}`;
 };

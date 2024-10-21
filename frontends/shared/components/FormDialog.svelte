@@ -1,15 +1,16 @@
-<script lang="ts">
+<script lang="ts" generics="T extends Record<string, unknown>">
 	import type { ComponentProps } from 'svelte';
 	import Dialog from './Dialog.svelte';
 	import Button from './Button.svelte';
 	import { uuid } from '../helpers/uuid';
-	import type { FormSubmitEventObject } from '../stores/form';
+	import type { FormSubmit } from '../stores/form';
 	import type { Readable } from 'svelte/store';
 
-	interface FormObject {
+	interface FormObject<T extends Record<string, unknown> = Record<string, unknown>> {
 		isSubmitting: Readable<boolean>;
 		isValid: Readable<boolean>;
 		reset: () => void;
+		submit: FormSubmit<T>;
 	}
 
 	interface Props
@@ -18,8 +19,8 @@
 			'title' | 'children' | 'open' | 'close' | 'closeButtonLabel' | 'onClosed'
 		> {
 		submitButtonLabel?: string;
-		onSubmit?: (e: FormSubmitEventObject) => boolean | Promise<boolean>;
-		form: FormObject;
+		onSubmit?: (data: T) => boolean | Promise<boolean>;
+		form: FormObject<T>;
 	}
 
 	let {
@@ -34,7 +35,7 @@
 		onClosed
 	}: Props = $props();
 
-	const { isSubmitting, isValid, reset } = $derived(form);
+	const { isSubmitting, isValid, reset, submit } = $derived(form);
 
 	const handleOnClosed = () => {
 		reset();
@@ -43,13 +44,13 @@
 
 	const id = uuid();
 
-	const handleSubmit = async (e: FormSubmitEventObject) => {
+	const handleSubmit = async (data: T) => {
 		if (!onSubmit) {
 			close?.();
 			return;
 		}
 
-		const success = await onSubmit(e);
+		const success = await onSubmit(data);
 		if (success) {
 			close?.();
 			return;
@@ -71,7 +72,7 @@
 	disableCloseButtons={$isSubmitting}
 	bind:open
 	bind:close>
-	<form {id} class="form" onsubmit={handleSubmit}>
+	<form {id} class="form" onsubmit={submit(handleSubmit)}>
 		{@render children?.()}
 	</form>
 </Dialog>

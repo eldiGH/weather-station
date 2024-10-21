@@ -8,7 +8,7 @@
 		deleteSnackbarFunc: () => void;
 	}
 
-	export const snackbarVisibilityTime = 3000;
+	const snackbarVisibilityTime = 3000;
 
 	const { snackbar, deleteSnackbarFunc }: Props = $props();
 

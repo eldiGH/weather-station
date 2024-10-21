@@ -1,29 +1,29 @@
 @use 'sass:map';
-@import './colors.scss';
+@use './colors.scss' as c;
 
 $themes: (
 	weather-station: (
-		background-color: $gunmetal-gray,
-		text-color: $white,
-		primary-color: $deep-saffron,
+		background-color: c.$gunmetal-gray,
+		text-color: c.$white,
+		primary-color: c.$deep-saffron,
 
-		error: $coral-red,
+		error: c.$coral-red,
 
 		navbar: var(--primary-color),
-		button-disabled: $davy-gray,
+		button-disabled: c.$davy-gray,
 
-		card-border: $outer-space,
+		card-border: c.$outer-space,
 		card-background: transparent,
-		card-text-color: $white,
+		card-text-color: c.$white,
 
 		input-border: var(--primary-color),
-		input-inactive-border: $davy-gray,
-		input-text-color: $white,
-		input-required-asterisk: $coral-red,
+		input-inactive-border: c.$davy-gray,
+		input-text-color: c.$white,
+		input-required-asterisk: c.$coral-red,
 
 		button-text-color: white,
 		button-color: var(--primary-color),
-		sidebar-color: $dirt,
+		sidebar-color: c.$dirt,
 
 		top-bar-background: var(--primary-color),
 		top-bar-text-color: white,
@@ -42,11 +42,11 @@ $themes: (
 		error: #ffa293,
 
 		navbar: var(--primary-color),
-		button-disabled: $davy-gray,
+		button-disabled: c.$davy-gray,
 
-		card-border: $outer-space,
+		card-border: c.$outer-space,
 		card-background: #748d92,
-		card-text-color: $white,
+		card-text-color: c.$white,
 
 		input-border: var(--primary-color),
 		input-inactive-border: #cacaca,
@@ -55,7 +55,7 @@ $themes: (
 
 		button-text-color: white,
 		button-color: var(--primary-color),
-		sidebar-color: $dirt,
+		sidebar-color: c.$dirt,
 
 		top-bar-background: var(--primary-color),
 		top-bar-text-color: white,
@@ -68,7 +68,7 @@ $themes: (
 );
 
 @mixin add-theme($theme-name) {
-	@each $variable-name, $value in map-get($themes, $theme-name) {
+	@each $variable-name, $value in map.get($themes, $theme-name) {
 		--#{$variable-name}: #{$value};
 	}
 }

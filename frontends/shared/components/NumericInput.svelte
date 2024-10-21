@@ -23,6 +23,7 @@
 		min,
 		max,
 		disabled,
+		short,
 		...inputProps
 	}: Props = $props();
 	let inputValue = $state('');
@@ -114,28 +115,69 @@
 	const handleFocus: FormEventHandler<HTMLInputElement> = (e) => {
 		e.currentTarget.select();
 	};
+
+	const incDecButtonSize = 20;
+
+	let incDecButtonsWidth = $derived(
+		((incButton ? incDecButtonSize : 0) + (decButton ? incDecButtonSize : 0)) * 2
+	);
+
+	let incDecGapsCount = $derived((incButton ? 1 : 0) + (decButton ? 1 : 0));
 </script>
 
 <div class="root">
 	{#if decButton}
-		<IconButton size={20} iconSize={25} {disabled} onclick={handleDecrement} icon="remove" />
+		<IconButton
+			type="button"
+			size={incDecButtonSize}
+			iconSize={25}
+			{disabled}
+			onclick={handleDecrement}
+			icon="remove" />
 	{/if}
-	<Input
-		inputmode="numeric"
-		{...inputProps}
-		{disabled}
-		bind:value={inputValue}
-		oninput={handleInput}
-		onfocus={handleFocus} />
+	<div
+		class="numeric-input-container"
+		class:short
+		style:--inc-dec-buttons-width={`${incDecButtonsWidth}px`}
+		style:--gaps-count={incDecGapsCount}>
+		<Input
+			inputmode="numeric"
+			{...inputProps}
+			{disabled}
+			bind:value={inputValue}
+			oninput={handleInput}
+			onfocus={handleFocus} />
+	</div>
 	{#if incButton}
-		<IconButton size={20} iconSize={25} {disabled} onclick={handleIncrement} icon="add" />
+		<IconButton
+			type="button"
+			size={incDecButtonSize}
+			iconSize={25}
+			{disabled}
+			onclick={handleIncrement}
+			icon="add" />
 	{/if}
 </div>
 
 <style lang="scss">
+	@use '../styles/vars.scss' as v;
+
 	.root {
+		--inc-dev-gap: 0.5rem;
+
 		display: inline-flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: var(--inc-dev-gap);
+
+		.numeric-input-container {
+			width: calc(
+				v.$inputWidth - var(--inc-dec-buttons-width, 0) -
+					(var(--inc-dev-gap) * var(--gaps-count, 0))
+			);
+
+			&.short {
+				width: v.$inputShortWidth;
+			}
+		}
 	}
 </style>

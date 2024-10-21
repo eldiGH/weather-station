@@ -1,8 +1,9 @@
 <script lang="ts">
 	import type { ComponentProps } from 'svelte';
-	import Icon, { type IconVariant } from './Icon.svelte';
+	import Icon from './Icon.svelte';
 	import Button from './Button.svelte';
 	import { fade as fadeAnimation } from 'svelte/transition';
+	import type { IconVariant } from '../types/Icon';
 
 	interface Props
 		extends Omit<ComponentProps<typeof Button>, 'icon'>,

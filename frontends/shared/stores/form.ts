@@ -28,15 +28,17 @@ export type FormReturn<
 		: Values
 > = {
 	values: Writable<InferredValues>;
-	errors: Writable<ChangePropsType<InferredValues, string>>;
+	errors: Readable<ChangePropsType<InferredValues, string>>;
 	touched: Readable<ChangePropsType<InferredValues, boolean>>;
 	touchedErrors: Readable<ChangePropsType<InferredValues, string>>;
 	validate: MySchema extends Schema ? () => ValidateResponse<InferredValues> : undefined;
 	isSubmitting: Readable<boolean>;
 	isValid: Readable<boolean>;
+	isInitial: Readable<boolean>;
 	submit: FormSubmit<InferredValues>;
 	handleBlur: (event: FocusEvent) => void;
 	reset: () => void;
+	setError: (field: keyof InferredValues, message: string, setTouched?: boolean) => void;
 };
 
 const parseZodResponse = (
@@ -96,6 +98,11 @@ const getInitialTouched = <T extends Record<string, unknown>>(
 	return touched as ChangePropsType<T, boolean>;
 };
 
+interface FormConfig<S extends Schema | undefined = undefined> {
+	schema?: S;
+	shouldInitialBeValid?: boolean;
+}
+
 export const createForm = <
 	T extends MySchema extends Schema ? z.infer<MySchema> : Record<string, unknown>,
 	MySchema extends Schema | undefined = undefined,
@@ -103,8 +110,13 @@ export const createForm = <
 	R extends FormReturn<T, MySchema, InferredValues> = FormReturn<T, MySchema, InferredValues>
 >(
 	initialValues: T,
-	schema?: MySchema
+	config?: FormConfig<MySchema>
 ): FormReturn<T, MySchema, InferredValues> => {
+	const { schema, shouldInitialBeValid }: FormConfig<MySchema> = {
+		shouldInitialBeValid: true,
+		...config
+	};
+
 	const values = writable({ ...initialValues });
 	const touched = writable(getInitialTouched(initialValues));
 	const errors = writable(getInitialErrors(initialValues, schema));
@@ -122,10 +134,12 @@ export const createForm = <
 		return touchedErrors;
 	});
 
+	const isInitial = derived([values], ([$values]) => shallowEqual($values, initialValues));
+
 	const isValid = derived(
-		[errors, values],
-		([$errors, $values]) =>
-			Object.values($errors).every((error) => !error) && !shallowEqual($values, initialValues)
+		[errors, isInitial],
+		([$errors, $isInitial]) =>
+			Object.values($errors).every((error) => !error) && (shouldInitialBeValid ? true : !$isInitial)
 	);
 
 	const clearErrors = () => {
@@ -144,33 +158,33 @@ export const createForm = <
 		}
 	};
 
-	const validate = (
-		schema
-			? () => {
-					const response = parseZodResponse(schema.safeParse(get(values)));
+	const validate = () => {
+		if (!schema) {
+			throw Error("Can't validate without schema");
+		}
 
-					if (response.success) {
-						clearErrors();
-						return { data: response.data };
-					}
+		const response = parseZodResponse(schema.safeParse(get(values)));
 
-					const currentErrors = get(errors);
-					if (shallowEqual(currentErrors, response.errors)) {
-						return { errors: response.errors };
-					}
+		if (response.success) {
+			clearErrors();
+			return { data: response.data as InferredValues };
+		}
 
-					errors.set(response.errors as ChangePropsType<T, string>);
-					return { errors: response.errors };
-				}
-			: undefined
-	) as R['validate'];
+		const currentErrors = get(errors);
+		if (shallowEqual(currentErrors, response.errors)) {
+			return { errors: response.errors };
+		}
+
+		errors.set(response.errors as ChangePropsType<T, string>);
+		return { errors: response.errors };
+	};
 
 	const submit = ((onSubmit) => async (e) => {
 		e.preventDefault();
 
 		let parsedData: InferredValues = get(values);
 
-		if (validate) {
+		if (schema) {
 			const { data, errors } = validate();
 
 			if (errors || !data) {
@@ -216,6 +230,13 @@ export const createForm = <
 		clearErrors();
 	};
 
+	const setError = (field: keyof InferredValues, message: string, setTouched = true) => {
+		errors.update((e) => ({ ...e, [field]: message }));
+		if (setTouched) {
+			touched.update((t) => ({ ...t, [field]: true }));
+		}
+	};
+
 	if (validate) {
 		values.subscribe(() => {
 			validate();
@@ -224,14 +245,16 @@ export const createForm = <
 
 	return {
 		values,
-		errors,
+		errors: { subscribe: errors.subscribe },
 		touchedErrors,
 		submit,
-		validate,
+		validate: (schema ? validate : undefined) as R['validate'],
 		isSubmitting: { subscribe: isSubmitting.subscribe },
-		isValid: { subscribe: isValid.subscribe },
+		isValid,
+		isInitial,
 		touched: { subscribe: touched.subscribe },
 		handleBlur,
-		reset
+		reset,
+		setError
 	};
 };

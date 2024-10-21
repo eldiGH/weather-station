@@ -1,8 +1,9 @@
-import { drizzle } from 'drizzle-orm/connect';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import 'dotenv/config';
 import * as schema from '../src/db/drizzle/schema';
 import bcryptjs from 'bcryptjs';
 import { addMilliseconds, differenceInMilliseconds } from 'date-fns';
+import pg from 'pg';
 
 const dbUrl = process.env.DATABASE_URL;
 
@@ -3815,7 +3816,10 @@ const transformedBme68xData = bme68xData.map((data) => ({
 
 console.log('Seed started');
 
-const db = await drizzle('node-postgres', { connection: dbUrl, schema });
+const pool = new pg.Pool({
+  connectionString: dbUrl
+});
+export const db = drizzle(pool, { schema });
 
 await db.insert(userSchema).values(hashedUserData).onConflictDoNothing();
 await Promise.all([

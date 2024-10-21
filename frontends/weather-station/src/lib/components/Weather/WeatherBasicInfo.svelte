@@ -4,8 +4,8 @@
 	import { getWeatherIcon } from '$lib/helpers/weatherHelper';
 	import IconInfo from '@shared/components/IconInfo.svelte';
 	import { format, fromUnixTime } from 'date-fns';
-	import type { IconType } from '@shared/types/IconType';
 	import type { WeatherDescription } from 'backend/types';
+	import type { IconType } from '@shared/types/Icon';
 
 	export let weather: WeatherDescription | undefined;
 	export let temperature: number;

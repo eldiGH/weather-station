@@ -1,3 +1,5 @@
+<svelte:options runes />
+
 <script lang="ts">
 	import type { ComponentProps, Snippet } from 'svelte';
 	import Dialog from './Dialog.svelte';
@@ -33,6 +35,7 @@
 
 	const handleConfirm = async () => {
 		if (!onConfirm) {
+			close?.();
 			return;
 		}
 

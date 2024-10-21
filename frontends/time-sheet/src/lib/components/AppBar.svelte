@@ -27,9 +27,9 @@
 	<IconButton
 		fade
 		icon="arrow_back"
-		floating={{ left: 'calc(50% - 9rem)', bottom: '0.3rem' }}
+		floating={{ left: 'calc(50% - 9rem)', bottom: '1rem' }}
 		onTop
-		size={35}
+		size={40}
 		iconSize={40}
 		href="../" />
 {/if}

@@ -2,8 +2,8 @@
 	import { sidebarStore } from '@shared/stores/sidebar';
 	import { onMount } from 'svelte';
 	import IconButton from '@shared/components/IconButton.svelte';
-	import type { IconType } from '@shared/types/IconType';
 	import Button from '@shared/components/Button.svelte';
+	import type { IconType } from '@shared/types/Icon';
 
 	let sidebarWidth = 0;
 	let sidebar: HTMLDivElement;

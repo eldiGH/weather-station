@@ -10,17 +10,18 @@
 	import { registerInputFormSchema, type RegisterInputForm } from 'backend/schemas';
 	import { ApiErrorCode } from 'backend/types';
 
-	const { submit, handleBlur, values, errors, isSubmitting, isValid, touched } = createForm(
-		{ email: '', password: '', passwordRepeat: '' },
-		registerInputFormSchema
-	);
+	const { submit, handleBlur, values, errors, isSubmitting, isValid, touched, setError } =
+		createForm(
+			{ email: '', password: '', passwordRepeat: '' },
+			{ schema: registerInputFormSchema }
+		);
 
 	const handleSubmit = async ({ email, password }: RegisterInputForm) => {
 		const error = await register({ email, password });
 
 		if (error) {
 			if (error.errorCode === ApiErrorCode.EMAIL_ALREADY_IN_USE) {
-				$errors.email = 'Ten adres email jest już zajęty';
+				setError('email', 'Ten adres email jest już zajęty');
 			}
 			return;
 		}

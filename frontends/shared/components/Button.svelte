@@ -2,8 +2,8 @@
 	import type { HTMLButtonAttributes, MouseEventHandler } from 'svelte/elements';
 	import Ripple from './Ripple.svelte';
 	import Spinner from './Spinner.svelte';
-	import type { Snippet } from 'svelte';
-	import type { IconType } from '../types/IconType';
+	import type { ComponentProps, Snippet } from 'svelte';
+	import type { IconType } from '../types/Icon';
 	import Icon from './Icon.svelte';
 
 	interface Props extends HTMLButtonAttributes {
@@ -36,13 +36,13 @@
 
 	const handleClick: MouseEventHandler<HTMLButtonElement> = (e) => {
 		if (ripple) {
-			rippleRef.showRipple(e);
+			showRipple?.(e);
 		}
 
 		onclick?.(e);
 	};
 
-	let rippleRef: Ripple;
+	let showRipple: ComponentProps<typeof Ripple>['showRipple'] = $state();
 </script>
 
 {#snippet buttonContent()}
@@ -59,7 +59,7 @@
 			<Spinner size={32} />
 		</div>
 	{/if}
-	<Ripple bind:this={rippleRef} />
+	<Ripple bind:showRipple />
 {/snippet}
 
 {#if href}
@@ -68,7 +68,7 @@
 		{style}
 		{href}
 		onclick={(e) => {
-			rippleRef.showRipple(e);
+			showRipple?.(e);
 		}}
 		class:busy
 		class:shadow

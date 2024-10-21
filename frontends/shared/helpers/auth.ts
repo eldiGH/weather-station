@@ -23,7 +23,7 @@ const saveToken = (tokens: TokensData) => {
 	});
 	document.cookie = cookie.serialize('refreshTokenExpiry', refreshTokenExpiry.toISOString(), {
 		...baseCookieConfig,
-		expires: accessToken.expires
+		expires: refreshTokenExpiry
 	});
 };
 

@@ -1,17 +1,21 @@
-<script lang="ts" context="module">
-	export type RippleEvent = MouseEvent & {
+<script lang="ts">
+	type RippleEvent = MouseEvent & {
 		currentTarget: EventTarget & HTMLElement;
 	};
 
-	export type ShowRippleFn = (event: RippleEvent) => void;
-</script>
+	type ShowRippleFn = (event: RippleEvent) => void;
 
-<script lang="ts">
 	const rippleTimeMs = 400;
 
 	let container: HTMLDivElement;
 
-	export const showRipple: ShowRippleFn = (event) => {
+	interface Props {
+		showRipple?: ShowRippleFn;
+	}
+
+	let { showRipple = $bindable() }: Props = $props();
+
+	showRipple = (event) => {
 		const diameter = Math.max(event.currentTarget.clientWidth, event.currentTarget.clientHeight);
 		const radius = diameter / 2;
 

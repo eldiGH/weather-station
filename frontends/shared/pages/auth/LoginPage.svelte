@@ -8,10 +8,8 @@
 	import { loginInputSchema, type LoginInput } from 'backend/schemas';
 	import { ApiErrorCode } from 'backend/types';
 
-	const { submit, handleBlur, values, errors, isSubmitting, isValid, touched } = createForm(
-		{ email: '', password: '' },
-		loginInputSchema
-	);
+	const { submit, handleBlur, values, errors, isSubmitting, isValid, touched, setError } =
+		createForm({ email: '', password: '' }, { schema: loginInputSchema });
 
 	const handleSubmit = async (formData: LoginInput) => {
 		const error = await login(formData);
@@ -19,7 +17,7 @@
 		if (!error) return;
 
 		if (error.errorCode === ApiErrorCode.EMAIL_OR_PASSWORD_NOT_VALID) {
-			$errors.email = 'Podane dane są nieprawidłowe';
+			setError('email', 'Podane dane są nieprawidłowe');
 		}
 	};
 </script>

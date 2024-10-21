@@ -90,7 +90,7 @@
 				<Button icon="calendar_month" href="/{timeSheet.id}/monthly">Widok miesiąca</Button>
 			</div>
 			<div>
-				<Button icon="calendar_view_day" href="/{timeSheet.id}/monthly">Widok wpisów</Button>
+				<Button icon="calendar_view_day" href="/{timeSheet.id}/entries">Widok wpisów</Button>
 			</div>
 			<div>
 				<Button icon="delete" variant="danger" onclick={() => handleTimeSheetDelete(timeSheet)}
@@ -113,15 +113,13 @@
 	{/if}
 </div>
 
-<div class="add-time-sheet-button">
-	<IconButton
-		icon="add"
-		size={40}
-		iconSize={40}
-		shadow
-		onclick={addTimeSheet}
-		floating={{ right: '1rem', bottom: '1rem' }} />
-</div>
+<IconButton
+	icon="add"
+	size={40}
+	iconSize={40}
+	shadow
+	onclick={addTimeSheet}
+	floating={{ right: '1rem', bottom: '1rem' }} />
 
 <AddEditTimeSheetDialog
 	bind:open={openAddEditTimeSheetDialog}
@@ -133,7 +131,7 @@
 <ConfirmationDialog
 	onConfirm={handleDeleteTimeSheet}
 	bind:open={openDeleteTimeSheetDialog}
-	title="Usunięcie karty czasu"
+	title={`Usunięcie karty czasu ${selectedTimeSheet?.name}`}
 	>Czy na pewno chcesz trwale usunąć kartę czasu&nbsp;<b>{selectedTimeSheet?.name}</b
 	>?</ConfirmationDialog>
 
@@ -141,6 +139,8 @@
 	@use '@shared/styles/vars' as v;
 
 	.root {
+		padding-bottom: 3rem;
+
 		.no-time-sheets {
 			font-size: 3rem;
 			padding: 1rem;

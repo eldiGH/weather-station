@@ -1,3 +1,5 @@
+export type IconVariant = 'outlined' | 'sharp' | 'rounded';
+
 export type IconType =
 	| 'search'
 	| 'search'

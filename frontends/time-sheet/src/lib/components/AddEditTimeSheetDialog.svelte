@@ -37,11 +37,11 @@
 						defaultPricePerHour: editTimeSheet.defaultPricePerHour ?? undefined
 					}
 				: { name: '', defaultHours: undefined, defaultPricePerHour: undefined },
-			addTimeSheetInputSchema
+			{ schema: addTimeSheetInputSchema, shouldInitialBeValid: false }
 		)
 	);
 
-	const { errors, handleBlur, isSubmitting, submit, values, touchedErrors } = $derived(form);
+	const { handleBlur, isSubmitting, values, touchedErrors, setError } = $derived(form);
 
 	const handleEdit = async (data: AddTimeSheetInput) => {
 		if (!editTimeSheet) {
@@ -52,7 +52,7 @@
 		const result = await onEdit({ ...data, timeSheetId: editTimeSheet?.id });
 
 		if (isApiError(result)) {
-			$errors.name = NAME_TAKEN_ERROR_LABEL;
+			setError('name', NAME_TAKEN_ERROR_LABEL);
 			return false;
 		}
 
@@ -65,18 +65,16 @@
 
 	$effect(() => {
 		if (timeSheetNamesUsed.has($values.name)) {
-			$errors.name = NAME_TAKEN_ERROR_LABEL;
+			setError('name', NAME_TAKEN_ERROR_LABEL);
 		}
 	});
-
-	$inspect($errors);
 </script>
 
 <FormDialog
 	bind:open
 	title={isEdit ? `Edytuj kartę czasu ${editTimeSheet?.name}` : 'Dodaj kartę czasu'}
 	submitButtonLabel={isEdit ? 'Zapisz' : 'Dodaj'}
-	onSubmit={submit(isEdit ? handleEdit : onAdd)}
+	onSubmit={isEdit ? handleEdit : onAdd}
 	{onClosed}
 	{form}>
 	<Input

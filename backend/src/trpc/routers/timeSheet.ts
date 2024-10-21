@@ -1,8 +1,10 @@
 import { authedProcedure, router } from '..';
 import {
   addTimeSheetInputSchema,
+  deleteTimeSheetEntryInputSchema,
   deleteTimeSheetInputSchema,
   editTimeSheetInputSchema,
+  getTimeSheetEntriesWithCursorInputSchema,
   getTimeSheetForMonthInputSchema,
   setTimeSheetEntryForMonthInputSchema,
   setTimeSheetEntryInputSchema
@@ -36,5 +38,21 @@ export const timeSheetRouter = router({
 
   setTimeSheetEntryForMonth: authedProcedure
     .input(setTimeSheetEntryForMonthInputSchema)
-    .mutation(({ input, ctx }) => TimeSheetServiceTRPC.setTimeSheetEntryForMonth(input, ctx.user))
+    .mutation(({ input, ctx }) => TimeSheetServiceTRPC.setTimeSheetEntryForMonth(input, ctx.user)),
+
+  getTimeSheetEntriesWithCursor: authedProcedure
+    .input(getTimeSheetEntriesWithCursorInputSchema)
+    .query(({ input, ctx }) => TimeSheetServiceTRPC.getTimeSheetEntriesWithCursor(input, ctx.user)),
+
+  deleteTimeSheetEntry: authedProcedure
+    .input(deleteTimeSheetEntryInputSchema)
+    .mutation(({ input, ctx }) => TimeSheetServiceTRPC.deleteTimeSheetEntry(input, ctx.user)),
+
+  addTimeSheetEntry: authedProcedure
+    .input(setTimeSheetEntryInputSchema)
+    .mutation(({ input, ctx }) => TimeSheetServiceTRPC.addTimeSheetEntry(input, ctx.user)),
+
+  editTimeSheetEntry: authedProcedure
+    .input(setTimeSheetEntryInputSchema)
+    .mutation(({ input, ctx }) => TimeSheetServiceTRPC.editTimeSheetEntry(input, ctx.user))
 });

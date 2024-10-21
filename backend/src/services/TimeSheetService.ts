@@ -7,6 +7,7 @@ import type {
   DeleteTimeSheetEntryInput,
   DeleteTimeSheetInput,
   EditTimeSheetInput,
+  GetTimeSheetEntriesWithCursorInput,
   GetTimeSheetForMonthInput,
   SetTimeSheetEntryBulkInput,
   SetTimeSheetEntryForMonthInput,
@@ -23,8 +24,9 @@ import {
   getFirstDateOfMonth,
   getLastDateOfMonth
 } from '../helpers/dates';
-import { format, getDaysInMonth } from 'date-fns';
+import { format, getDaysInMonth, subDays } from 'date-fns';
 import { convertArrayToDict } from '../helpers';
+import { TimeSheetEntryAlreadyExists } from '../errors/TimeSheetEntryAlreadyExists';
 
 const timeSheetEntryOnConflictUpdateConfig = {
   target: [timeSheetEntry.date, timeSheetEntry.timeSheetId],
@@ -165,7 +167,15 @@ export const TimeSheetService = {
         timeSheetId: timeSheetEntriesQuery.timeSheet.id
       })
       .from(timeSheetEntriesQuery)
-      .where(gte(timeSheetEntriesQuery.timeSheetEntry.date, truncatedTodayDate))
+      .where(
+        and(
+          gte(timeSheetEntriesQuery.timeSheetEntry.date, truncatedTodayDate),
+          lt(
+            timeSheetEntriesQuery.timeSheetEntry.date,
+            dbOps.add(truncatedTodayDate, timeInterval('1 months'))
+          )
+        )
+      )
       .groupBy(timeSheetEntriesQuery.timeSheet.id)
       .as('currentMonthEntries');
 
@@ -324,5 +334,73 @@ export const TimeSheetService = {
           inArray(timeSheetEntry.date, input.dates)
         )
       );
+  },
+
+  getTimeSheetEntriesWithCursor: async (
+    input: GetTimeSheetEntriesWithCursorInput,
+    user: UserModel
+  ) => {
+    await getAndValidateTimeSheet(input.timeSheetId, user);
+
+    const cursor = input.cursor ? formatToStringDate(input.cursor) : undefined;
+
+    const limit = (input.count ?? 10) + 1;
+
+    const entries = await db
+      .select({
+        date: timeSheetEntry.date,
+        hours: timeSheetEntry.hours,
+        pricePerHour: timeSheetEntry.pricePerHour
+      })
+      .from(timeSheetEntry)
+      .where(
+        and(
+          eq(timeSheetEntry.timeSheetId, input.timeSheetId),
+          cursor ? lte(timeSheetEntry.date, cursor) : undefined
+        )
+      )
+      .orderBy(desc(timeSheetEntry.date))
+      .limit(limit);
+
+    let nextCursor: string | undefined = undefined;
+
+    if (entries.length === limit) {
+      nextCursor = formatToStringDate(subDays(entries[entries.length - 2].date, 1));
+    } else if (entries.length === limit - 1) {
+      nextCursor = entries[entries.length - 1].date;
+    }
+
+    return {
+      entries: entries
+        .values()
+        .take(limit - 1)
+        .toArray(),
+      nextCursor
+    };
+  },
+
+  addTimeSheetEntry: async (input: SetTimeSheetEntryInput, user: UserModel) => {
+    await getAndValidateTimeSheet(input.timeSheetId, user);
+
+    const { rowCount } = await db.insert(timeSheetEntry).values(input).onConflictDoNothing();
+
+    if (rowCount === 0) {
+      throw TimeSheetEntryAlreadyExists();
+    }
+  },
+
+  editTimeSheetEntry: async (input: SetTimeSheetEntryInput, user: UserModel) => {
+    const { timeSheetId, date, ...valuesToUpdate } = input;
+
+    await getAndValidateTimeSheet(timeSheetId, user);
+
+    const { rowCount } = await db
+      .update(timeSheetEntry)
+      .set(valuesToUpdate)
+      .where(and(eq(timeSheetEntry.timeSheetId, timeSheetId), eq(timeSheetEntry.date, date)));
+
+    if (rowCount === 0) {
+      throw TimeSheetEntryNotFound();
+    }
   }
 };

@@ -5,7 +5,7 @@
 	import { setDefaultOptions } from 'date-fns';
 	import { pl } from 'date-fns/locale';
 	import { browser } from '$app/environment';
-	import ActionPoller from '@shared/components/ActionPoller.svelte';
+	import ActionPoller from '$lib/components/ActionPoller.svelte';
 	import NavigationLoader from '@shared/components/NavigationLoader.svelte';
 
 	Chart.defaults.borderColor = '#545454';

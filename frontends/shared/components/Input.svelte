@@ -32,7 +32,8 @@
 			class="input"
 			bind:value
 			class:center-text={centerText}
-			class:short />
+			class:short
+			class:error />
 		{#if label}
 			<label for={id} class:raised={!!value}
 				>{label}
@@ -48,9 +49,11 @@
 </div>
 
 <style lang="scss">
+	@use '../styles/vars.scss' as v;
+
 	.input {
 		$animationOpts: 150ms ease-in-out;
-		$raisedTransform: translateY(-1.8rem) scale(0.75);
+		$raisedTransform: translateY(-1.1rem) scale(0.75);
 
 		background-color: transparent !important;
 		border: none;
@@ -60,14 +63,21 @@
 		font-size: 1rem;
 		color: var(--input-text-color) !important;
 
+		width: 100%;
+		max-width: v.$inputWidth;
+
 		touch-action: manipulation;
+
+		&[type='date'] {
+			width: v.$inputWidth;
+		}
 
 		&.center-text {
 			text-align: center;
 		}
 
 		&.short {
-			width: 75px;
+			max-width: v.$inputShortWidth;
 		}
 
 		&:focus {
@@ -83,8 +93,7 @@
 		+ label {
 			position: absolute;
 			left: 0.4rem;
-			top: 50%;
-			transform: translateY(-50%);
+			bottom: 1px;
 			pointer-events: none;
 			user-select: none;
 			transform-origin: left;
@@ -120,9 +129,17 @@
 			color: var(--input-text-color) !important;
 			-webkit-text-fill-color: var(--input-text-color) !important;
 		}
+
+		&.error {
+			border-color: var(--error);
+
+			+ label {
+				color: var(--error);
+			}
+		}
 	}
 
-	.error {
+	span.error {
 		position: absolute;
 		left: 0.4rem;
 		top: 105%;

@@ -1,9 +1,6 @@
-<script lang="ts" module>
-	export type IconVariant = 'outlined' | 'sharp' | 'rounded';
-</script>
-
 <script lang="ts">
-	import type { IconType } from '../types/IconType';
+	import type { IconType } from '../types/Icon';
+	import type { IconVariant } from '../types/Icon';
 
 	interface Props {
 		variant?: IconVariant;

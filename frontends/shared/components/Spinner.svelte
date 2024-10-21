@@ -1,3 +1,5 @@
+<svelte:options runes />
+
 <script lang="ts">
 	import { roundToPrecision } from '../helpers/math';
 	import { onMount } from 'svelte';
