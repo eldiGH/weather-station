@@ -362,13 +362,8 @@ export const TimeSheetService = {
       .orderBy(desc(timeSheetEntry.date))
       .limit(limit);
 
-    let nextCursor: string | undefined = undefined;
-
-    if (entries.length === limit) {
-      nextCursor = formatToStringDate(subDays(entries[entries.length - 2].date, 1));
-    } else if (entries.length === limit - 1) {
-      nextCursor = entries[entries.length - 1].date;
-    }
+    const lastEntry = entries[limit - 2]?.date;
+    const nextCursor = lastEntry ? formatToStringDate(subDays(lastEntry, 1)) : undefined;
 
     return {
       entries: entries

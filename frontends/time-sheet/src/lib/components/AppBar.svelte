@@ -31,5 +31,6 @@
 		onTop
 		size={40}
 		iconSize={40}
+		shadow
 		href="../" />
 {/if}

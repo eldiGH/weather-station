@@ -1,5 +1,5 @@
 import * as cookie from 'cookie';
-import { fromUnixTime, isFuture, isValid } from 'date-fns';
+import { fromUnixTime, isFuture, isValid, subMilliseconds } from 'date-fns';
 import { goto } from '$app/navigation';
 import { handleTRPCErrors, trpc } from '../api/trpc';
 import type { LoginInput, RegisterInput } from 'backend/schemas';
@@ -91,6 +91,8 @@ export const isLoggedIn = (data: CookieTokensData) => {
 	return refreshTokenExpiry !== undefined && isFuture(refreshTokenExpiry);
 };
 
+const ACCESS_TOKEN_INVALIDATE_ADVANCE_TIME_MS = 10000;
+
 export const hasValidAccessToken = (data: CookieTokensData) => {
 	const { accessToken } = data;
 
@@ -106,7 +108,7 @@ export const hasValidAccessToken = (data: CookieTokensData) => {
 		}
 		const expDate = new Date(decodedToken.exp * 1000);
 
-		if (!isFuture(expDate)) {
+		if (!isFuture(subMilliseconds(expDate, ACCESS_TOKEN_INVALIDATE_ADVANCE_TIME_MS))) {
 			return false;
 		}
 

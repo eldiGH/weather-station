@@ -8,13 +8,15 @@
 		color?: string;
 		content?: string;
 		children?: Snippet;
+		height?: string;
 	}
 
-	let { class: className, gap, color, content, children, ...iconProps }: Props = $props();
+	let { class: className, gap, color, content, children, height, ...iconProps }: Props = $props();
 </script>
 
 <div
 	style={`--gap:${gap ?? 0}rem; ${color !== undefined ? 'color: ' + color : ''}`}
+	style:height
 	class={className}>
 	<Icon {...iconProps} />
 	{#if content}

@@ -13,6 +13,7 @@
 	import { slide } from 'svelte/transition';
 	import ConfirmationDialog from '@shared/components/ConfirmationDialog.svelte';
 	import AddEditTimeSheetEntryDialog from '$lib/components/AddEditTimeSheetEntryDialog.svelte';
+	import IconInfo from '@shared/components/IconInfo.svelte';
 
 	type StructuredTimeSheetEntry = InferMapValue<InferStoreType<typeof structuredEntries>>[number];
 
@@ -24,8 +25,8 @@
 
 	const { data }: Props = $props();
 
-	const { entries } = $derived(data);
-	const { finishedLoading, structuredEntries } = $derived(entries);
+	let { entries } = $derived(data);
+	let { finishedLoading, structuredEntries } = $derived(entries ?? {});
 
 	let loadMorePromise: Promise<boolean> | null = null;
 	const loadMoreEntries = async () => {
@@ -56,6 +57,7 @@
 	onMount(() => {
 		if (!$finishedLoading) {
 			document.addEventListener('scroll', handleScroll);
+			handleScroll();
 		}
 	});
 
@@ -69,21 +71,49 @@
 	let openAddEditDialog: (() => void) | undefined = $state();
 	let selectedEntry: StructuredTimeSheetEntry | null = $state(null);
 
-	// let stats = $derived.by(() => {
-	// 	for (const [month, entries] of $structuredEntries.entries()) {
-	// 		const shouldRenderStatsForMonth =
-	// 			$finishedLoading || $entries.length - 1 > entries[entries.length - 1].entryIndex;
-	// 	}
-	// });
+	let statsMap = $derived.by(() => {
+		const statsMap = new Map<string, { totalPrice: number; count: number; hours: number }>();
+
+		const structuredEntriesArray = $structuredEntries.entries().toArray();
+
+		for (let i = 0; i < structuredEntriesArray.length; i++) {
+			const [month, entries] = structuredEntriesArray[i];
+
+			const shouldRenderStatsForMonth = $finishedLoading || structuredEntriesArray.length - 1 > i;
+
+			if (!shouldRenderStatsForMonth) {
+				break;
+			}
+
+			statsMap.set(
+				month,
+				entries.reduce(
+					(acc, entry) => ({
+						totalPrice: acc.totalPrice + entry.pricePerHour * entry.hours,
+						hours: acc.hours + entry.hours,
+						count: acc.count + 1
+					}),
+					{ totalPrice: 0, count: 0, hours: 0 }
+				)
+			);
+		}
+
+		return statsMap;
+	});
 </script>
 
 {#snippet entrySnippet(entry: StructuredTimeSheetEntry)}
 	<div transition:slide class="entry">
-		<div>{format(entry.date, 'dd.MM.yyyy')}</div>
+		<div class="entry-date">
+			<span>{format(entry.date, 'dd.MM.yyyy')}</span>
+			<span>{capitalize(format(entry.date, 'EEEE'))}</span>
+		</div>
 		<div>
 			<div class="entry-details">
-				<div>{pluralizePl(entry.hours, ['godzina', 'godziny', 'godzin'])}</div>
-				<div>{entry.pricePerHour * entry.hours}&nbsp;zł</div>
+				<IconInfo height="1rem" size={22} gap={0.2} icon="schedule"
+					>{pluralizePl(entry.hours, ['godzina', 'godziny', 'godzin'])}</IconInfo>
+				<IconInfo height="1rem" size={22} gap={0.2} icon="attach_money"
+					>{entry.pricePerHour * entry.hours}&nbsp;zł</IconInfo>
 			</div>
 		</div>
 		<div class="entry-actions">
@@ -115,6 +145,20 @@
 				{@render entrySnippet(entry)}
 			{/each}
 		</div>
+
+		{@const stats = statsMap.get(month)}
+		{#if stats}
+			<div transition:slide class="stats">
+				<div class="stats-title">Podsumowanie</div>
+				<div class="stats-items">
+					<IconInfo gap={0.2} icon="calendar_month" size={22}
+						>{pluralizePl(stats.count, ['wpis', 'wpisy', 'wpisów'])}</IconInfo>
+					<IconInfo gap={0.2} icon="schedule" size={22}
+						>{pluralizePl(stats.hours, ['godzina', 'godziny', 'godzin'])}</IconInfo>
+					<IconInfo gap={0.2} icon="attach_money" size={22}>{stats.totalPrice}&nbsp;zł</IconInfo>
+				</div>
+			</div>
+		{/if}
 	{/each}
 	{#if !$finishedLoading}
 		<div class="entry-container">
@@ -175,24 +219,52 @@
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
-			padding: 1rem 0.5rem;
+			padding: 1rem 0.3rem;
 
 			border-bottom: 1px solid black;
 
 			&-container {
-				padding: 0 1.5rem;
+				padding: 0 1rem;
 			}
 
 			.entry-details {
 				display: flex;
 				flex-direction: column;
-				gap: 0.5rem;
+				gap: 0.7rem;
 			}
 
 			&-actions {
 				display: flex;
 				gap: 0.5rem;
 				align-items: center;
+			}
+
+			&-date {
+				display: inline-flex;
+				width: 91px;
+				text-align: center;
+				flex-direction: column;
+				gap: 0.1rem;
+			}
+		}
+
+		.stats {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+
+			padding: 1rem;
+
+			&-title {
+				font-size: 1.8rem;
+			}
+
+			&-items {
+				padding-top: 1rem;
+				display: flex;
+				flex-direction: column;
+				gap: 0.4rem;
+				font-size: 1.2rem;
 			}
 		}
 	}

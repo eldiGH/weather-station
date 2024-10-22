@@ -53,8 +53,7 @@
 				)
 	);
 
-	const { values, touchedErrors, touched, isSubmitting, errors, isInitial, isValid } =
-		$derived(form);
+	const { values, touchedErrors, touched, isSubmitting, errors } = $derived(form);
 
 	let entriesDates = $derived(new Set(entries.values().map((e) => e.date)));
 
@@ -84,8 +83,6 @@
 		errors.set('date', DATE_ALREADY_USED_LABEL);
 		return false;
 	};
-
-	$inspect({ errors: $errors, isInitial: $isInitial, isValid: $isValid });
 </script>
 
 <FormDialog

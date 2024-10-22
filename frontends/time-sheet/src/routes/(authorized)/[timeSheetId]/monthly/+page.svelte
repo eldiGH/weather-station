@@ -21,6 +21,12 @@
 		await data.entries.save();
 		isSavingTimeSheet = false;
 	};
+
+	const handleMonthChange = async (relativeMonth: number) => {
+		window.scrollTo({ top: 0, behavior: 'smooth' });
+
+		await entries.changeMonth(relativeMonth);
+	};
 </script>
 
 {#snippet timeEntry(index: number)}
@@ -45,14 +51,14 @@
 			iconSize={30}
 			size={20}
 			icon="chevron_left"
-			onclick={() => data.entries.changeMonth(-1)}
+			onclick={() => handleMonthChange(-1)}
 			disabled={isSavingTimeSheet} />
 		{capitalize(format($selectedMonth, 'LLLL yyyy'))}
 		<IconButton
 			iconSize={30}
 			size={20}
 			icon="chevron_right"
-			onclick={() => data.entries.changeMonth(1)}
+			onclick={() => handleMonthChange(1)}
 			disabled={isSavingTimeSheet} />
 	</div>
 	<div class="time-sheet">
