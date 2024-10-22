@@ -6,9 +6,10 @@ import type { AddTimeSheetInput, EditTimeSheetInput } from 'backend/schemas';
 import { snackbar } from '@shared/helpers/snackbar';
 import { ApiErrorCode } from 'backend/types';
 import type { AppRouterOutputs } from 'backend/trpc';
-import { addMonths, isSameMonth } from 'date-fns';
+import { addMonths, isSameMonth, subMonths } from 'date-fns';
 
 type TimeSheetEntry = AppRouterOutputs['timeSheet']['getTimeSheetForMonth'][number];
+type TimeSheetStats = AppRouterOutputs['timeSheet']['getTimeSheets'][number]['currentMonth'];
 
 const getStatsOfTimeSheet = (entries: TimeSheetEntry[]) =>
 	entries
@@ -74,7 +75,7 @@ export const load: LayoutLoad = async ({ fetch, depends }) => {
 				};
 
 				timeSheets.update((t) => [...t, newTimeSheet]);
-				snackbar.pushSuccess('Pomyślnie dodano');
+				snackbar.pushSuccess('Pomyślnie dodano.');
 				return true;
 			},
 			edit: async (input: EditTimeSheetInput) => {
@@ -110,7 +111,7 @@ export const load: LayoutLoad = async ({ fetch, depends }) => {
 				return true;
 			},
 
-			updateStats: (date: string | Date, timeSheetId: string, entries: TimeSheetEntry[]) => {
+			recalculateStats: (date: string | Date, timeSheetId: string, entries: TimeSheetEntry[]) => {
 				const currentDate = new Date();
 
 				if (isSameMonth(currentDate, date)) {
@@ -136,6 +137,30 @@ export const load: LayoutLoad = async ({ fetch, depends }) => {
 						)
 					);
 				}
+			},
+
+			updateStats: (
+				date: string,
+				timeSheetId: string,
+				newStats: (currentStats: TimeSheetStats) => TimeSheetStats
+			) => {
+				timeSheets.update((timeSheets) => {
+					const currentDate = new Date();
+					const isCurrentMonth = isSameMonth(date, currentDate);
+					const isLastMonth = isSameMonth(date, subMonths(currentDate, 1));
+
+					if (isCurrentMonth) {
+						return timeSheets.map((t) =>
+							t.id === timeSheetId ? { ...t, currentMonth: newStats(t.currentMonth) } : t
+						);
+					} else if (isLastMonth) {
+						return timeSheets.map((t) =>
+							t.id === timeSheetId ? { ...t, lastMonth: newStats(t.lastMonth) } : t
+						);
+					}
+
+					return timeSheets;
+				});
 			}
 		}
 	};

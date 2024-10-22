@@ -117,7 +117,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
 					return;
 				}
 
-				timeSheets.updateStats(timeSheetDate, timeSheet.id, filteredEntries);
+				timeSheets.recalculateStats(timeSheetDate, timeSheet.id, filteredEntries);
 
 				snackbar.pushSuccess('Zapisano.');
 			},

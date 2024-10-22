@@ -26,7 +26,15 @@
 
 	const DATE_ALREADY_USED_LABEL = 'Wpis dla tej daty już istnieje';
 
-	let { open = $bindable(), timeSheet, editEntry, onEdit, onAdd, entries }: Props = $props();
+	// TODO: fix TimeSheet type when https://github.com/sveltejs/kit/issues/12851 will be resolved
+	let {
+		open = $bindable(),
+		timeSheet = {} as TimeSheet,
+		editEntry,
+		onEdit,
+		onAdd,
+		entries
+	}: Props = $props();
 
 	const form = $derived(
 		editEntry

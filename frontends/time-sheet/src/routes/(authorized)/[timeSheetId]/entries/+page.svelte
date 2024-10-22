@@ -24,8 +24,6 @@
 
 	const { data }: Props = $props();
 
-	$inspect({ data });
-
 	const { entries } = $derived(data);
 	const { finishedLoading, structuredEntries } = $derived(entries);
 
@@ -70,6 +68,13 @@
 	let openDeleteDialog: (() => void) | undefined = $state();
 	let openAddEditDialog: (() => void) | undefined = $state();
 	let selectedEntry: StructuredTimeSheetEntry | null = $state(null);
+
+	let stats = $derived.by(() => {
+		for (const [month, entries] of $structuredEntries.entries()) {
+			const shouldRenderStatsForMonth =
+				$finishedLoading || $entries.length - 1 > entries[entries.length - 1].entryIndex;
+		}
+	});
 </script>
 
 {#snippet entrySnippet(entry: StructuredTimeSheetEntry)}
@@ -140,12 +145,18 @@
 		if (!selectedEntry) {
 			return false;
 		}
-		return await entries.delete(selectedEntry);
+		const success = await entries.delete(selectedEntry);
+		if (!success) {
+			return false;
+		}
+
+		handleScroll();
+		return true;
 	}}>Czy na pewno chcesz usunąć</ConfirmationDialog>
 
 <AddEditTimeSheetEntry
 	onAdd={entries.add}
-	onEdit={entries.edit}
+	onEdit={(entry) => entries.edit(entry, selectedEntry)}
 	bind:open={openAddEditDialog}
 	timeSheet={data.timeSheet}
 	editEntry={selectedEntry}
@@ -164,12 +175,12 @@
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
-			padding: 1rem;
+			padding: 1rem 0.5rem;
 
 			border-bottom: 1px solid black;
 
 			&-container {
-				padding: 0 2rem;
+				padding: 0 1.5rem;
 			}
 
 			.entry-details {

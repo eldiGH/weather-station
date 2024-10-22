@@ -87,13 +87,13 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
 			}
 
 			const from = entries[0].date;
-			const to = get(nextCursorStore);
+			const to = get(nextCursorStore) ?? entries[entries.length - 1].date;
 
 			if (isAfter(entry.date, from)) {
 				return [entryData, ...entries];
 			}
 
-			if (!to) {
+			if (isBefore(entry.date, to)) {
 				return [...entries, entryData];
 			}
 
@@ -167,6 +167,13 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
 
 				entriesStore.update((entries) => entries.filter((e) => e.date !== entry.date));
 				snackbar.pushSuccess('Pomyślnie usunięto.');
+
+				timeSheets.updateStats(entry.date, timeSheet.id, ({ count, hours, totalPrice }) => ({
+					count: count - 1,
+					hours: hours - entry.hours,
+					totalPrice: totalPrice - entry.hours * entry.pricePerHour
+				}));
+
 				return true;
 			},
 
@@ -187,11 +194,17 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
 
 				updateEntriesStore(entry);
 
+				timeSheets.updateStats(entry.date, entry.timeSheetId, ({ count, hours, totalPrice }) => ({
+					count: count + 1,
+					hours: hours + entry.hours,
+					totalPrice: totalPrice + entry.hours * entry.pricePerHour
+				}));
+
 				snackbar.pushSuccess('Pomyślnie dodano.');
 				return true;
 			},
 
-			edit: async (entry: SetTimeSheetEntryInput) => {
+			edit: async (entry: SetTimeSheetEntryInput, oldEntry: TimeSheetEntry | null) => {
 				const { error } = await handleAuthedTRPCErrors(
 					trpc(fetch).timeSheet.editTimeSheetEntry.mutate,
 					entry
@@ -203,6 +216,16 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
 				}
 
 				updateEntriesStore(entry);
+
+				if (oldEntry) {
+					timeSheets.updateStats(entry.date, entry.timeSheetId, ({ count, hours, totalPrice }) => ({
+						count,
+						hours: hours - (oldEntry.hours - entry.hours),
+						totalPrice:
+							totalPrice -
+							(oldEntry.pricePerHour * oldEntry.hours - entry.pricePerHour * entry.hours)
+					}));
+				}
 
 				snackbar.pushSuccess('Pomyślnie zapisano.');
 				return true;
