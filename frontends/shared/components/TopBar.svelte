@@ -5,12 +5,13 @@
 		left?: Snippet;
 		center?: Snippet;
 		right?: Snippet;
+		class?: string;
 	}
 
-	const { center, left, right }: Props = $props();
+	const { center, left, right, class: className }: Props = $props();
 </script>
 
-<div class="top-bar">
+<div class={`top-bar ${className}`}>
 	<div class="left-slot">{@render left?.()}</div>
 	<div class="center-slot">{@render center?.()}</div>
 	<div class="right-slot">{@render right?.()}</div>

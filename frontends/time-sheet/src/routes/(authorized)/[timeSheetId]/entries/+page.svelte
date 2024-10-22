@@ -148,7 +148,7 @@
 
 		{@const stats = statsMap.get(month)}
 		{#if stats}
-			<div transition:slide class="stats">
+			<div transition:slide|global class="stats">
 				<div class="stats-title">Podsumowanie</div>
 				<div class="stats-items">
 					<IconInfo gap={0.2} icon="calendar_month" size={22}

@@ -21,7 +21,7 @@
 		}}>Wyloguj</Button>
 {/snippet}
 
-<TopBar {right} {left} />
+<TopBar class="top-bar-navigation" {right} {left} />
 
 {#if !isRootPage}
 	<IconButton
@@ -34,3 +34,11 @@
 		shadow
 		href="../" />
 {/if}
+
+<style lang="scss">
+	:global {
+		.top-bar-navigation {
+			view-transition-name: app-bar;
+		}
+	}
+</style>
