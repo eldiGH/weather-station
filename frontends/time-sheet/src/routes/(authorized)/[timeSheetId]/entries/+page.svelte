@@ -147,18 +147,20 @@
 		</div>
 
 		{@const stats = statsMap.get(month)}
-		{#if stats}
-			<div transition:slide|global class="stats">
-				<div class="stats-title">Podsumowanie</div>
-				<div class="stats-items">
-					<IconInfo gap={0.2} icon="calendar_month" size={22}
-						>{pluralizePl(stats.count, ['wpis', 'wpisy', 'wpisów'])}</IconInfo>
-					<IconInfo gap={0.2} icon="schedule" size={22}
-						>{pluralizePl(stats.hours, ['godzina', 'godziny', 'godzin'])}</IconInfo>
-					<IconInfo gap={0.2} icon="attach_money" size={22}>{stats.totalPrice}&nbsp;zł</IconInfo>
+		<div out:slide>
+			{#if stats}
+				<div in:slide class="stats">
+					<div class="stats-title">Podsumowanie</div>
+					<div class="stats-items">
+						<IconInfo gap={0.2} icon="calendar_month" size={22}
+							>{pluralizePl(stats.count, ['wpis', 'wpisy', 'wpisów'])}</IconInfo>
+						<IconInfo gap={0.2} icon="schedule" size={22}
+							>{pluralizePl(stats.hours, ['godzina', 'godziny', 'godzin'])}</IconInfo>
+						<IconInfo gap={0.2} icon="attach_money" size={22}>{stats.totalPrice}&nbsp;zł</IconInfo>
+					</div>
 				</div>
-			</div>
-		{/if}
+			{/if}
+		</div>
 	{/each}
 	{#if !$finishedLoading}
 		<div class="entry-container">
