@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import './polyfills';
 
 import { connectToRedis } from './db/redis';
 import { server } from './server';

@@ -31,6 +31,7 @@
 		"zod": "^3.23.8"
 	},
 	"dependencies": {
+		"core-js": "^3.38.1",
 		"dotenv": "^16.4.5"
 	}
 }
