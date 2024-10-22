@@ -1,1 +1,1 @@
-import 'core-js/actual/iterator';
+import 'core-js/actual/iterator/index.js';
