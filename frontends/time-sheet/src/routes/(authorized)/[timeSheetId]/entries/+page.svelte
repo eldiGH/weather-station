@@ -12,7 +12,7 @@
 	import type { InferMapValue } from '@shared/types/Map';
 	import { slide } from 'svelte/transition';
 	import ConfirmationDialog from '@shared/components/ConfirmationDialog.svelte';
-	import AddEditTimeSheetEntry from '$lib/components/AddEditTimeSheetEntry.svelte';
+	import AddEditTimeSheetEntryDialog from '$lib/components/AddEditTimeSheetEntryDialog.svelte';
 
 	type StructuredTimeSheetEntry = InferMapValue<InferStoreType<typeof structuredEntries>>[number];
 
@@ -69,12 +69,12 @@
 	let openAddEditDialog: (() => void) | undefined = $state();
 	let selectedEntry: StructuredTimeSheetEntry | null = $state(null);
 
-	let stats = $derived.by(() => {
-		for (const [month, entries] of $structuredEntries.entries()) {
-			const shouldRenderStatsForMonth =
-				$finishedLoading || $entries.length - 1 > entries[entries.length - 1].entryIndex;
-		}
-	});
+	// let stats = $derived.by(() => {
+	// 	for (const [month, entries] of $structuredEntries.entries()) {
+	// 		const shouldRenderStatsForMonth =
+	// 			$finishedLoading || $entries.length - 1 > entries[entries.length - 1].entryIndex;
+	// 	}
+	// });
 </script>
 
 {#snippet entrySnippet(entry: StructuredTimeSheetEntry)}
@@ -154,7 +154,7 @@
 		return true;
 	}}>Czy na pewno chcesz usunąć</ConfirmationDialog>
 
-<AddEditTimeSheetEntry
+<AddEditTimeSheetEntryDialog
 	onAdd={entries.add}
 	onEdit={(entry) => entries.edit(entry, selectedEntry)}
 	bind:open={openAddEditDialog}

@@ -10,6 +10,9 @@
 		required?: boolean;
 		centerText?: boolean;
 		short?: boolean;
+		inputRef?: HTMLInputElement;
+		touched?: boolean;
+		fullWidth?: boolean;
 	}
 
 	let {
@@ -20,6 +23,9 @@
 		required,
 		centerText,
 		short,
+		inputRef = $bindable(),
+		touched = $bindable(),
+		fullWidth,
 		...restProps
 	}: Props = $props();
 </script>
@@ -33,7 +39,10 @@
 			bind:value
 			class:center-text={centerText}
 			class:short
-			class:error />
+			class:error
+			class:full-width={fullWidth}
+			onblur={() => (touched = true)}
+			bind:this={inputRef} />
 		{#if label}
 			<label for={id} class:raised={!!value}
 				>{label}
@@ -78,6 +87,10 @@
 
 		&.short {
 			max-width: v.$inputShortWidth;
+		}
+
+		&.full-width {
+			max-width: 100%;
 		}
 
 		&:focus {

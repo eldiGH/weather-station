@@ -24,6 +24,9 @@
 		max,
 		disabled,
 		short,
+		fullWidth,
+		inputRef = $bindable(),
+		touched = $bindable(),
 		...inputProps
 	}: Props = $props();
 	let inputValue = $state('');
@@ -87,6 +90,8 @@
 	};
 
 	const handleIncrement = () => {
+		touched = true;
+
 		if (value === undefined) {
 			value = 1;
 			return;
@@ -100,6 +105,8 @@
 	};
 
 	const handleDecrement = () => {
+		touched = true;
+
 		if (value === undefined) {
 			value = -1;
 			return;
@@ -137,6 +144,7 @@
 	{/if}
 	<div
 		class="numeric-input-container"
+		class:full-width={fullWidth}
 		class:short
 		style:--inc-dec-buttons-width={`${incDecButtonsWidth}px`}
 		style:--gaps-count={incDecGapsCount}>
@@ -144,9 +152,12 @@
 			inputmode="numeric"
 			{...inputProps}
 			{disabled}
+			{fullWidth}
 			bind:value={inputValue}
+			bind:touched
 			oninput={handleInput}
-			onfocus={handleFocus} />
+			onfocus={handleFocus}
+			bind:inputRef />
 	</div>
 	{#if incButton}
 		<IconButton
@@ -177,6 +188,10 @@
 
 			&.short {
 				width: v.$inputShortWidth;
+			}
+
+			&.full-width {
+				width: 100%;
 			}
 		}
 	}

@@ -10,18 +10,17 @@
 	import { registerInputFormSchema, type RegisterInputForm } from 'backend/schemas';
 	import { ApiErrorCode } from 'backend/types';
 
-	const { submit, handleBlur, values, errors, isSubmitting, isValid, touched, setError } =
-		createForm(
-			{ email: '', password: '', passwordRepeat: '' },
-			{ schema: registerInputFormSchema }
-		);
+	const { submit, values, errors, isSubmitting, isValid, touched } = createForm(
+		{ email: '', password: '', passwordRepeat: '' },
+		{ schema: registerInputFormSchema }
+	);
 
 	const handleSubmit = async ({ email, password }: RegisterInputForm) => {
 		const error = await register({ email, password });
 
 		if (error) {
 			if (error.errorCode === ApiErrorCode.EMAIL_ALREADY_IN_USE) {
-				setError('email', 'Ten adres email jest już zajęty');
+				errors.set('email', 'Ten adres email jest już zajęty');
 			}
 			return;
 		}
@@ -35,14 +34,14 @@
 		<span>Rejestracja</span>
 		<Input
 			bind:value={$values.email}
-			onblur={handleBlur}
+			bind:touched={$touched.email}
 			error={!$touched.email && $errors.email}
 			label="Email"
 			name="email"
 			disabled={$isSubmitting} />
 		<Input
 			bind:value={$values.password}
-			onblur={handleBlur}
+			bind:touched={$touched.password}
 			error={!$touched.password && $errors.password}
 			label="Hasło"
 			name="password"
@@ -50,7 +49,7 @@
 			disabled={$isSubmitting} />
 		<Input
 			bind:value={$values.passwordRepeat}
-			onblur={handleBlur}
+			bind:touched={$touched.passwordRepeat}
 			error={!$touched.passwordRepeat && $errors.passwordRepeat}
 			label="Powtórz hasło"
 			name="passwordRepeat"

@@ -28,17 +28,17 @@ export type FormReturn<
 		: Values
 > = {
 	values: Writable<InferredValues>;
-	errors: Readable<ChangePropsType<InferredValues, string>>;
-	touched: Readable<ChangePropsType<InferredValues, boolean>>;
+	errors: Readable<ChangePropsType<InferredValues, string>> & {
+		set: (field: keyof InferredValues, message: string, setTouched?: boolean) => void;
+	};
+	touched: Writable<ChangePropsType<InferredValues, boolean>>;
 	touchedErrors: Readable<ChangePropsType<InferredValues, string>>;
 	validate: MySchema extends Schema ? () => ValidateResponse<InferredValues> : undefined;
 	isSubmitting: Readable<boolean>;
 	isValid: Readable<boolean>;
 	isInitial: Readable<boolean>;
 	submit: FormSubmit<InferredValues>;
-	handleBlur: (event: FocusEvent) => void;
 	reset: () => void;
-	setError: (field: keyof InferredValues, message: string, setTouched?: boolean) => void;
 };
 
 const parseZodResponse = (
@@ -205,24 +205,6 @@ export const createForm = <
 		return true;
 	}) as FormSubmit<InferredValues>;
 
-	const handleBlur = (e: FocusEvent) => {
-		const target = e.target as HTMLInputElement;
-
-		const name = target.attributes?.getNamedItem('name');
-
-		if (!name) {
-			return;
-		}
-
-		touched.update((touched) => {
-			if (!(name.value in touched) && touched[name.value] === false) {
-				return touched;
-			}
-
-			return { ...touched, [name.value]: true };
-		});
-	};
-
 	const reset = () => {
 		values.set({ ...initialValues });
 		touched.set(getInitialTouched(initialValues));
@@ -245,16 +227,14 @@ export const createForm = <
 
 	return {
 		values,
-		errors: { subscribe: errors.subscribe },
+		errors: { subscribe: errors.subscribe, set: setError },
 		touchedErrors,
 		submit,
 		validate: (schema ? validate : undefined) as R['validate'],
 		isSubmitting: { subscribe: isSubmitting.subscribe },
 		isValid,
 		isInitial,
-		touched: { subscribe: touched.subscribe },
-		handleBlur,
-		reset,
-		setError
+		touched,
+		reset
 	};
 };

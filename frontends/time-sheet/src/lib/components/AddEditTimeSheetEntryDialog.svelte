@@ -53,7 +53,7 @@
 				)
 	);
 
-	const { values, touchedErrors, handleBlur, isSubmitting, setError, errors, isInitial, isValid } =
+	const { values, touchedErrors, touched, isSubmitting, errors, isInitial, isValid } =
 		$derived(form);
 
 	let entriesDates = $derived(new Set(entries.values().map((e) => e.date)));
@@ -66,7 +66,7 @@
 		const { date } = $values;
 
 		if (entriesDates.has(date)) {
-			setError('date', DATE_ALREADY_USED_LABEL);
+			errors.set('date', DATE_ALREADY_USED_LABEL);
 		}
 	});
 
@@ -81,7 +81,7 @@
 			return false;
 		}
 
-		setError('date', DATE_ALREADY_USED_LABEL);
+		errors.set('date', DATE_ALREADY_USED_LABEL);
 		return false;
 	};
 
@@ -95,16 +95,16 @@
 	bind:open>
 	<Input
 		bind:value={$values.date}
+		bind:touched={$touched.date}
 		type="date"
 		name="date"
 		error={$touchedErrors.date}
 		label="Data"
-		disabled={$isSubmitting || Boolean(editEntry)}
-		onblur={handleBlur} />
+		disabled={$isSubmitting || Boolean(editEntry)} />
 	<NumericInput
 		bind:value={$values.pricePerHour}
+		bind:touched={$touched.pricePerHour}
 		name="pricePerHour"
-		onblur={handleBlur}
 		label="Cena za godzinę"
 		min={0}
 		error={$touchedErrors.pricePerHour}
@@ -113,8 +113,8 @@
 		incButton />
 	<NumericInput
 		bind:value={$values.hours}
+		bind:touched={$touched.hours}
 		name="hours"
-		onblur={handleBlur}
 		label="Godziny"
 		min={0}
 		max={24}

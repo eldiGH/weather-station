@@ -41,7 +41,7 @@
 		)
 	);
 
-	const { handleBlur, isSubmitting, values, touchedErrors, setError } = $derived(form);
+	const { isSubmitting, values, touchedErrors, errors, touched } = $derived(form);
 
 	const handleEdit = async (data: AddTimeSheetInput) => {
 		if (!editTimeSheet) {
@@ -52,7 +52,7 @@
 		const result = await onEdit({ ...data, timeSheetId: editTimeSheet?.id });
 
 		if (isApiError(result)) {
-			setError('name', NAME_TAKEN_ERROR_LABEL);
+			errors.set('name', NAME_TAKEN_ERROR_LABEL);
 			return false;
 		}
 
@@ -65,7 +65,7 @@
 
 	$effect(() => {
 		if (timeSheetNamesUsed.has($values.name)) {
-			setError('name', NAME_TAKEN_ERROR_LABEL);
+			errors.set('name', NAME_TAKEN_ERROR_LABEL);
 		}
 	});
 </script>
@@ -79,29 +79,35 @@
 	{form}>
 	<Input
 		bind:value={$values.name}
+		bind:touched={$touched.name}
 		error={$touchedErrors.name}
 		label="Nazwa"
 		name="name"
-		onblur={handleBlur}
 		disabled={$isSubmitting}
 		required />
 	<NumericInput
 		bind:value={$values.defaultHours}
+		bind:touched={$touched.defaultHours}
 		error={$touchedErrors.defaultHours}
 		label="Godziny przyszłych wpisów"
 		name="defaultHours"
-		onblur={handleBlur}
 		disabled={$isSubmitting}
 		inputmode="numeric"
 		min={0}
-		max={24} />
+		max={24}
+		incButton
+		decButton
+		fullWidth />
 	<NumericInput
 		bind:value={$values.defaultPricePerHour}
+		bind:touched={$touched.defaultPricePerHour}
 		error={$touchedErrors.defaultPricePerHour}
 		label="Cena przyszłych wpisów"
 		name="defaultPricePerHour"
-		onblur={handleBlur}
 		disabled={$isSubmitting}
 		inputmode="numeric"
-		min={0} />
+		min={0}
+		incButton
+		decButton
+		fullWidth />
 </FormDialog>
