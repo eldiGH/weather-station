@@ -9,7 +9,7 @@
 
 	onNavigate((navigation) => {
 		return new Promise((res) => {
-			document.startViewTransition(async () => {
+			document.startViewTransition?.(async () => {
 				const from = navigation.from?.url.pathname;
 				const to = navigation.to?.url.pathname;
 
