@@ -1,4 +1,6 @@
 <script lang="ts">
+	import '$lib/polyfills';
+
 	import '@shared/styles/global.scss';
 	import { browser } from '$app/environment';
 	import NavigationLoader from '@shared/components/NavigationLoader.svelte';
