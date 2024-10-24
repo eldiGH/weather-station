@@ -1,5 +1,8 @@
-<script>
+<script lang="ts">
 	import { AuthLayout } from '@shared/ui/pages';
+	import type { LayoutProps } from '@shared/ui/types';
+
+	const { children }: LayoutProps = $props();
 </script>
 
-<AuthLayout><slot /></AuthLayout>
+<AuthLayout>{@render children()}</AuthLayout>
