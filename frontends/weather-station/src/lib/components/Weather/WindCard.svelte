@@ -1,6 +1,5 @@
 <script lang="ts">
-	import Card from '@shared/components/Card.svelte';
-	import IconInfo from '@shared/components/IconInfo.svelte';
+	import { Card, IconInfo } from '@shared/ui/components';
 
 	export let windDirection: number;
 	export let windSpeed: number;

@@ -3,13 +3,11 @@
 		setTimeSheetEntryFormInputSchema,
 		type SetTimeSheetEntryFormInput
 	} from '$lib/schemas/timeSheet';
-	import FormDialog from '@shared/components/FormDialog.svelte';
-	import Input from '@shared/components/Input.svelte';
-	import NumericInput from '@shared/components/NumericInput.svelte';
-	import { createForm } from '@shared/stores/form';
+	import { createForm } from '@shared/ui/stores';
 	import { formatToStringDate } from 'backend/helpers';
 	import type { AppRouterOutputs } from 'backend/trpc';
 	import { ApiErrorCode, isApiError, type ApiError } from 'backend/types';
+	import { FormDialog, Input, NumericInput } from '@shared/ui/components';
 
 	type TimeSheet = AppRouterOutputs['timeSheet']['getTimeSheets'][number];
 	type TimeSheetEntry =

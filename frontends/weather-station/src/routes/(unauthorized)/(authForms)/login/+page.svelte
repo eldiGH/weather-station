@@ -1,5 +1,5 @@
 <script lang="ts">
-	import LoginPage from '@shared/pages/auth/LoginPage.svelte';
+	import { LoginPage } from '@shared/ui/pages';
 </script>
 
 <LoginPage />

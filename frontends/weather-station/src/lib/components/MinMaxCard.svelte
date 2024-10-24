@@ -1,7 +1,6 @@
 <script lang="ts">
-	import Card from '@shared/components/Card.svelte';
-	import IconInfo from '@shared/components/IconInfo.svelte';
-	import type { IconType } from '@shared/types/Icon';
+	import { Card, IconInfo } from '@shared/ui/components';
+	import type { IconType } from '@shared/ui/types';
 
 	interface FormattedResult {
 		value: string;

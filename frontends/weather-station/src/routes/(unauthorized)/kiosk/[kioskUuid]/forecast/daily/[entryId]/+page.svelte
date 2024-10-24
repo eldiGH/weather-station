@@ -1,8 +1,8 @@
 <script lang="ts">
-	import Icon from '@shared/components/Icon.svelte';
 	import DailyWeatherStatus from '$lib/components/Weather/DailyWeatherStatus.svelte';
 	import { format, fromUnixTime } from 'date-fns';
 	import type { PageData } from './$types';
+	import { Icon } from '@shared/ui/components';
 
 	export let data: PageData;
 </script>

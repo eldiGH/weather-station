@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getRadians, roundToPrecision } from '@shared/helpers/math';
+	import { getRadians, roundToPrecision } from '@shared/ui/helpers';
 
 	export let label: string;
 	export let radius: number;

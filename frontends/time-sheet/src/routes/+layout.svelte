@@ -1,12 +1,12 @@
 <script lang="ts">
 	import '$lib/polyfills';
 
-	import '@shared/styles/global.scss';
+	import '@shared/ui/styles/global.scss';
 	import { browser } from '$app/environment';
-	import NavigationLoader from '@shared/components/NavigationLoader.svelte';
+	import { NavigationLoader } from '@shared/ui/components';
 	import { setDefaultOptions } from 'date-fns';
 	import { pl } from 'date-fns/locale';
-	import type { LayoutProps } from '@shared/types/LayoutProps';
+	import type { LayoutProps } from '@shared/ui/types';
 	import { onNavigate } from '$app/navigation';
 
 	onNavigate((navigation) => {
@@ -45,7 +45,7 @@
 {@render children()}
 
 <style lang="scss">
-	@use '@shared/styles/theme' as t;
+	@use '@shared/ui/styles/theme' as t;
 
 	@keyframes slide-from-right {
 		from {

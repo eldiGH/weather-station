@@ -1,10 +1,7 @@
 <script lang="ts">
-	import { logout } from '@shared/helpers/auth';
-	import { sidebarStore } from '@shared/stores/sidebar';
-	import Button from '@shared/components/Button.svelte';
-	import IconButton from '@shared/components/IconButton.svelte';
-	import TopBar from '@shared/components/TopBar.svelte';
-	import Link from '@shared/components/Link.svelte';
+	import { logout } from '@shared/ui/helpers';
+	import { sidebarStore } from '@shared/ui/stores';
+	import { Button, IconButton, TopBar, Link } from '@shared/ui/components';
 </script>
 
 {#snippet left()}

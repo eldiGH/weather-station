@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { formatTemperature } from '$lib/helpers/formatters';
-	import { capitalize } from '@shared/helpers/string';
+	import { capitalize } from '@shared/ui/helpers';
 	import { getWeatherIcon } from '$lib/helpers/weatherHelper';
-	import IconInfo from '@shared/components/IconInfo.svelte';
+	import { IconInfo } from '@shared/ui/components';
 	import { format, fromUnixTime } from 'date-fns';
 	import type { WeatherDescription } from 'backend/types';
-	import type { IconType } from '@shared/types/Icon';
+	import type { IconType } from '@shared/ui/types';
 
 	export let weather: WeatherDescription | undefined;
 	export let temperature: number;

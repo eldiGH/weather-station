@@ -1,7 +1,6 @@
 <script lang="ts">
-	import Card from '@shared/components/Card.svelte';
 	import type { ComponentProps } from 'svelte';
-	import IconInfo from '@shared/components/IconInfo.svelte';
+	import { IconInfo, Card } from '@shared/ui/components';
 
 	export let data: ComponentProps<typeof IconInfo>[];
 	export let header: string;

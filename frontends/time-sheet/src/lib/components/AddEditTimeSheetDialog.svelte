@@ -1,9 +1,7 @@
 <script lang="ts">
-	import FormDialog from '@shared/components/FormDialog.svelte';
-	import Input from '@shared/components/Input.svelte';
-	import NumericInput from '@shared/components/NumericInput.svelte';
-	import { snackbar } from '@shared/helpers/snackbar';
-	import { createForm } from '@shared/stores/form';
+	import { FormDialog, Input, NumericInput } from '@shared/ui/components';
+	import { snackbar } from '@shared/ui/helpers';
+	import { createForm } from '@shared/ui/stores';
 	import {
 		addTimeSheetInputSchema,
 		type AddTimeSheetInput,

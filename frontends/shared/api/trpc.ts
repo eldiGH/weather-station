@@ -9,11 +9,11 @@ import {
 } from '@trpc/client';
 import { transformer, type AppRouter } from 'backend/trpc';
 import { isApiError, type ApiError } from 'backend/types';
-import { isDevelopment } from '../helpers/environment';
+import { isDevelopment } from '../helpers';
 import { browser } from '$app/environment';
 import { InternalServerError } from 'backend/errors';
 import { devtoolsLink } from 'trpc-client-devtools-link';
-import { getTokensDataCookies, hasValidAccessToken, isLoggedIn, refresh } from '../helpers/auth';
+import { getTokensDataCookies, hasValidAccessToken, isLoggedIn, refresh } from '../helpers';
 import { goto } from '$app/navigation';
 
 export type FetchFunc = (

@@ -1,19 +1,15 @@
 <script lang="ts">
 	import { format } from 'date-fns';
 	import type { PageData } from './$types';
-	import { capitalize } from '@shared/helpers/string';
-	import { pluralizePl } from '@shared/helpers/language';
-	import IconButton from '@shared/components/IconButton.svelte';
+	import { capitalize, pluralizePl } from '@shared/ui/helpers';
+	import { IconButton, ConfirmationDialog, IconInfo } from '@shared/ui/components';
 	import { onDestroy, onMount } from 'svelte';
 	import { getBodyHeight } from '$lib/helpers/dom';
 	import { browser } from '$app/environment';
 	import Skeleton from '$lib/components/Skeleton.svelte';
-	import type { InferStoreType } from '@shared/types/Store';
-	import type { InferMapValue } from '@shared/types/Map';
+	import type { InferStoreType, InferMapValue } from '@shared/ui/types';
 	import { slide } from 'svelte/transition';
-	import ConfirmationDialog from '@shared/components/ConfirmationDialog.svelte';
 	import AddEditTimeSheetEntryDialog from '$lib/components/AddEditTimeSheetEntryDialog.svelte';
-	import IconInfo from '@shared/components/IconInfo.svelte';
 
 	type StructuredTimeSheetEntry = InferMapValue<InferStoreType<typeof structuredEntries>>[number];
 

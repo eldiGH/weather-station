@@ -1,11 +1,11 @@
 import { get } from 'svelte/store';
 import type { PageLoad } from './$types';
-import { handleAuthedTRPCErrors, trpc } from '@shared/api/trpc';
+import { handleAuthedTRPCErrors, trpc } from '@shared/ui/api';
 import { writable } from 'svelte/store';
 import { derived } from 'svelte/store';
 import { addDays, isAfter, isBefore, isSameMonth } from 'date-fns';
 import type { AppRouterOutputs } from 'backend/trpc';
-import { snackbar } from '@shared/helpers/snackbar';
+import { snackbar } from '@shared/ui/helpers';
 import { getFirstDateOfMonth } from 'backend/helpers';
 import type { SetTimeSheetEntryInput } from 'backend/schemas';
 import { addIntoDateSortedObjectArray } from '$lib/helpers/date';

@@ -1,3 +1,3 @@
-import config from 'frontend.shared/eslint.config.js';
+import config from '@shared/ui/eslint.config.js';
 
 export default config;

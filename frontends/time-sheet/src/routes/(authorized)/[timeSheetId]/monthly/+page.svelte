@@ -1,11 +1,8 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import NumericInput from '@shared/components/NumericInput.svelte';
+	import { NumericInput, Button, IconButton, Loader } from '@shared/ui/components';
 	import { format } from 'date-fns';
-	import Button from '@shared/components/Button.svelte';
-	import { capitalize } from '@shared/helpers/string';
-	import IconButton from '@shared/components/IconButton.svelte';
-	import Loader from '@shared/components/Loader.svelte';
+	import { capitalize } from '@shared/ui/helpers';
 
 	interface Props {
 		data: PageData;
@@ -76,7 +73,7 @@
 </div>
 
 <style lang="scss">
-	@use '@shared/styles/vars' as v;
+	@use '@shared/ui/styles/vars' as v;
 
 	.root {
 		display: flex;

@@ -1,5 +1,5 @@
 {
-	"name": "frontend.shared",
+	"name": "@shared/ui",
 	"version": "0.0.1",
 	"private": true,
 	"type": "module",
@@ -10,8 +10,15 @@
 		"./.prettierrc.mjs": "./.prettierrc.mjs",
 		"./server.js": "./server.js",
 		"./eslint.config.js": "./eslint.config.js",
-		"./svelte.config.js": "./svelte.config.js",
-		"./config.json": "./config.json"
+		"./config.json": "./config.json",
+		"./components": "./components/index.ts",
+		"./api": "./api/trpc.ts",
+		"./constants": "./constants/index.ts",
+		"./helpers": "./helpers/index.ts",
+		"./pages": "./pages/index.ts",
+		"./types": "./types/index.ts",
+		"./styles/*": "./styles/*",
+		"./stores": "./stores/index.ts"
 	},
 	"dependencies": {
 		"http-proxy": "^1.18.1"
@@ -38,6 +45,7 @@
 		"svelte": "^5.0.4",
 		"trpc-client-devtools-link": "0.2.1-next",
 		"tslib": "^2.8.0",
+		"tsx": "^4.19.1",
 		"url-join": "^5.0.0",
 		"uuid": "^10.0.0",
 		"zod": "^3.23.8"

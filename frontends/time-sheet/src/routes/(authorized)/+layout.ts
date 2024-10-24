@@ -1,9 +1,9 @@
-import { handleAuthedTRPCErrors, trpc } from '@shared/api/trpc';
+import { handleAuthedTRPCErrors, trpc } from '@shared/ui/api';
 import { CacheIdentifiers } from '$lib/constants/cache';
 import type { LayoutLoad } from './$types';
 import { writable } from 'svelte/store';
 import type { AddTimeSheetInput, EditTimeSheetInput } from 'backend/schemas';
-import { snackbar } from '@shared/helpers/snackbar';
+import { snackbar } from '@shared/ui/helpers';
 import { ApiErrorCode } from 'backend/types';
 import type { AppRouterOutputs } from 'backend/trpc';
 import { addMonths, isSameMonth, subMonths } from 'date-fns';

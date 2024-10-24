@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { Gradient } from '$lib/helpers/colors';
 	import { getArcOfCircle } from '$lib/helpers/svg';
+	import { minMax } from '@shared/ui/helpers';
 	import type { Point } from 'chart.js';
-	import { minMax } from '@shared/helpers/math';
 	import { onMount } from 'svelte';
 
 	interface Props {

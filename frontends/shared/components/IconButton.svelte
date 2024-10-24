@@ -65,7 +65,7 @@
 </div>
 
 <style lang="scss">
-	@use '@shared/styles/vars' as v;
+	@use '@shared/ui/styles/vars' as v;
 
 	.icon-button {
 		:global(.btn) {

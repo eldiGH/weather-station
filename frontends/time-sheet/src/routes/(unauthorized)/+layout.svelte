@@ -1,5 +1,5 @@
 <script lang="ts">
-	import AuthLayout from '@shared/pages/auth/AuthLayout.svelte';
+	import { AuthLayout } from '@shared/ui/pages';
 
 	const { children } = $props();
 </script>

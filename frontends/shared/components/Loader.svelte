@@ -34,7 +34,7 @@
 {/if}
 
 <style lang="scss">
-	@use '@shared/styles/vars' as v;
+	@use '@shared/ui/styles/vars' as v;
 
 	.loader-container {
 		position: absolute;

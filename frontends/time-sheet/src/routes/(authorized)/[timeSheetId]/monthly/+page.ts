@@ -1,10 +1,10 @@
-import { handleAuthedTRPCErrors, trpc } from '@shared/api/trpc';
-import type { PageLoad } from '../$types';
+import { handleAuthedTRPCErrors, trpc } from '@shared/ui/api';
+import type { PageLoad } from './$types';
 import { get } from 'svelte/store';
 import { writable } from 'svelte/store';
 import { addMonths, getDaysInMonth, setDate } from 'date-fns';
 import { convertArrayToDict, formatToStringDate, shallowEqual } from 'backend/helpers';
-import { snackbar } from '@shared/helpers/snackbar';
+import { snackbar } from '@shared/ui/helpers';
 import type { AppRouterOutputs } from 'backend/trpc';
 import { derived } from 'svelte/store';
 

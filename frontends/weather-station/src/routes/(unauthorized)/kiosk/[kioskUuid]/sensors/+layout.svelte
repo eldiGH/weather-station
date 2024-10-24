@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import type { LayoutData } from './$types';
-	import { trpcWs } from '@shared/api/trpc';
+	import { trpcWs } from '@shared/ui/api';
 
 	export let data: LayoutData;
 

@@ -1,5 +1,5 @@
 <script>
-	import AuthLayout from '@shared/pages/auth/AuthLayout.svelte';
+	import { AuthLayout } from '@shared/ui/pages';
 </script>
 
 <AuthLayout><slot /></AuthLayout>

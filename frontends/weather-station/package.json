@@ -17,6 +17,7 @@
 		"start": "node -r dotenv/config server.js"
 	},
 	"devDependencies": {
+		"@shared/ui": "workspace:^",
 		"@sveltejs/adapter-node": "^5.2.8",
 		"@sveltejs/kit": "^2.7.2",
 		"@sveltejs/vite-plugin-svelte": "4.0.0",
@@ -25,7 +26,6 @@
 		"chart.js": "^4.4.5",
 		"chartjs-adapter-date-fns": "^3.0.0",
 		"date-fns": "^4.1.0",
-		"frontend.shared": "workspace:^",
 		"sass": "^1.80.3",
 		"svelte": "^5.0.4",
 		"svelte-check": "^4.0.5",

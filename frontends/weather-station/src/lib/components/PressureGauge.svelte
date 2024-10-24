@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { roundToPrecision } from '@shared/helpers/math';
-	import IconInfo from '@shared/components/IconInfo.svelte';
+	import { roundToPrecision } from '@shared/ui/helpers';
+	import { IconInfo } from '@shared/ui/components';
 	import InfoGauge, { type GaugeConfig } from './InfoGauge/InfoGauge.svelte';
 
 	export let value: number;

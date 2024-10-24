@@ -1,15 +1,10 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import IconInfo from '@shared/components/IconInfo.svelte';
-	import { pluralizePl } from '@shared/helpers/language';
+	import { IconInfo, Button, ConfirmationDialog, IconButton } from '@shared/ui/components';
+	import { pluralizePl, capitalize, snackbar } from '@shared/ui/helpers';
 	import { addMonths, format } from 'date-fns';
-	import { capitalize } from '@shared/helpers/string';
-	import Button from '@shared/components/Button.svelte';
-	import ConfirmationDialog from '@shared/components/ConfirmationDialog.svelte';
 	import { fade, slide } from 'svelte/transition';
-	import IconButton from '@shared/components/IconButton.svelte';
 	import AddEditTimeSheetDialog from '$lib/components/AddEditTimeSheetDialog.svelte';
-	import { snackbar } from '@shared/helpers/snackbar';
 
 	interface Props {
 		data: PageData;
@@ -136,7 +131,7 @@
 	>?</ConfirmationDialog>
 
 <style lang="scss">
-	@use '@shared/styles/vars' as v;
+	@use '@shared/ui/styles/vars' as v;
 
 	.root {
 		padding-bottom: 3rem;

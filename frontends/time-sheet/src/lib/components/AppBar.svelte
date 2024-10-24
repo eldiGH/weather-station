@@ -1,8 +1,6 @@
 <script lang="ts">
-	import Button from '@shared/components/Button.svelte';
-	import IconButton from '@shared/components/IconButton.svelte';
-	import TopBar from '@shared/components/TopBar.svelte';
-	import { logout } from '@shared/helpers/auth';
+	import { IconButton, Button, TopBar } from '@shared/ui/components';
+	import { logout } from '@shared/ui/helpers';
 	import { page } from '$app/stores';
 
 	let isRootPage = $derived($page.url.pathname === '/');

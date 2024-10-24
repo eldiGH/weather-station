@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { sidebarStore } from '@shared/stores/sidebar';
+	import { IconButton, Button } from '@shared/ui/components';
+	import type { IconType } from '@shared/ui/types';
+	import { sidebarStore } from '@shared/ui/stores';
 	import { onMount } from 'svelte';
-	import IconButton from '@shared/components/IconButton.svelte';
-	import Button from '@shared/components/Button.svelte';
-	import type { IconType } from '@shared/types/Icon';
 
 	let sidebarWidth = 0;
 	let sidebar: HTMLDivElement;

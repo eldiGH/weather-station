@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { capitalize } from '@shared/helpers/string';
+	import { capitalize } from '@shared/ui/helpers';
 	import { format, fromUnixTime } from 'date-fns';
-	import IconInfo from '@shared/components/IconInfo.svelte';
+	import { IconInfo } from '@shared/ui/components';
 	import { getWeatherIcon } from '$lib/helpers/weatherHelper';
 	import { formatTemperature } from '$lib/helpers/formatters';
 	import { goto } from '$app/navigation';

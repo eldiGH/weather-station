@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ChartTabs from '$lib/components/ChartTabs.svelte';
 	import DailyStats from '$lib/components/DailyStats.svelte';
-	import IconInfo from '@shared/components/IconInfo.svelte';
+	import { IconInfo } from '@shared/ui/components';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

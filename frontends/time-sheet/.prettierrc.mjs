@@ -1,3 +1,3 @@
-import prettierConfig from 'frontend.shared/.prettierrc.mjs';
+import prettierConfig from '@shared/ui/.prettierrc.mjs';
 
 export default prettierConfig;

@@ -1,1 +1,1 @@
-export { handle } from '@shared/helpers/hooks';
+export { handle } from '@shared/ui/helpers';

@@ -1,4 +1,4 @@
-import { getRadians, roundToPrecision } from '@shared/helpers/math';
+import { getRadians, roundToPrecision } from '@shared/ui/helpers';
 
 export interface Point {
 	x: number;
