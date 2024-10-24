@@ -3,8 +3,10 @@
 	import Container from '../../components/Container.svelte';
 	import { getTokensDataCookies, isLoggedIn } from '../../helpers/auth';
 	import { onMount } from 'svelte';
+	import type { LayoutProps } from '../../types/LayoutProps'
 
-	const { children } = $props();
+
+	const { children }: LayoutProps = $props();
 
 	onMount(() => {
 		if (isLoggedIn(getTokensDataCookies())) {
