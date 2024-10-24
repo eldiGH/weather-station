@@ -24,7 +24,7 @@
 <slot />
 
 <style lang="scss">
-	@use '@shared/ui/styles/theme' as t;
+	@use '@shared/ui/styles/themes' as t;
 
 	:root {
 		@include t.add-theme('weather-station');

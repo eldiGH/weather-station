@@ -9,7 +9,7 @@ import {
 } from '@trpc/client';
 import { transformer, type AppRouter } from 'backend/trpc';
 import { isApiError, type ApiError } from 'backend/types';
-import { isDevelopment } from '../helpers';
+import { isDevelopment } from '../helpers/environment';
 import { browser } from '$app/environment';
 import { InternalServerError } from 'backend/errors';
 import { devtoolsLink } from 'trpc-client-devtools-link';

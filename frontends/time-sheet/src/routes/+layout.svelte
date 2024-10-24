@@ -45,7 +45,7 @@
 {@render children()}
 
 <style lang="scss">
-	@use '@shared/ui/styles/theme' as t;
+	@use '@shared/ui/styles/themes' as t;
 
 	@keyframes slide-from-right {
 		from {

@@ -14,7 +14,7 @@ export const svelteConfig = {
 		style: {
 			resolve: {
 				alias: {
-					'@shared/ui/styles/theme': themePath,
+					'@shared/ui/styles/themes': themePath,
 					'@shared/ui/styles/vars': varsPath
 				}
 			}
@@ -25,10 +25,6 @@ export const svelteConfig = {
 		// If your environment is not supported or you settled on a specific environment, switch out the adapter.
 		// See https://kit.svelte.dev/docs/adapters for more information about adapters.
 		adapter: adapter()
-	},
-
-	compilerOptions: {
-		runes: true
 	}
 };
 

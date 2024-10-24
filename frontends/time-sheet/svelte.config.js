@@ -14,7 +14,7 @@ export const svelteConfig = {
 		style: {
 			resolve: {
 				alias: {
-					'@shared/ui/styles/theme': themePath,
+					'@shared/ui/styles/themes': themePath,
 					'@shared/ui/styles/vars': varsPath
 				}
 			}

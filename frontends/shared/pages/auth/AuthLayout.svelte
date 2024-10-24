@@ -4,6 +4,8 @@
 	import { getTokensDataCookies, isLoggedIn } from '../../helpers/auth';
 	import { onMount } from 'svelte';
 
+	const { children } = $props();
+
 	onMount(() => {
 		if (isLoggedIn(getTokensDataCookies())) {
 			goto('/', { replaceState: true });
@@ -11,7 +13,7 @@
 	});
 </script>
 
-<Container pt={5}><div><slot /></div></Container>
+<Container pt={5}><div>{@render children()}</div></Container>
 
 <style lang="scss">
 	div {

@@ -29,7 +29,7 @@
 	};
 </script>
 
-<form class="root" on:submit={submit(handleSubmit)}>
+<form class="root" onsubmit={submit(handleSubmit)}>
 	<Card class="card">
 		<span>Rejestracja</span>
 		<Input
