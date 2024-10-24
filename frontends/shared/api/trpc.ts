@@ -13,8 +13,8 @@ import { isDevelopment } from '../helpers/environment';
 import { browser } from '$app/environment';
 import { InternalServerError } from 'backend/errors';
 import { devtoolsLink } from 'trpc-client-devtools-link';
-import { getTokensDataCookies, hasValidAccessToken, isLoggedIn, refresh } from '../helpers';
 import { goto } from '$app/navigation';
+import { getTokensDataCookies, hasValidAccessToken, isLoggedIn, refresh } from '../helpers/auth';
 
 export type FetchFunc = (
 	input: RequestInfo | URL,

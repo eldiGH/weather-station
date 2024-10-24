@@ -4,7 +4,9 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"generate-indexes": "tsx scripts/generateIndexes/bin.ts",
+		"generate-indexes:watch": "tsx scripts/generateIndexes/watch.ts"
 	},
 	"exports": {
 		"./.prettierrc.mjs": "./.prettierrc.mjs",
@@ -28,7 +30,6 @@
 		"@trpc/client": "^10.45.2",
 		"@types/cookie": "^0.6.0",
 		"@types/http-proxy": "^1.17.15",
-		"@types/node": "^22.7.7",
 		"@types/url-join": "^4.0.3",
 		"@types/uuid": "^10.0.0",
 		"backend": "workspace:^",

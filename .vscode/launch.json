@@ -5,6 +5,15 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Frontend-shared:generate-indexes:watch",
+      "request": "launch",
+      "runtimeArgs": ["run-script", "generate-indexes:watch"],
+      "runtimeExecutable": "npm",
+      "skipFiles": ["<node_internals>/**"],
+      "cwd": "${workspaceFolder}/frontends/shared",
+      "type": "node"
+    },
+    {
       "name": "Frontend:time-sheet",
       "request": "launch",
       "type": "chrome",
@@ -12,7 +21,8 @@
       "webRoot": "${workspaceFolder}/frontends/time-sheet",
       "pathMapping": {
         "@fs/": ""
-      }
+      },
+      "preLaunchTask": "npm: generate-indexes:watch - frontends/shared"
     },
     {
       "name": "Frontend:weather-station",
@@ -22,7 +32,8 @@
       "webRoot": "${workspaceFolder}/frontends/weather-station",
       "pathMapping": {
         "@fs/": ""
-      }
+      },
+      "preLaunchTask": "npm: generate-indexes:watch - frontends/shared"
     },
     {
       "name": "Backend",
@@ -58,7 +69,8 @@
       "configurations": [
         "Backend",
         "SSR:weather-station",
-        "Frontend:weather-station"
+        "Frontend:weather-station",
+        "Frontend-shared:generate-indexes:watch"
       ],
       "stopAll": true
     },
@@ -69,7 +81,12 @@
     },
     {
       "name": "Fullstack (time-sheet)",
-      "configurations": ["Backend", "SSR:time-sheet", "Frontend:time-sheet"],
+      "configurations": [
+        "Backend",
+        "SSR:time-sheet",
+        "Frontend:time-sheet",
+        "Frontend-shared:generate-indexes:watch"
+      ],
       "stopAll": true
     },
     {

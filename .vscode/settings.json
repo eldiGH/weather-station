@@ -1,5 +1,0 @@
-{
-  "path-autocomplete.pathMappings": {
-    "@theme": "${folder}/frontends/shared/styles.themes.scss"
-  }
-}

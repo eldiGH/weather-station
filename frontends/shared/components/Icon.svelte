@@ -1,6 +1,5 @@
 <script lang="ts">
-	import type { IconType } from '../types/Icon';
-	import type { IconVariant } from '../types/Icon';
+	import type { IconType, IconVariant } from '../types/Icon';
 
 	interface Props {
 		variant?: IconVariant;
