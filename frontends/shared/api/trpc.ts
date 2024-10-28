@@ -14,7 +14,7 @@ import { devtoolsLink } from 'trpc-client-devtools-link';
 import { getTokensDataCookies, hasValidAccessToken, isLoggedIn, refresh } from '../helpers/auth';
 import { goto } from '$app/navigation';
 import { isApiError, type ApiError } from 'backend/types';
-import { InternalServerError, type ValidationErrorType } from 'backend/errors';
+import { type ValidationErrorType } from 'backend/errors';
 import type { ApiResponseFail } from '../../../backend/src/types/Control';
 import type { ProcedureOptions } from '@trpc/server';
 
@@ -36,13 +36,16 @@ type AddValidationError<T> = {
 			: T[key];
 };
 
-type WithWasAborted<T> = T & {
-	wasAborted: boolean;
+type WithWasAborted<T, Opts> = T & {
+	wasAborted: Opts extends { signal: AbortSignal } ? boolean : false;
 };
 
 type AddWasAborted<T> = {
-	[key in keyof T]: T[key] extends (input: infer Input, opts?: infer Opts) => infer Return
-		? (input: Input, opts?: Opts) => Promise<WithWasAborted<Awaited<Return>>>
+	[key in keyof T]: T[key] extends (input: infer Input, opts?: ProcedureOptions) => infer Return
+		? <O extends ProcedureOptions>(
+				input: Input,
+				opts?: O
+			) => Promise<WithWasAborted<Awaited<Return>, O>>
 		: T[key] extends Record<string, unknown>
 			? AddWasAborted<T[key]>
 			: T[key];
