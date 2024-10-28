@@ -5,10 +5,13 @@
 	import HumidityChart from './HumidityChart.svelte';
 	import PressureChart from './PressureChart.svelte';
 	import type { AppRouterOutputs } from 'backend/trpc';
+	import type { ExtractResponseDataType } from 'backend/types';
 
 	const tabsStore = createTabs(3);
 
-	export let data: AppRouterOutputs['kiosk']['getKioskSensorDetails']['bme68xData'];
+	export let data: ExtractResponseDataType<
+		AppRouterOutputs['kiosk']['getKioskSensorDetails']
+	>['bme68xData'];
 	export let showTooltip = true;
 </script>
 

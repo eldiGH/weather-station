@@ -70,7 +70,13 @@ const refreshTokens = async (
 			cookies.set(...parseCookieOptions(setCookieString));
 		}
 
-		const tokens: TokensData = parse((await resp.json()).result.data);
+		const jsonResp = await resp.json();
+
+		if (jsonResp.error) {
+			throw jsonResp.error;
+		}
+
+		const tokens: TokensData = parse(jsonResp.data);
 
 		const cookieOptions = {
 			sameSite: 'lax',

@@ -1,6 +1,6 @@
 import { get } from 'svelte/store';
 import type { PageLoad } from './$types';
-import { handleAuthedTRPCErrors, trpc } from '@shared/ui/api';
+import { trpcAuthed } from '@shared/ui/api';
 import { writable } from 'svelte/store';
 import { derived } from 'svelte/store';
 import { addDays, isAfter, isBefore, isSameMonth } from 'date-fns';
@@ -9,10 +9,11 @@ import { snackbar } from '@shared/ui/helpers';
 import { getFirstDateOfMonth } from 'backend/helpers';
 import type { SetTimeSheetEntryInput } from 'backend/schemas';
 import { addIntoDateSortedObjectArray } from '$lib/helpers/date';
-import { ApiErrorCode } from 'backend/types';
+import { ApiErrorCode, type ExtractResponseDataType } from 'backend/types';
 
-type TimeSheetEntry =
-	AppRouterOutputs['timeSheet']['getTimeSheetEntriesWithCursor']['entries'][number];
+type TimeSheetEntry = ExtractResponseDataType<
+	AppRouterOutputs['timeSheet']['getTimeSheetEntriesWithCursor']
+>['entries'][number];
 type StructuredEntry = TimeSheetEntry & { entryIndex: number };
 
 const ENTRIES_PER_LOAD_COUNT = 15;
@@ -26,13 +27,10 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
 		throw Error('Time sheet not found');
 	}
 
-	const response = await handleAuthedTRPCErrors(
-		trpc(fetch).timeSheet.getTimeSheetEntriesWithCursor.query,
-		{
-			timeSheetId: timeSheet.id,
-			count: ENTRIES_PER_LOAD_COUNT
-		}
-	);
+	const response = await trpcAuthed(fetch).timeSheet.getTimeSheetEntriesWithCursor.query({
+		timeSheetId: timeSheet.id,
+		count: ENTRIES_PER_LOAD_COUNT
+	});
 
 	type ResponseType = typeof response;
 
@@ -125,14 +123,11 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
 					return !nextCursor;
 				}
 
-				loadMorePromise = handleAuthedTRPCErrors(
-					trpc(fetch).timeSheet.getTimeSheetEntriesWithCursor.query,
-					{
-						timeSheetId: timeSheet.id,
-						cursor: nextCursor,
-						count: ENTRIES_PER_LOAD_COUNT
-					}
-				);
+				loadMorePromise = trpcAuthed(fetch).timeSheet.getTimeSheetEntriesWithCursor.query({
+					timeSheetId: timeSheet.id,
+					cursor: nextCursor,
+					count: ENTRIES_PER_LOAD_COUNT
+				});
 
 				const { error, data } = await loadMorePromise;
 				loadMorePromise = null;
@@ -152,13 +147,10 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
 			},
 
 			delete: async (entry: TimeSheetEntry) => {
-				const { error } = await handleAuthedTRPCErrors(
-					trpc(fetch).timeSheet.deleteTimeSheetEntry.mutate,
-					{
-						date: entry.date,
-						timeSheetId: timeSheet.id
-					}
-				);
+				const { error } = await trpcAuthed(fetch).timeSheet.deleteTimeSheetEntry.mutate({
+					date: entry.date,
+					timeSheetId: timeSheet.id
+				});
 
 				if (error) {
 					snackbar.pushError();
@@ -178,10 +170,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
 			},
 
 			add: async (entry: SetTimeSheetEntryInput) => {
-				const { error } = await handleAuthedTRPCErrors(
-					trpc(fetch).timeSheet.addTimeSheetEntry.mutate,
-					entry
-				);
+				const { error } = await trpcAuthed(fetch).timeSheet.addTimeSheetEntry.mutate(entry);
 
 				if (error) {
 					if (error.errorCode === ApiErrorCode.TIME_SHEET_ENTRY_ALREADY_EXISTS) {
@@ -205,10 +194,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
 			},
 
 			edit: async (entry: SetTimeSheetEntryInput, oldEntry: TimeSheetEntry | null) => {
-				const { error } = await handleAuthedTRPCErrors(
-					trpc(fetch).timeSheet.editTimeSheetEntry.mutate,
-					entry
-				);
+				const { error } = await trpcAuthed(fetch).timeSheet.editTimeSheetEntry.mutate(entry);
 
 				if (error) {
 					snackbar.pushError();

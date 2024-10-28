@@ -1,9 +1,10 @@
-import type { ApiError } from '../types/ApiError';
+import { createError } from '../helpers/control';
 import { ApiErrorCode } from '../types/enums/ApiErrorCode';
 import { HttpStatus } from '../types/enums/HttpStatus';
 
-export const SensorNotFound = (sensorId: number): ApiError => ({
-  errorCode: ApiErrorCode.SENSOR_NOT_FOUND,
-  httpStatus: HttpStatus.BAD_REQUEST,
-  message: `Requested sensor with id: ${sensorId} not found`
-});
+export const SensorNotFound = (sensorId: number) =>
+  createError({
+    errorCode: ApiErrorCode.SENSOR_NOT_FOUND,
+    httpStatus: HttpStatus.BAD_REQUEST,
+    message: `Requested sensor with id: ${sensorId} not found`
+  });

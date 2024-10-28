@@ -18,6 +18,7 @@ import {
 } from '../repositories/kiosk';
 import { getSensorsWithIds } from '../repositories/sensor';
 import type { userSchema } from '../db/drizzle/schema';
+import { Err, Ok } from '../helpers/control';
 
 const FORECAST_CACHE_MINUTES = 30;
 
@@ -26,21 +27,22 @@ if (!OPEN_WEATHER_API_KEY) {
   throw new Error('Missing OPEN_WEATHER_API_KEY env variable!');
 }
 
-const getForecast = async (kioskUuid: string): Promise<WeatherApiResponse> => {
+const getForecast = async (kioskUuid: string) => {
   const kiosk = await getKioskByUuid(kioskUuid);
 
   if (!kiosk) {
-    throw KioskNotFound;
+    return Err(KioskNotFound());
   }
 
   const { latitude, longitude } = kiosk;
 
   if (!latitude || !longitude) {
-    throw KioskWithoutCoordinates();
+    return Err(KioskWithoutCoordinates());
   }
 
-  return (
-    await axios.get(`https://api.openweathermap.org/data/3.0/onecall`, {
+  const response = await axios.get<WeatherApiResponse>(
+    `https://api.openweathermap.org/data/3.0/onecall`,
+    {
       responseType: 'json',
       params: {
         lat: latitude,
@@ -49,8 +51,10 @@ const getForecast = async (kioskUuid: string): Promise<WeatherApiResponse> => {
         lang: 'pl',
         units: 'metric'
       }
-    })
-  ).data;
+    }
+  );
+
+  return Ok(response.data);
 };
 
 const mapForecastResponseData = (forecast: WeatherApiResponse, nextRefreshTimestamp: Date) => {
@@ -76,15 +80,15 @@ export const KioskService = {
     const kiosk = await getKioskWithBme68xSensor(kioskUuid, sensorId, { dates });
 
     if (!kiosk) {
-      throw KioskNotFound();
+      return Err(KioskNotFound());
     }
 
     const sensor = kiosk.sensors[0];
     if (!sensor) {
-      throw SensorNotFound(sensorId);
+      return Err(SensorNotFound(sensorId));
     }
 
-    return sensor;
+    return Ok(sensor);
   },
 
   getKioskForecast: async (kioskUuid: string) => {
@@ -103,14 +107,18 @@ export const KioskService = {
       cacheValid = isAfter(timestampValidTo, new Date());
       if (cacheValid) {
         const nextRefreshTimestamp = addMinutes(timestampValidTo, FORECAST_CACHE_MINUTES * 0.05);
-        return mapForecastResponseData(parsedCacheEntry.data, nextRefreshTimestamp);
+        return Ok(mapForecastResponseData(parsedCacheEntry.data, nextRefreshTimestamp));
       }
     }
 
     const timestamp = new Date();
     const timestampValidTo = addMinutes(timestamp, FORECAST_CACHE_MINUTES);
 
-    const newForecast = await getForecast(kioskUuid);
+    const { data: newForecast, error } = await getForecast(kioskUuid);
+    if (error) {
+      return Err(error);
+    }
+
     const newCacheEntry: RedisCachedEntry<WeatherApiResponse> = {
       timestamp: timestamp.toISOString(),
       data: newForecast
@@ -119,24 +127,24 @@ export const KioskService = {
     await redisClient.set(cacheKey, JSON.stringify(newCacheEntry));
 
     const nextRefreshTimestamp = addMinutes(timestampValidTo, FORECAST_CACHE_MINUTES * 0.05);
-    return mapForecastResponseData(newForecast, nextRefreshTimestamp);
+    return Ok(mapForecastResponseData(newForecast, nextRefreshTimestamp));
   },
 
   getKiosk: async (kioskUuid: string) => {
     const kiosk = await getKioskWithSensors(kioskUuid);
 
     if (!kiosk) {
-      throw KioskNotFound();
+      return Err(KioskNotFound());
     }
 
-    return { ...kiosk };
+    return Ok({ ...kiosk });
   },
 
   getKioskData: async (kioskUuid: string) => {
     const kiosk = await getKioskWithBme68xSensors(kioskUuid, { limit: 1, order: 'desc' });
 
     if (!kiosk) {
-      throw KioskNotFound();
+      return Err(KioskNotFound());
     }
 
     const parsedKiosk = {
@@ -144,7 +152,7 @@ export const KioskService = {
       sensors: kiosk.sensors.map((sensor) => ({ ...sensor, currentData: sensor.bme68xData[0] }))
     };
 
-    return parsedKiosk;
+    return Ok(parsedKiosk);
   },
 
   createKiosk: async (data: CreateKioskInput, user: typeof userSchema.$inferSelect) => {
@@ -154,17 +162,17 @@ export const KioskService = {
     const missingSensor = data.sensors.find((id) => !foundSensorsIds.includes(id));
 
     if (missingSensor) {
-      throw SensorNotFound(missingSensor);
+      return Err(SensorNotFound(missingSensor));
     }
 
     if (!sensors.every((sensor) => sensor.ownerId === user.id)) {
-      throw PermissionDenied();
+      return Err(PermissionDenied());
     }
 
     const kioskUuid = uuid();
 
     await createKioskWithSensors({ kioskUuid, ownerId: user.id }, data.sensors);
 
-    return { kioskUuid };
+    return Ok({ kioskUuid });
   }
 };

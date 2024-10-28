@@ -16,12 +16,13 @@ import { v4 } from 'uuid';
 import { SensorNameAlreadyUsed } from '../errors/SensorNameAlreadyUsed';
 import type { CreateSensorInput } from '../schemas/sensor';
 import type { userSchema } from '../db/drizzle/schema';
+import { Err, Ok } from '../helpers/control';
 
 const addNewSensor = async (data: CreateSensorInput, user: typeof userSchema.$inferSelect) => {
   const existingSensor = await getSensorByName(data.name);
 
   if (existingSensor) {
-    throw SensorNameAlreadyUsed(data.name);
+    return Err(SensorNameAlreadyUsed(data.name));
   }
 
   let secret: string;
@@ -33,43 +34,45 @@ const addNewSensor = async (data: CreateSensorInput, user: typeof userSchema.$in
 
   await createSensor({ ...data, secret, ownerId: user.id });
 
-  return secret;
+  return Ok(secret);
 };
 
 const addBME68XDataEntry = async ({ secret, ...data }: PostBME68XDataInput) => {
   const sensor = await getSensorBySecret(secret);
 
   if (!sensor || sensor.type !== 'BME68X') {
-    throw SecretIsNotValid();
+    return Err(SecretIsNotValid());
   }
 
   const newData = (await createBme68xDataEntry({ ...data, sensorId: sensor.id }).returning())[0];
 
   emitNewSensorData(sensor.id, newData);
+
+  return Ok();
 };
 
 const getLatestBME68XDataEntry = async (sensorId: number) => {
   const sensor = await getSensorWithBme68xData(sensorId, { limit: 1 });
 
   if (!sensor) {
-    throw SensorNotFound(sensorId);
+    return Err(SensorNotFound(sensorId));
   }
 
   if (sensor.bme68xData.length === 0) {
-    throw SensorDataNotFound();
+    return Err(SensorDataNotFound());
   }
 
-  return sensor.bme68xData[0];
+  return Ok(sensor.bme68xData[0]);
 };
 
 const getBME68XData = async (sensorId: number, query: TimestampRangeQuery) => {
   const sensor = await getSensorWithBme68xData(sensorId, { dates: query });
 
   if (!sensor) {
-    throw SensorNotFound(sensorId);
+    return Err(SensorNotFound(sensorId));
   }
 
-  return sensor.bme68xData;
+  return Ok(sensor.bme68xData);
 };
 
 export const SensorService = {

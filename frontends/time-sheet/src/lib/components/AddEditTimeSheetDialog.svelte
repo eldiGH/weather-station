@@ -8,11 +8,11 @@
 		type EditTimeSheetInput
 	} from 'backend/schemas';
 	import type { AppRouterOutputs } from 'backend/trpc';
-	import { isApiError, type ApiError } from 'backend/types';
+	import { isApiError, type ApiError, type ExtractResponseDataType } from 'backend/types';
 
 	const NAME_TAKEN_ERROR_LABEL = 'Ta nazwa jest już przez Ciebie używana.';
 
-	type TimeSheet = AppRouterOutputs['timeSheet']['getTimeSheets'][number];
+	type TimeSheet = ExtractResponseDataType<AppRouterOutputs['timeSheet']['getTimeSheets']>[number];
 
 	interface Props {
 		open?: () => void;

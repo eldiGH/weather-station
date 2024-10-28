@@ -6,8 +6,11 @@
 	import BatteryIndicator from './BatteryIndicator.svelte';
 	import PressureCardGauge from './PressureCardGauge.svelte';
 	import type { AppRouterOutputs } from 'backend/trpc';
+	import type { ExtractResponseDataType } from 'backend/types';
 
-	export let sensor: AppRouterOutputs['kiosk']['getKioskData']['sensors'][0];
+	export let sensor: ExtractResponseDataType<
+		AppRouterOutputs['kiosk']['getKioskData']
+	>['sensors'][0];
 </script>
 
 <Link noColor href={`${$page.url.pathname}/${sensor.id}`}>

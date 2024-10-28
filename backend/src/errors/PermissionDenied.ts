@@ -1,9 +1,10 @@
-import type { ApiError } from '../types/ApiError';
+import { createError } from '../helpers/control';
 import { ApiErrorCode } from '../types/enums/ApiErrorCode';
 import { HttpStatus } from '../types/enums/HttpStatus';
 
-export const PermissionDenied = (): ApiError => ({
-  errorCode: ApiErrorCode.PERMISSION_DENIED,
-  httpStatus: HttpStatus.FORBIDDEN,
-  message: `Permission denied`
-});
+export const PermissionDenied = () =>
+  createError({
+    errorCode: ApiErrorCode.PERMISSION_DENIED,
+    httpStatus: HttpStatus.FORBIDDEN,
+    message: `Permission denied`
+  });

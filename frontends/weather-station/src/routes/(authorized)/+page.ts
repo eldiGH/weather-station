@@ -1,13 +1,13 @@
 import type { PageLoad } from './$types';
-import { handleAuthedTRPCErrors, trpc } from '../../../../shared/api/trpc';
+import { trpcAuthed } from '../../../../shared/api/trpc';
 
 type FetchType = (input: RequestInfo | URL, init?: RequestInit | undefined) => Promise<Response>;
 
 const getTemperatureData = async (fetch: FetchType) => {
-	const { data, error } = await handleAuthedTRPCErrors(trpc(fetch).sensor.getSensorData.query, {
+	const { data, error } = await trpcAuthed(fetch).sensor.getSensorData.query({
 		sensorId: 1,
 		dateRangeQuery: { fromLastDays: 1 }
-	}); //, 1, { fromLastDays: 1 });
+	});
 
 	if (error) {
 		throw error;

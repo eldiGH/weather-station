@@ -3,8 +3,11 @@
 	import type { MinMaxReadingResult } from '$lib/types/MinMaxReadingResult';
 	import type { AppRouterOutputs } from 'backend/trpc';
 	import MinMaxCard from './MinMaxCard.svelte';
+	import type { ExtractResponseDataType } from 'backend/types';
 
-	type DataType = AppRouterOutputs['kiosk']['getKioskSensorDetails']['bme68xData'];
+	type DataType = ExtractResponseDataType<
+		AppRouterOutputs['kiosk']['getKioskSensorDetails']
+	>['bme68xData'];
 	interface SummaryReadingsResult {
 		temperature: MinMaxReadingResult;
 		humidity: MinMaxReadingResult;

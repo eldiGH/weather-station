@@ -6,12 +6,18 @@
 	import { createForm } from '@shared/ui/stores';
 	import { formatToStringDate } from 'backend/helpers';
 	import type { AppRouterOutputs } from 'backend/trpc';
-	import { ApiErrorCode, isApiError, type ApiError } from 'backend/types';
+	import {
+		ApiErrorCode,
+		isApiError,
+		type ApiError,
+		type ExtractResponseDataType
+	} from 'backend/types';
 	import { FormDialog, Input, NumericInput } from '@shared/ui/components';
 
-	type TimeSheet = AppRouterOutputs['timeSheet']['getTimeSheets'][number];
-	type TimeSheetEntry =
-		AppRouterOutputs['timeSheet']['getTimeSheetEntriesWithCursor']['entries'][number];
+	type TimeSheet = ExtractResponseDataType<AppRouterOutputs['timeSheet']['getTimeSheets']>[number];
+	type TimeSheetEntry = ExtractResponseDataType<
+		AppRouterOutputs['timeSheet']['getTimeSheetEntriesWithCursor']
+	>['entries'][number];
 
 	interface Props {
 		timeSheet: TimeSheet;

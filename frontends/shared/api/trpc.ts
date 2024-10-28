@@ -8,30 +8,53 @@ import {
 	type CreateTRPCProxyClient
 } from '@trpc/client';
 import { transformer, type AppRouter } from 'backend/trpc';
-import { isApiError, type ApiError } from 'backend/types';
 import { isDevelopment } from '../helpers/environment';
 import { browser } from '$app/environment';
-import { InternalServerError } from 'backend/errors';
 import { devtoolsLink } from 'trpc-client-devtools-link';
-import { goto } from '$app/navigation';
 import { getTokensDataCookies, hasValidAccessToken, isLoggedIn, refresh } from '../helpers/auth';
+import { goto } from '$app/navigation';
+import { isApiError, type ApiError } from 'backend/types';
+import { InternalServerError, type ValidationErrorType } from 'backend/errors';
+import type { ApiResponseFail } from '../../../backend/src/types/Control';
+import type { ProcedureOptions } from '@trpc/server';
 
 export type FetchFunc = (
 	input: RequestInfo | URL,
 	init?: RequestInit | undefined
 ) => Promise<Response>;
 
+type AddValidationError<T> = {
+	[key in keyof T]: T[key] extends (input: infer Input, opts?: infer Opts) => infer Return
+		? (
+				input: Input,
+				opts?: Opts
+			) => Input extends void | undefined
+				? Return
+				: Return | Promise<ApiResponseFail<ValidationErrorType>>
+		: T[key] extends Record<string, unknown>
+			? AddValidationError<T[key]>
+			: T[key];
+};
+
+type WithWasAborted<T> = T & {
+	wasAborted: boolean;
+};
+
+type AddWasAborted<T> = {
+	[key in keyof T]: T[key] extends (input: infer Input, opts?: infer Opts) => infer Return
+		? (input: Input, opts?: Opts) => Promise<WithWasAborted<Awaited<Return>>>
+		: T[key] extends Record<string, unknown>
+			? AddWasAborted<T[key]>
+			: T[key];
+};
+
+type MyClient = AddWasAborted<AddValidationError<CreateTRPCProxyClient<AppRouter>>>;
+
 export const isTrpcClientError = (error: unknown): error is TRPCClientError<AppRouter> =>
 	error instanceof TRPCClientError;
 
 const logger = loggerLink({ enabled: () => isDevelopment });
 const devtools = devtoolsLink({ enabled: isDevelopment });
-
-export const trpc = (fetch: FetchFunc, headers?: Record<string, string>) =>
-	createTRPCProxyClient<AppRouter>({
-		links: [logger, devtools, httpBatchLink({ url: '/trpc', fetch, headers })],
-		transformer
-	});
 
 let trpcWsClient: CreateTRPCProxyClient<AppRouter> | null = null;
 export const trpcWs = () => {
@@ -55,80 +78,108 @@ export const trpcWs = () => {
 	return trpcWsClient;
 };
 
-type HandledRequestSuccess<Data> = { success: true; data: Data; error: null; wasAborted: false };
-type HandledRequestFail = { success: false; error: ApiError; data: null; wasAborted: false };
-type HandledRequestAborted = { success: false; error: null; data: null; wasAborted: true };
+const TRPC_OPS = ['subscribe', 'query', 'mutate'];
+const createRecursiveTrpcProxy = (handler: (path: string[]) => unknown, path: string[] = []) =>
+	new Proxy(
+		{},
+		{
+			get(_, property) {
+				const currentPath = [...path, property as string];
 
-type HandledRequest<Data, Abortable extends boolean> = Abortable extends true
-	? HandledRequestSuccess<Data> | HandledRequestFail | HandledRequestAborted
-	: HandledRequestSuccess<Data> | HandledRequestFail;
+				if (TRPC_OPS.includes(property as string)) {
+					return handler(currentPath);
+				}
 
-export const handleTRPCErrors = async <
-	T,
-	O,
-	D,
-	Abortable extends O extends { signal: AbortSignal } ? true : false
->(
-	procedure: (input: T, opts?: O) => Promise<D>,
-	input: T,
-	opts?: O
-): Promise<HandledRequest<D, Abortable>> => {
-	try {
-		return { success: true, data: await procedure(input, opts), error: null, wasAborted: false };
-	} catch (error) {
-		if (isTrpcClientError(error) && error.cause?.name === 'ObservableAbortError') {
-			return { success: false, error: null, data: null, wasAborted: true } as HandledRequest<
-				D,
-				Abortable
-			>;
+				return createRecursiveTrpcProxy(handler, currentPath);
+			}
 		}
-		if (!(isTrpcClientError(error) && isApiError(error.data))) {
-			return { success: false, error: InternalServerError(), data: null, wasAborted: false };
-		}
+	);
 
-		return { success: false, error: error.data, data: null, wasAborted: false };
+const getPropertyFromPath = <T>(obj: Record<string, unknown>, path: string[]) => {
+	let property = obj;
+
+	for (const item of path) {
+		property = property[item as keyof typeof property] as Record<string, unknown>;
 	}
+
+	return property as T;
+};
+
+export const trpc = (fetch: FetchFunc, headers?: Record<string, string>) => {
+	const client = createTRPCProxyClient<AppRouter>({
+		links: [logger, devtools, httpBatchLink({ url: '/trpc', fetch, headers })],
+		transformer
+	});
+
+	const proxy = createRecursiveTrpcProxy((path) => {
+		return async (input?: unknown, opts?: ProcedureOptions) => {
+			const trpcProcedure = <(input?: unknown, opts?: ProcedureOptions) => Promise<unknown>>(
+				getPropertyFromPath(client, path)
+			);
+
+			try {
+				return { data: await trpcProcedure(input, opts), wasAborted: false };
+			} catch (error) {
+				if (isTrpcClientError(error)) {
+					if (error.cause?.name === 'ObservableAbortError') {
+						return { wasAborted: true };
+					}
+
+					if (isApiError(error.shape)) {
+						return { error: error.shape };
+					}
+				}
+
+				throw error;
+			}
+		};
+	});
+
+	return proxy as MyClient;
 };
 
 let refetchPromise: Promise<ApiError | undefined> | null = null;
-export const handleAuthedTRPCErrors = async <
-	T,
-	O extends { signal?: AbortSignal },
-	D,
-	Abortable extends O extends { signal: AbortSignal } ? true : false
->(
-	procedure: (input: T, opts?: O) => Promise<D>,
-	input: T,
-	opts?: O
-): Promise<HandledRequest<D, Abortable>> => {
-	if (browser) {
-		const tokensData = getTokensDataCookies();
+export const trpcAuthed = (fetch: FetchFunc) => {
+	const client = trpc(fetch);
 
-		if (!isLoggedIn(tokensData)) {
-			await goto('/login');
-			throw Error('Not authorized');
-		}
+	const proxy = createRecursiveTrpcProxy((path) => {
+		return async (input?: unknown, opts?: ProcedureOptions) => {
+			if (browser) {
+				const tokensData = getTokensDataCookies();
 
-		if (!hasValidAccessToken(tokensData)) {
-			let error: ApiError | undefined;
-			if (refetchPromise) {
-				error = await refetchPromise;
-			} else {
-				refetchPromise = refresh();
-				error = await refetchPromise;
+				if (!isLoggedIn(tokensData)) {
+					await goto('/login');
+					throw Error('Not authorized');
+				}
+
+				if (!hasValidAccessToken(tokensData)) {
+					let error: ApiError | undefined;
+					if (refetchPromise) {
+						error = await refetchPromise;
+					} else {
+						refetchPromise = refresh();
+						error = await refetchPromise;
+					}
+					refetchPromise = null;
+
+					if (error) {
+						goto('/login');
+						throw error;
+					}
+				}
 			}
-			refetchPromise = null;
 
-			if (error) {
-				goto('/login');
-				throw error;
+			if (opts?.signal?.aborted) {
+				return { wasAborted: true };
 			}
-		}
-	}
 
-	if (opts?.signal?.aborted) {
-		return { data: null, error: null, wasAborted: true } as HandledRequest<D, Abortable>;
-	}
+			const trpcProcedure = <(input?: unknown, opts?: ProcedureOptions) => Promise<unknown>>(
+				getPropertyFromPath(client, path)
+			);
 
-	return handleTRPCErrors(procedure, input, opts);
+			return await trpcProcedure(input, opts);
+		};
+	});
+
+	return proxy as MyClient;
 };

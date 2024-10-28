@@ -1,6 +1,6 @@
 import { TRPCError, initTRPC } from '@trpc/server';
 import { transformer } from '../helpers/trpc';
-import { AuthServiceTRPC } from './services';
+import { AuthService } from '../services/AuthService';
 import type { CreateFastifyContextOptions } from '@trpc/server/adapters/fastify';
 import cookie from 'cookie';
 import type { CreateWSSContextFnOptions } from '@trpc/server/adapters/ws';
@@ -9,6 +9,9 @@ import { fromUnixTime } from 'date-fns';
 import { ZodError } from 'zod';
 import { isApiError } from '../types';
 import { isDevelopment } from '../helpers/environment';
+import { isApiResponse } from '../types/Control';
+import { ValidationError } from '../errors/ValidationError';
+import { InternalServerError } from '../errors';
 
 const REFRESH_TOKEN_COOKIE_NAME = 'refreshToken';
 
@@ -71,19 +74,40 @@ export const {
   procedure: publicProcedure,
   middleware
 } = initTRPC.context<typeof createContext>().create({
-  transformer,
+  transformer: {
+    input: transformer.input,
+    output: {
+      serialize: (a) => {
+        if (isApiResponse(a)) {
+          if (a.error) {
+            throw a.error;
+          }
+
+          return transformer.output.serialize(a.data);
+        }
+
+        throw new Error('Response from procedure is not of type ApiResponse.', a);
+      },
+      deserialize: transformer.output.deserialize
+    }
+  },
   errorFormatter: (err) => {
-    let data = {};
+    let error;
 
     if (isApiError(err.error.cause)) {
-      data = { ...err.error.cause };
+      error = err.error.cause;
     } else if (err.error.cause instanceof ZodError) {
-      data = { issues: [...err.error.cause.issues] };
-    } else if (err.error.cause instanceof Error) {
-      data = { ...err.error.cause };
+      error = ValidationError(err.error.cause);
+    } else {
+      console.error('Unknown error.', err);
+      error = InternalServerError();
     }
 
-    return { ...err.shape, data };
+    return {
+      message: error.message,
+      code: error.errorCode,
+      data: { ...error, code: err.shape.code }
+    };
   }
 });
 
@@ -96,7 +120,10 @@ export const authedProcedure = publicProcedure.use(async ({ ctx, next }) => {
     accessToken = `Bearer ${cookie.parse(req.headers.cookie).accessToken}`;
   }
 
-  const user = await AuthServiceTRPC.authorize(accessToken);
+  const { data: user, error } = await AuthService.authorize(accessToken);
+  if (error) {
+    throw error;
+  }
 
   return next({ ctx: { user } });
 });

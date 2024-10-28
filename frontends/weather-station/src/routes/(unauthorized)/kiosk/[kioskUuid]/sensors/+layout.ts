@@ -3,10 +3,15 @@ import { writable } from 'svelte/store';
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async ({ fetch, params }) => {
+	const { error, data } = await trpc(fetch).kiosk.getKioskData.query({
+		kioskUuid: params.kioskUuid
+	});
+	if (error) {
+		throw error;
+	}
+
 	return {
-		kioskDataStore: writable(
-			await trpc(fetch).kiosk.getKioskData.query({ kioskUuid: params.kioskUuid })
-		),
+		kioskDataStore: writable(data),
 		kioskUuid: params.kioskUuid
 	};
 };

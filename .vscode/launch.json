@@ -21,8 +21,7 @@
       "webRoot": "${workspaceFolder}/frontends/time-sheet",
       "pathMapping": {
         "@fs/": ""
-      },
-      "preLaunchTask": "npm: generate-indexes:watch - frontends/shared"
+      }
     },
     {
       "name": "Frontend:weather-station",
@@ -32,8 +31,7 @@
       "webRoot": "${workspaceFolder}/frontends/weather-station",
       "pathMapping": {
         "@fs/": ""
-      },
-      "preLaunchTask": "npm: generate-indexes:watch - frontends/shared"
+      }
     },
     {
       "name": "Backend",

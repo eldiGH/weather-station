@@ -1,4 +1,5 @@
 import { router, publicProcedure, authedProcedure } from '..';
+import { Err, Ok } from '../../helpers/control';
 import { addNewSensorDataListener } from '../../helpers/eventEmitter';
 import {
   getKioskDataInputSchema,
@@ -9,23 +10,30 @@ import {
   createKioskInputSchema
 } from '../../schemas';
 import type { SubscribeBME68xData } from '../../schemas/bme68x';
-import { KioskServiceTRPC } from '../services';
+import { KioskService } from '../../services/KioskService';
 import { observable } from '@trpc/server/observable';
 
 export const kioskRouter = router({
   createKiosk: authedProcedure
     .input(createKioskInputSchema)
-    .mutation(({ input, ctx }) => KioskServiceTRPC.createKiosk(input, ctx.user)),
+    .mutation(({ input, ctx }) => KioskService.createKiosk(input, ctx.user)),
 
-  getKioskData: publicProcedure
-    .input(getKioskDataInputSchema)
-    .output(getKioskDataOutputSchema)
-    .query(({ input }) => KioskServiceTRPC.getKioskData(input.kioskUuid)),
+  getKioskData: publicProcedure.input(getKioskDataInputSchema).query(async ({ input }) => {
+    const { data, error } = await KioskService.getKioskData(input.kioskUuid);
+    if (error) {
+      return Err(error);
+    }
+
+    return Ok(await getKioskDataOutputSchema.parseAsync(data));
+  }),
 
   subscribeKiosk: publicProcedure
     .input(subscribeKioskInputSchema)
     .subscription(async ({ input: { kioskUuid } }) => {
-      const kiosk = await KioskServiceTRPC.getKiosk(kioskUuid);
+      const { data: kiosk, error } = await KioskService.getKiosk(kioskUuid);
+      if (error) {
+        return Err(error);
+      }
 
       return observable<SubscribeBME68xData>((emit) => {
         const disposers: (() => void)[] = [];
@@ -49,11 +57,11 @@ export const kioskRouter = router({
 
   getForecastForKiosk: publicProcedure
     .input(getForecastForKioskInputSchema)
-    .query(({ input }) => KioskServiceTRPC.getKioskForecast(input.kioskUuid)),
+    .query(({ input }) => KioskService.getKioskForecast(input.kioskUuid)),
 
   getKioskSensorDetails: publicProcedure
     .input(getKioskSensorDetailsInputSchema)
     .query(({ input: { kioskUuid, sensorId, dateRangeQuery } }) =>
-      KioskServiceTRPC.getKioskSensorData(kioskUuid, sensorId, dateRangeQuery)
+      KioskService.getKioskSensorData(kioskUuid, sensorId, dateRangeQuery)
     )
 });

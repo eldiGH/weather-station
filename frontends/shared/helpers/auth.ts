@@ -1,7 +1,7 @@
 import * as cookie from 'cookie';
 import { fromUnixTime, isFuture, isValid, subMilliseconds } from 'date-fns';
 import { goto } from '$app/navigation';
-import { handleTRPCErrors, trpc } from '../api/trpc';
+import { trpc } from '../api/trpc';
 import type { LoginInput, RegisterInput } from 'backend/schemas';
 import type { ApiError } from 'backend/types';
 import { isDevelopment } from './environment';
@@ -28,7 +28,7 @@ const saveToken = (tokens: TokensData) => {
 };
 
 export const login = async (data: LoginInput) => {
-	const { data: accessToken, error } = await handleTRPCErrors(trpc(fetch).auth.login.mutate, data);
+	const { data: accessToken, error } = await trpc(fetch).auth.login.mutate(data);
 
 	if (error) {
 		return error;
@@ -39,7 +39,7 @@ export const login = async (data: LoginInput) => {
 };
 
 export const register = async (data: RegisterInput) => {
-	const { error, data: tokens } = await handleTRPCErrors(trpc(fetch).auth.register.mutate, data);
+	const { error, data: tokens } = await trpc(fetch).auth.register.mutate(data);
 
 	if (error) {
 		return error;
@@ -50,7 +50,7 @@ export const register = async (data: RegisterInput) => {
 };
 
 export const refresh = async (): Promise<ApiError | undefined> => {
-	const { error, data } = await handleTRPCErrors(trpc(fetch).auth.refresh.mutate, undefined);
+	const { error, data } = await trpc(fetch).auth.refresh.mutate();
 
 	if (error) {
 		return error;
@@ -60,7 +60,7 @@ export const refresh = async (): Promise<ApiError | undefined> => {
 };
 
 export const logout = async (): Promise<void> => {
-	handleTRPCErrors(trpc(fetch).auth.logout.mutate, undefined);
+	await trpc(fetch).auth.logout.mutate();
 
 	const unixTime = fromUnixTime(0);
 

@@ -1,9 +1,10 @@
-import type { ApiError } from '../types/ApiError';
+import { createError } from '../helpers/control';
 import { ApiErrorCode } from '../types/enums/ApiErrorCode';
 import { HttpStatus } from '../types/enums/HttpStatus';
 
-export const NotAuthorized = (): ApiError => ({
-  errorCode: ApiErrorCode.NOT_AUTHORIZED,
-  httpStatus: HttpStatus.UNAUTHORIZED,
-  message: `Not authorized`
-});
+export const NotAuthorized = () =>
+  createError({
+    errorCode: ApiErrorCode.NOT_AUTHORIZED,
+    httpStatus: HttpStatus.UNAUTHORIZED,
+    message: `Not authorized`
+  });

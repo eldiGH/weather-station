@@ -1,15 +1,19 @@
-import { handleAuthedTRPCErrors, trpc } from '@shared/ui/api';
+import { trpcAuthed } from '@shared/ui/api';
 import { CacheIdentifiers } from '$lib/constants/cache';
 import type { LayoutLoad } from './$types';
 import { writable } from 'svelte/store';
 import type { AddTimeSheetInput, EditTimeSheetInput } from 'backend/schemas';
 import { snackbar } from '@shared/ui/helpers';
-import { ApiErrorCode } from 'backend/types';
+import { ApiErrorCode, type ExtractResponseDataType } from 'backend/types';
 import type { AppRouterOutputs } from 'backend/trpc';
 import { addMonths, isSameMonth, subMonths } from 'date-fns';
 
-type TimeSheetEntry = AppRouterOutputs['timeSheet']['getTimeSheetForMonth'][number];
-type TimeSheetStats = AppRouterOutputs['timeSheet']['getTimeSheets'][number]['currentMonth'];
+type TimeSheetEntry = ExtractResponseDataType<
+	AppRouterOutputs['timeSheet']['getTimeSheetForMonth']
+>[number];
+type TimeSheetStats = ExtractResponseDataType<
+	AppRouterOutputs['timeSheet']['getTimeSheets']
+>[number]['currentMonth'];
 
 const getStatsOfTimeSheet = (entries: TimeSheetEntry[]) =>
 	entries
@@ -26,10 +30,7 @@ const getStatsOfTimeSheet = (entries: TimeSheetEntry[]) =>
 export const load: LayoutLoad = async ({ fetch, depends }) => {
 	depends(CacheIdentifiers.API_TIME_SHEETS_LIST);
 
-	const { data, error } = await handleAuthedTRPCErrors(
-		trpc(fetch).timeSheet.getTimeSheets.query,
-		undefined
-	);
+	const { data, error } = await trpcAuthed(fetch).timeSheet.getTimeSheets.query();
 
 	if (error) {
 		throw error;
@@ -41,12 +42,9 @@ export const load: LayoutLoad = async ({ fetch, depends }) => {
 		timeSheets: {
 			subscribe: timeSheets.subscribe,
 			delete: async (timeSheetId: string) => {
-				const { error } = await handleAuthedTRPCErrors(
-					trpc(fetch).timeSheet.deleteTimeSheet.mutate,
-					{
-						timeSheetId
-					}
-				);
+				const { error } = await trpcAuthed(fetch).timeSheet.deleteTimeSheet.mutate({
+					timeSheetId
+				});
 
 				if (error) {
 					snackbar.pushError();
@@ -58,10 +56,7 @@ export const load: LayoutLoad = async ({ fetch, depends }) => {
 				return true;
 			},
 			add: async (input: AddTimeSheetInput) => {
-				const { error, data } = await handleAuthedTRPCErrors(
-					trpc(fetch).timeSheet.createTimeSheet.mutate,
-					input
-				);
+				const { error, data } = await trpcAuthed(fetch).timeSheet.createTimeSheet.mutate(input);
 
 				if (error) {
 					snackbar.pushError();
@@ -79,10 +74,7 @@ export const load: LayoutLoad = async ({ fetch, depends }) => {
 				return true;
 			},
 			edit: async (input: EditTimeSheetInput) => {
-				const { error } = await handleAuthedTRPCErrors(
-					trpc(fetch).timeSheet.editTimeSheet.mutate,
-					input
-				);
+				const { error } = await trpcAuthed(fetch).timeSheet.editTimeSheet.mutate(input);
 
 				if (error) {
 					if (error.errorCode === ApiErrorCode.TIME_SHEET_NAME_ALREADY_USED) {

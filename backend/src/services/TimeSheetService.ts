@@ -27,6 +27,7 @@ import {
 import { format, getDaysInMonth, subDays } from 'date-fns';
 import { convertArrayToDict } from '../helpers';
 import { TimeSheetEntryAlreadyExists } from '../errors/TimeSheetEntryAlreadyExists';
+import { Err, Ok } from '../helpers/control';
 
 const timeSheetEntryOnConflictUpdateConfig = {
   target: [timeSheetEntry.date, timeSheetEntry.timeSheetId],
@@ -41,14 +42,14 @@ const validateTimeSheet = <T extends typeof timeSheet.$inferSelect>(
   user: UserModel
 ) => {
   if (!timeSheet) {
-    throw TimeSheetNotFound();
+    return Err(TimeSheetNotFound());
   }
 
   if (timeSheet.ownerId !== user.id) {
-    throw AccessDenied(`TimeSheet: ${timeSheet.id}`);
+    return Err(AccessDenied(`TimeSheet: ${timeSheet.id}`));
   }
 
-  return timeSheet;
+  return Ok(timeSheet);
 };
 
 const getAndValidateTimeSheet = async (timeSheetId: string, user: UserModel) =>
@@ -67,7 +68,7 @@ export const TimeSheetService = {
     ).at(0);
 
     if (existingTimeSheetWithSameNameForUser) {
-      throw TimeSheetNameAlreadyUsed(data.name);
+      return Err(TimeSheetNameAlreadyUsed(data.name));
     }
 
     const { id, name, defaultHours, defaultPricePerHour, createdAt } = (
@@ -77,11 +78,14 @@ export const TimeSheetService = {
         .returning()
     )[0];
 
-    return { id, name, defaultHours, defaultPricePerHour, createdAt };
+    return Ok({ id, name, defaultHours, defaultPricePerHour, createdAt });
   },
 
   editTimeSheet: async (data: EditTimeSheetInput, user: UserModel) => {
-    await getAndValidateTimeSheet(data.timeSheetId, user);
+    const { error } = await getAndValidateTimeSheet(data.timeSheetId, user);
+    if (error) {
+      return Err(error);
+    }
 
     const existingTimeSheetWithSameNameForUser = (
       await db
@@ -97,7 +101,7 @@ export const TimeSheetService = {
     ).at(0);
 
     if (existingTimeSheetWithSameNameForUser) {
-      throw TimeSheetNameAlreadyUsed(data.name);
+      return Err(TimeSheetNameAlreadyUsed(data.name));
     }
 
     await db
@@ -108,6 +112,8 @@ export const TimeSheetService = {
         defaultHours: data.defaultHours
       })
       .where(eq(timeSheet.id, data.timeSheetId));
+
+    return Ok();
   },
 
   getTimeSheetForMonth: async (data: GetTimeSheetForMonthInput, user: UserModel) => {
@@ -130,9 +136,12 @@ export const TimeSheetService = {
       }
     });
 
-    const { entries } = validateTimeSheet(timeSheet, user);
+    const { data: validatedTimeSheet, error } = validateTimeSheet(timeSheet, user);
+    if (error) {
+      return Err(error);
+    }
 
-    return entries;
+    return Ok(validatedTimeSheet.entries);
   },
 
   getTimeSheetsForUser: async (user: UserModel) => {
@@ -201,54 +210,74 @@ export const TimeSheetService = {
       .leftJoin(lastMonthEntriesQuery, eq(lastMonthEntriesQuery.timeSheetId, timeSheet.id))
       .where(eq(timeSheet.ownerId, user.id));
 
-    return data.map((d) => ({
-      id: d.time_sheet.id,
-      name: d.time_sheet.name,
-      createdAt: d.time_sheet.createdAt,
-      defaultHours: d.time_sheet.defaultHours,
-      defaultPricePerHour: d.time_sheet.defaultPricePerHour,
-      currentMonth: {
-        count: d.currentMonthEntries?.count ?? 0,
-        totalPrice: parseFloat(d.currentMonthEntries?.totalPrice ?? '0'),
-        hours: parseFloat(d.currentMonthEntries?.hours ?? '0')
-      },
-      lastMonth: {
-        count: d.lastMonthEntries?.count ?? 0,
-        totalPrice: parseFloat(d.lastMonthEntries?.totalPrice ?? '0'),
-        hours: parseFloat(d.lastMonthEntries?.hours ?? '0')
-      }
-    }));
+    return Ok(
+      data.map((d) => ({
+        id: d.time_sheet.id,
+        name: d.time_sheet.name,
+        createdAt: d.time_sheet.createdAt,
+        defaultHours: d.time_sheet.defaultHours,
+        defaultPricePerHour: d.time_sheet.defaultPricePerHour,
+        currentMonth: {
+          count: d.currentMonthEntries?.count ?? 0,
+          totalPrice: parseFloat(d.currentMonthEntries?.totalPrice ?? '0'),
+          hours: parseFloat(d.currentMonthEntries?.hours ?? '0')
+        },
+        lastMonth: {
+          count: d.lastMonthEntries?.count ?? 0,
+          totalPrice: parseFloat(d.lastMonthEntries?.totalPrice ?? '0'),
+          hours: parseFloat(d.lastMonthEntries?.hours ?? '0')
+        }
+      }))
+    );
   },
 
   deleteTimeSheet: async (input: DeleteTimeSheetInput, user: UserModel) => {
-    await getAndValidateTimeSheet(input.timeSheetId, user);
+    const { error } = await getAndValidateTimeSheet(input.timeSheetId, user);
+    if (error) {
+      return Err(error);
+    }
 
     await db.transaction(async (tx) => {
       await tx.delete(timeSheetEntry).where(eq(timeSheetEntry.timeSheetId, input.timeSheetId));
       await tx.delete(timeSheet).where(eq(timeSheet.id, input.timeSheetId));
     });
+
+    return Ok();
   },
 
   setTimeSheetEntry: async (input: SetTimeSheetEntryInput, user: UserModel) => {
-    await getAndValidateTimeSheet(input.timeSheetId, user);
+    const { error } = await getAndValidateTimeSheet(input.timeSheetId, user);
+    if (error) {
+      return Err(error);
+    }
 
     await db
       .insert(timeSheetEntry)
       .values(input)
       .onConflictDoUpdate(timeSheetEntryOnConflictUpdateConfig);
+
+    return Ok();
   },
 
   setTimeSheetEntryBulk: async (input: SetTimeSheetEntryBulkInput, user: UserModel) => {
-    await getAndValidateTimeSheet(input.timeSheetId, user);
+    const { error } = await getAndValidateTimeSheet(input.timeSheetId, user);
+    if (error) {
+      return Err(error);
+    }
 
     await db
       .insert(timeSheetEntry)
       .values(input.entries.map((entry) => ({ ...entry, timeSheetId: input.timeSheetId })))
       .onConflictDoUpdate(timeSheetEntryOnConflictUpdateConfig);
+
+    return Ok();
   },
 
   setTimeSheetEntryForMonth: async (input: SetTimeSheetEntryForMonthInput, user: UserModel) => {
-    await getAndValidateTimeSheet(input.timeSheetId, user);
+    const { error } = await getAndValidateTimeSheet(input.timeSheetId, user);
+    if (error) {
+      return Err(error);
+    }
 
     const formattedDate = formatToStringDate(input.date);
 
@@ -275,7 +304,7 @@ export const TimeSheetService = {
             eq(timeSheetEntry.timeSheetId, input.timeSheetId)
           )
         );
-      return;
+      return Ok();
     }
 
     const entriesDict = convertArrayToDict(sortedEntries, 'date');
@@ -307,10 +336,15 @@ export const TimeSheetService = {
         .values(sortedEntries)
         .onConflictDoUpdate(timeSheetEntryOnConflictUpdateConfig);
     });
+
+    return Ok();
   },
 
   deleteTimeSheetEntry: async (input: DeleteTimeSheetEntryInput, user: UserModel) => {
-    await getAndValidateTimeSheet(input.timeSheetId, user);
+    const { error } = await getAndValidateTimeSheet(input.timeSheetId, user);
+    if (error) {
+      return Err(error);
+    }
 
     const { rowCount } = await db
       .delete(timeSheetEntry)
@@ -319,12 +353,17 @@ export const TimeSheetService = {
       );
 
     if (rowCount === 0) {
-      throw TimeSheetEntryNotFound();
+      return Err(TimeSheetEntryNotFound());
     }
+
+    return Ok();
   },
 
   deleteTimeSheetEntryBulk: async (input: DeleteTimeSheetEntryBulkInput, user: UserModel) => {
-    await getAndValidateTimeSheet(input.timeSheetId, user);
+    const { error } = await getAndValidateTimeSheet(input.timeSheetId, user);
+    if (error) {
+      return Err(error);
+    }
 
     await db
       .delete(timeSheetEntry)
@@ -334,13 +373,18 @@ export const TimeSheetService = {
           inArray(timeSheetEntry.date, input.dates)
         )
       );
+
+    return Ok();
   },
 
   getTimeSheetEntriesWithCursor: async (
     input: GetTimeSheetEntriesWithCursorInput,
     user: UserModel
   ) => {
-    await getAndValidateTimeSheet(input.timeSheetId, user);
+    const { error } = await getAndValidateTimeSheet(input.timeSheetId, user);
+    if (error) {
+      return Err(error);
+    }
 
     const cursor = input.cursor ? formatToStringDate(input.cursor) : undefined;
 
@@ -365,29 +409,37 @@ export const TimeSheetService = {
     const lastEntry = entries[limit - 2]?.date;
     const nextCursor = lastEntry ? formatToStringDate(subDays(lastEntry, 1)) : undefined;
 
-    return {
+    return Ok({
       entries: entries
         .values()
         .take(limit - 1)
         .toArray(),
       nextCursor
-    };
+    });
   },
 
   addTimeSheetEntry: async (input: SetTimeSheetEntryInput, user: UserModel) => {
-    await getAndValidateTimeSheet(input.timeSheetId, user);
+    const { error } = await getAndValidateTimeSheet(input.timeSheetId, user);
+    if (error) {
+      return Err(error);
+    }
 
     const { rowCount } = await db.insert(timeSheetEntry).values(input).onConflictDoNothing();
 
     if (rowCount === 0) {
-      throw TimeSheetEntryAlreadyExists();
+      return Err(TimeSheetEntryAlreadyExists());
     }
+
+    return Ok();
   },
 
   editTimeSheetEntry: async (input: SetTimeSheetEntryInput, user: UserModel) => {
     const { timeSheetId, date, ...valuesToUpdate } = input;
 
-    await getAndValidateTimeSheet(timeSheetId, user);
+    const { error } = await getAndValidateTimeSheet(timeSheetId, user);
+    if (error) {
+      return Err(error);
+    }
 
     const { rowCount } = await db
       .update(timeSheetEntry)
@@ -395,7 +447,9 @@ export const TimeSheetService = {
       .where(and(eq(timeSheetEntry.timeSheetId, timeSheetId), eq(timeSheetEntry.date, date)));
 
     if (rowCount === 0) {
-      throw TimeSheetEntryNotFound();
+      return Err(TimeSheetEntryNotFound());
     }
+
+    return Ok();
   }
 };

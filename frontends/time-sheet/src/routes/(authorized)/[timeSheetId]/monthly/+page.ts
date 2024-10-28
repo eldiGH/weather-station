@@ -1,4 +1,4 @@
-import { handleAuthedTRPCErrors, trpc } from '@shared/ui/api';
+import { trpcAuthed } from '@shared/ui/api';
 import type { PageLoad } from './$types';
 import { get } from 'svelte/store';
 import { writable } from 'svelte/store';
@@ -7,9 +7,12 @@ import { convertArrayToDict, formatToStringDate, shallowEqual } from 'backend/he
 import { snackbar } from '@shared/ui/helpers';
 import type { AppRouterOutputs } from 'backend/trpc';
 import { derived } from 'svelte/store';
+import type { ExtractResponseDataType } from 'backend/types';
 
-type TimeSheetEntry = AppRouterOutputs['timeSheet']['getTimeSheetForMonth'][number];
-type TimeSheet = AppRouterOutputs['timeSheet']['getTimeSheets'][number];
+type TimeSheetEntry = ExtractResponseDataType<
+	AppRouterOutputs['timeSheet']['getTimeSheetForMonth']
+>[number];
+type TimeSheet = ExtractResponseDataType<AppRouterOutputs['timeSheet']['getTimeSheets']>[number];
 
 const getInitialEntries = (entries: TimeSheetEntry[], date: Date, timeSheet: TimeSheet) => {
 	const initialMonthlyEntries: TimeSheetEntry[] = [];
@@ -48,14 +51,10 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
 
 	const currentDate = new Date();
 
-	const { data, error } = await handleAuthedTRPCErrors(
-		trpc(fetch).timeSheet.getTimeSheetForMonth.query,
-		{
-			timeSheetId: params.timeSheetId,
-			date: currentDate
-		}
-	);
-
+	const { data, error } = await trpcAuthed(fetch).timeSheet.getTimeSheetForMonth.query({
+		timeSheetId: params.timeSheetId,
+		date: currentDate
+	});
 	if (error) {
 		throw error;
 	}
@@ -103,14 +102,11 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
 
 				const timeSheetDate = get(selectedMonth);
 
-				const { error } = await handleAuthedTRPCErrors(
-					trpc(fetch).timeSheet.setTimeSheetEntryForMonth.mutate,
-					{
-						timeSheetId: timeSheet.id,
-						date: get(selectedMonth),
-						entries: filteredEntries
-					}
-				);
+				const { error } = await trpcAuthed(fetch).timeSheet.setTimeSheetEntryForMonth.mutate({
+					timeSheetId: timeSheet.id,
+					date: get(selectedMonth),
+					entries: filteredEntries
+				});
 
 				if (error) {
 					snackbar.pushError('Coś poszło nie tak, spróbuj ponownie później');
@@ -125,13 +121,10 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
 			changeMonth: async (relativeMonths: number) => {
 				const newDate = addMonths(get(selectedMonth), relativeMonths);
 
-				const { data, error } = await handleAuthedTRPCErrors(
-					trpc(fetch).timeSheet.getTimeSheetForMonth.query,
-					{
-						timeSheetId: params.timeSheetId,
-						date: newDate
-					}
-				);
+				const { data, error } = await trpcAuthed(fetch).timeSheet.getTimeSheetForMonth.query({
+					timeSheetId: params.timeSheetId,
+					date: newDate
+				});
 
 				if (error) {
 					snackbar.pushError();

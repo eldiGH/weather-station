@@ -1,9 +1,10 @@
-import type { ApiError } from '../types/ApiError';
+import { createError } from '../helpers/control';
 import { ApiErrorCode } from '../types/enums/ApiErrorCode';
 import { HttpStatus } from '../types/enums/HttpStatus';
 
-export const SensorDataNotFound = (): ApiError => ({
-  errorCode: ApiErrorCode.SENSOR_NAME_ALREADY_USED,
-  httpStatus: HttpStatus.BAD_REQUEST,
-  message: `Requested sensor data not found.`
-});
+export const SensorDataNotFound = () =>
+  createError({
+    errorCode: ApiErrorCode.SENSOR_DATA_NOT_FOUND,
+    httpStatus: HttpStatus.BAD_REQUEST,
+    message: `Requested sensor data not found.`
+  });
