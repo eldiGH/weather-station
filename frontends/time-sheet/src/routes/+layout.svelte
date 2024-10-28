@@ -10,8 +10,12 @@
 	import { onNavigate } from '$app/navigation';
 
 	onNavigate((navigation) => {
+		if (!document.startViewTransition) {
+			return;
+		}
+
 		return new Promise((res) => {
-			document.startViewTransition?.(async () => {
+			document.startViewTransition(async () => {
 				const from = navigation.from?.url.pathname;
 				const to = navigation.to?.url.pathname;
 

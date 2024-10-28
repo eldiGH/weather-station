@@ -30,11 +30,7 @@ const getStatsOfTimeSheet = (entries: TimeSheetEntry[]) =>
 export const load: LayoutLoad = async ({ fetch, depends }) => {
 	depends(CacheIdentifiers.API_TIME_SHEETS_LIST);
 
-	const { data, error } = await trpcAuthed(fetch).timeSheet.getTimeSheets.query();
-
-	if (error) {
-		throw error;
-	}
+	const { data } = await trpcAuthed(fetch).timeSheet.getTimeSheets.query();
 
 	const timeSheets = writable(data);
 
