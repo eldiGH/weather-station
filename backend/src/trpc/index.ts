@@ -12,6 +12,7 @@ import { isDevelopment } from '../helpers/environment';
 import { isApiResponse } from '../types/Control';
 import { ValidationError } from '../errors/ValidationError';
 import { InternalServerError } from '../errors';
+import { ProcedureNotFound } from '../errors/ProcedureNotFound';
 
 const REFRESH_TOKEN_COOKIE_NAME = 'refreshToken';
 
@@ -91,22 +92,31 @@ export const {
       deserialize: transformer.output.deserialize
     }
   },
-  errorFormatter: (err) => {
+  errorFormatter: (opts) => {
+    const originalError = opts.error;
     let error;
 
-    if (isApiError(err.error.cause)) {
-      error = err.error.cause;
-    } else if (err.error.cause instanceof ZodError) {
-      error = ValidationError(err.error.cause);
+    if (isApiError(originalError.cause)) {
+      error = originalError.cause;
+    } else if (originalError.cause instanceof ZodError) {
+      error = ValidationError(originalError.cause);
     } else {
-      console.error('Unknown error.', err);
-      error = InternalServerError();
+      if (originalError instanceof TRPCError) {
+        if (originalError.code === 'NOT_FOUND') {
+          error = ProcedureNotFound();
+        }
+      }
+
+      if (!error) {
+        console.error('Unknown error.', opts);
+        error = InternalServerError();
+      }
     }
 
     return {
       message: error.message,
       code: error.errorCode,
-      data: { ...error, code: err.shape.code }
+      data: { ...error, code: opts.shape.code }
     };
   }
 });

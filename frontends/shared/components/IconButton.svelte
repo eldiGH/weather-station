@@ -44,7 +44,7 @@
 
 <div
 	transition:a
-	class={`icon-button`}
+	class="icon-button"
 	class:on-top={onTop}
 	class:floating
 	class:round={!square}

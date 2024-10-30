@@ -9,9 +9,6 @@ import { isDevelopment } from './environment';
 import type { SerializeOptions } from 'cookie';
 import type { TokensData } from '../types/Token';
 
-const NOT_AUTHED_ROUTES = ['/login', '/register', '/kiosk'];
-const AUTHED_NOT_ALLOWED_ROUTES = ['/login', '/register'];
-
 const parseCookieOptions = (
 	setCookieString: string
 ): [string, string, SerializeOptions & { path: string }] => {
@@ -115,31 +112,40 @@ const checkIfAuthed = async (event: RequestEvent): Promise<boolean> => {
 	return true;
 };
 
-export const handle: Handle = async ({ event, resolve }) => {
-	if (event.url.pathname.startsWith('/trpc')) {
-		const pathname = event.url.pathname.replace(/\/trpc(?:ws)?\//, '');
-		const url = `${urljoin(config.serverAddress, pathname)}${event.url.search}`;
-
-		return event.fetch(url, {
-			body: event.request.body,
-			headers: event.request.headers,
-			method: event.request.method
-		});
-	}
-
-	const isAuthed = await checkIfAuthed(event);
-	const isOnAuthedRoute = !NOT_AUTHED_ROUTES.some((notAuthedRoute) =>
-		event.url.pathname.startsWith(notAuthedRoute)
-	);
-	const isOnNotAllowedAuthedRoute = AUTHED_NOT_ALLOWED_ROUTES.some((authedNotAllowedRoute) =>
-		event.url.pathname.startsWith(authedNotAllowedRoute)
-	);
-
-	if (isAuthed && isOnNotAllowedAuthedRoute) {
-		throw redirect(HttpStatus.FOUND, '/');
-	} else if (!isAuthed && isOnAuthedRoute) {
-		throw redirect(HttpStatus.FOUND, '/login');
-	}
-
-	return resolve(event);
+type HandleFactoryOptions = {
+	isOnAuthedRoute?: (pathname: string) => boolean;
+	isOnPermittedForAuthedRoute?: (pathname: string) => boolean;
 };
+
+export const handleFactory =
+	(opts?: HandleFactoryOptions): Handle =>
+	async ({ event, resolve }) => {
+		if (event.url.pathname.startsWith('/trpc')) {
+			const pathname = event.url.pathname.replace(/\/trpc(?:ws)?\//, '');
+			const url = `${urljoin(config.serverAddress, pathname)}${event.url.search}`;
+
+			return event.fetch(url, {
+				body: event.request.body,
+				headers: event.request.headers,
+				method: event.request.method
+			});
+		}
+
+		const isOnAuthedRoute = opts?.isOnAuthedRoute?.(event.url.pathname) ?? false;
+		const isOnNotAllowedForAuthedRoute =
+			opts?.isOnPermittedForAuthedRoute?.(event.url.pathname) ?? false;
+
+		if (isOnNotAllowedForAuthedRoute || isOnAuthedRoute) {
+			const isAuthed = await checkIfAuthed(event);
+
+			if (isAuthed && isOnNotAllowedForAuthedRoute) {
+				throw redirect(HttpStatus.FOUND, '/');
+			}
+
+			if (!isAuthed && isOnAuthedRoute) {
+				throw redirect(HttpStatus.FOUND, '/login');
+			}
+		}
+
+		return resolve(event);
+	};

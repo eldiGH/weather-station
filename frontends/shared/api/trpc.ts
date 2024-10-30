@@ -15,7 +15,7 @@ import { getTokensDataCookies, hasValidAccessToken, isLoggedIn, refresh } from '
 import { goto } from '$app/navigation';
 import { isApiError, type ApiError } from 'backend/types';
 import { type ValidationErrorType } from 'backend/errors';
-import type { ApiResponseFail } from '../../../backend/src/types/Control';
+import type { ApiResponse, ApiResponseFail } from '../../../backend/src/types/Control';
 import type { ProcedureOptions } from '@trpc/server';
 
 export type FetchFunc = (
@@ -59,7 +59,30 @@ export const isTrpcClientError = (error: unknown): error is TRPCClientError<AppR
 const logger = loggerLink({ enabled: () => isDevelopment });
 const devtools = devtoolsLink({ enabled: isDevelopment });
 
-let trpcWsClient: CreateTRPCProxyClient<AppRouter> | null = null;
+type TransformWsSubscription<T> = {
+	[key in keyof T]: key extends 'subscribe'
+		? T[key] extends (input: infer Input, opts: infer Opts) => infer Return
+			? (
+					input: Input,
+					opts: Omit<Opts, 'onData'> & {
+						onData: Opts extends Record<any, any>
+							? Opts['onData'] extends ((value: infer Value) => void) | undefined
+								? Value extends ApiResponse<infer DataType>
+									? ((value: DataType) => void) | undefined
+									: ((value: Value) => void) | undefined
+								: 1
+							: 2;
+					}
+				) => Return
+			: never
+		: T[key] extends Record<string, unknown>
+			? TransformWsSubscription<T[key]>
+			: T[key];
+};
+
+type MyWsClient = TransformWsSubscription<CreateTRPCProxyClient<AppRouter>>;
+
+let trpcWsClient: MyWsClient | null = null;
 export const trpcWs = () => {
 	if (!browser) {
 		throw new Error(
@@ -75,7 +98,7 @@ export const trpcWs = () => {
 		trpcWsClient = createTRPCProxyClient({
 			links: [logger, devtools, wsLink<AppRouter>({ client: wsClient })],
 			transformer
-		}) as unknown as CreateTRPCProxyClient<AppRouter>;
+		}) as unknown as MyWsClient;
 	}
 
 	return trpcWsClient;

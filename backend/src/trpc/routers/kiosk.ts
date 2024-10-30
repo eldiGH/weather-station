@@ -12,6 +12,7 @@ import {
 import type { SubscribeBME68xData } from '../../schemas/bme68x';
 import { KioskService } from '../../services/KioskService';
 import { observable } from '@trpc/server/observable';
+import type { ApiResponseSuccess } from '../../types';
 
 export const kioskRouter = router({
   createKiosk: authedProcedure
@@ -35,13 +36,13 @@ export const kioskRouter = router({
         return Err(error);
       }
 
-      return observable<SubscribeBME68xData>((emit) => {
+      return observable<ApiResponseSuccess<SubscribeBME68xData>>((emit) => {
         const disposers: (() => void)[] = [];
 
         for (const sensor of kiosk.sensors) {
           const sensorId = sensor.id;
           const dispose = addNewSensorDataListener(sensorId, (data) => {
-            emit.next({ ...data, sensorId });
+            emit.next(Ok({ ...data, sensorId }));
           });
 
           disposers.push(dispose);
