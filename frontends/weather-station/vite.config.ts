@@ -18,6 +18,9 @@ export default defineConfig({
 				rewrite: (path) => path.replace('/trpcws', ''),
 				ws: true
 			}
+		},
+		fs: {
+			allow: ["../shared"]
 		}
 	},
 	css: {

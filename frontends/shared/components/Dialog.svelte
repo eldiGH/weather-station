@@ -148,10 +148,6 @@
 			font-weight: bold;
 		}
 
-		.text-content {
-			padding: 1rem;
-		}
-
 		.footer {
 			border-top: 1px solid black;
 			background-color: white;
