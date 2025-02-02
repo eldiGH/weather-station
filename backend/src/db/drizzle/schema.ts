@@ -12,8 +12,10 @@ import {
   customType,
   type PgCustomColumnBuilder,
   date,
-  uuid
+  uuid,
+  jsonb
 } from 'drizzle-orm/pg-core';
+import type { SensorTemplateData } from '../../types/SensorTemplateData';
 
 const myTimestamp = customType<{ data: Date; driverData: string }>({
   dataType() {
@@ -39,8 +41,6 @@ const defaultNow = <T extends string>(
     enumValues: undefined;
   }>
 ) => column.default(sql`(now() at time zone 'utc')`);
-
-export const sensorTypeEnumSchema = pgEnum('sensor_type', ['BME68X']);
 
 export const userSchema = pgTable('user', {
   id: serial('id').primaryKey(),
@@ -103,15 +103,29 @@ export const refreshTokenRelations = relations(refreshTokenSchema, ({ one }) => 
   user: one(userSchema, { fields: [refreshTokenSchema.userId], references: [userSchema.id] })
 }));
 
+export const sensorTemplateSchema = pgTable('sensor_template', {
+  id: serial('id').primaryKey().unique().notNull(),
+
+  data: jsonb().$type<SensorTemplateData>(),
+
+  name: text('name').notNull()
+});
+
+export const sensorTemplateRelations = relations(sensorTemplateSchema, ({ many }) => ({
+  sensors: many(sensorSchema)
+}));
+
 export const sensorSchema = pgTable('sensor', {
   id: serial('id').primaryKey().unique().notNull(),
 
   name: text('name').notNull(),
-  type: sensorTypeEnumSchema('type').notNull(),
   secret: char('secret', { length: 36 }).notNull().unique(),
 
   createdAt: defaultNow(myTimestamp('created_at')).notNull(),
 
+  sensorTemplateId: integer('sensor_template_id')
+    .references(() => sensorTemplateSchema.id)
+    .notNull(),
   ownerId: integer('owner_id')
     .references(() => userSchema.id)
     .notNull()
@@ -123,30 +137,31 @@ export const sensorRelations = relations(sensorSchema, ({ one, many }) => ({
     references: [userSchema.id]
   }),
 
-  bme68xData: many(bme68xDataSchema),
+  sensorTemplate: one(sensorTemplateSchema, {
+    fields: [sensorSchema.sensorTemplateId],
+    references: [sensorTemplateSchema.id]
+  }),
+
+  data: many(sensorDataSchema),
 
   kiosksToSensors: many(kioskToSensorSchema)
 }));
 
-export const bme68xDataSchema = pgTable('bme68x_data', {
+export const sensorDataSchema = pgTable('sensor_data', {
   id: serial('id').primaryKey().unique().notNull(),
-
-  temperature: doublePrecision('temperature').notNull(),
-  humidity: doublePrecision('humidity').notNull(),
-  pressure: doublePrecision('pressure').notNull(),
-  gasResistance: doublePrecision('gas_resistance').notNull(),
-  batteryPercentage: doublePrecision('battery_percentage').notNull(),
 
   sensorId: integer('sensor_id')
     .references(() => sensorSchema.id)
     .notNull(),
 
+  data: jsonb().$type<(string | number | boolean | null)[]>().notNull(),
+
   createdAt: defaultNow(myTimestamp('created_at')).notNull()
 });
 
-export const bme68xSensorDataRelations = relations(bme68xDataSchema, ({ one }) => ({
+export const sensorDataRelations = relations(sensorDataSchema, ({ one }) => ({
   sensor: one(sensorSchema, {
-    fields: [bme68xDataSchema.sensorId],
+    fields: [sensorDataSchema.sensorId],
     references: [sensorSchema.id]
   })
 }));
