@@ -12,15 +12,17 @@ export const server = fastify({ logger: isDevelopment, maxParamLength: 5000 });
 
 server.register(cors);
 
-server.register(ws);
-server.register(fastifyTRPCPlugin, {
+const trpcConfig = {
   prefix: '/trpc',
   useWSS: true,
   trpcOptions: {
     router: appRouter,
     createContext
   } satisfies FastifyTRPCPluginOptions<AppRouter>['trpcOptions']
-});
+};
+
+server.register(ws);
+server.register(fastifyTRPCPlugin, trpcConfig);
 
 if (isDevelopment) {
   server.register(
@@ -44,3 +46,5 @@ if (isDevelopment) {
     }
   });
 }
+
+server.register(fastifyTRPCPlugin, { ...trpcConfig, prefix: '/:urlParam/trpc' });
