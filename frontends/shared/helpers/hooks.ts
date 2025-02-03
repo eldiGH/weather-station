@@ -70,6 +70,9 @@ const refreshTokens = async (
 		const jsonResp = await resp.json();
 
 		if (jsonResp.error) {
+			cookies.delete('accessToken', { path: '/' });
+			cookies.delete('refreshToken', { path: '/' });
+			cookies.delete('refreshTokenExpiry', { path: '/' });
 			throw jsonResp.error;
 		}
 

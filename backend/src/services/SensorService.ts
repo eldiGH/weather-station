@@ -77,6 +77,7 @@ export const SensorService = {
 
     const parsedSensorData = [];
 
+    // TODO: remove that if when notNull will be added to schema
     if (!sensor.sensorTemplate) {
       return Err(SensorTemplateNotFound(sensor.sensorTemplateId ?? -1));
     }

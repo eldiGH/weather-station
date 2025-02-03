@@ -14,8 +14,7 @@ import {
   uuid,
   jsonb
 } from 'drizzle-orm/pg-core';
-import type { CreateSensorTemplateInput, PostSensorDataInput, SensorDataItem } from '../../schemas';
-import type { SensorData } from '../../types/SensorData';
+import type { CreateSensorTemplateInput, SensorDataItem } from '../../schemas';
 
 const myTimestamp = customType<{ data: Date; driverData: string }>({
   dataType() {
