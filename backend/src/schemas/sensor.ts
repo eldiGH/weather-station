@@ -33,3 +33,9 @@ export const createSensorTemplateFormSchema = createSensorTemplateSchema.extend(
     .max(MAX_SENSORS_FIELDS)
 });
 export type CreateSensorTemplateFormInput = z.infer<typeof createSensorTemplateFormSchema>;
+
+export const sensorDataItemSchema = z.union([z.string(), z.number(), z.boolean(), z.null()]);
+export type SensorDataItem = z.infer<typeof sensorDataItemSchema>;
+
+export const postSensorDataSchema = z.record(sensorDataItemSchema);
+export type PostSensorDataInput = z.infer<typeof postSensorDataSchema>;

@@ -1,7 +1,32 @@
-import { router, authedProcedure } from '..';
+import { router, authedProcedure, publicProcedure } from '..';
 import { Err, Ok } from '../../helpers/control';
-import { createSensorInputSchema, createSensorTemplateSchema } from '../../schemas/sensor';
+import {
+  createSensorInputSchema,
+  createSensorTemplateSchema,
+  postSensorDataSchema
+} from '../../schemas/sensor';
 import { SensorService } from '../../services/SensorService';
+import uuid from 'uuid';
+
+const SENSOR_SECRET_HEADER = 'Sensor-Secret';
+
+const sensorSecretProcedure = publicProcedure
+  .input(postSensorDataSchema)
+  .use(({ input, ctx, next }) => {
+    const sensorSecretHeader = ctx.req.headers[SENSOR_SECRET_HEADER];
+
+    if (typeof sensorSecretHeader === 'string' && uuid.validate(sensorSecretHeader)) {
+      return next({ ctx: { sensorSecret: sensorSecretHeader } });
+    }
+
+    const sensorSecretBody = input['sensorSecret'];
+
+    if (typeof sensorSecretBody !== 'string' || !uuid.validate(sensorSecretBody)) {
+      throw new Error('No sensor secret provided.');
+    }
+
+    return next({ ctx: { sensorSecret: sensorSecretBody } });
+  });
 
 export const sensorRouter = router({
   createSensor: authedProcedure
@@ -17,7 +42,11 @@ export const sensorRouter = router({
       }
 
       return Ok(data);
-    })
+    }),
+
+  postSensorData: sensorSecretProcedure.mutation(({ input, ctx }) =>
+    SensorService.postSensorData(ctx.sensorSecret, input)
+  )
 
   // getSensorData: authedProcedure.input(getSensorDataInputSchema).query(async ({ input }) => {
   //   const { data, error } = await SensorService.getBME68XData(input.sensorId, input.dateRangeQuery);
@@ -27,8 +56,4 @@ export const sensorRouter = router({
 
   //   return Ok(await getSensorDataOutputSchema.parseAsync(data));
   // }),
-
-  // postBME68xData: publicProcedure
-  //   .input(postBME68XDataInputSchema)
-  //   .mutation(({ input }) => SensorService.addBME68XDataEntry(input)),
 });

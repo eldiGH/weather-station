@@ -14,7 +14,8 @@ import {
   uuid,
   jsonb
 } from 'drizzle-orm/pg-core';
-import type { CreateSensorTemplateInput } from '../../schemas';
+import type { CreateSensorTemplateInput, PostSensorDataInput, SensorDataItem } from '../../schemas';
+import type { SensorData } from '../../types/SensorData';
 
 const myTimestamp = customType<{ data: Date; driverData: string }>({
   dataType() {
@@ -158,7 +159,7 @@ export const sensorDataSchema = pgTable('sensor_data', {
     .references(() => sensorSchema.id)
     .notNull(),
 
-  data: jsonb().$type<(string | number | boolean | null)[]>().notNull(),
+  data: jsonb().$type<SensorDataItem[]>().notNull(),
 
   createdAt: defaultNow(myTimestamp('created_at')).notNull()
 });
