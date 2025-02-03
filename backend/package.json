@@ -13,9 +13,10 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "tsx src/index.ts",
-    "lint": "prettier --check . && eslint .",
+    "lint": "eslint .",
     "check": "tsc",
-    "format": "prettier --write .",
+    "format": "prettier .",
+    "format:fix": "prettier --write .",
     "build": "esbuild src/index.ts --bundle --outfile=dist/index.js --platform=node --target=node16 --packages=external --format=esm",
     "create-migration": "drizzle-kit generate",
     "db:migrate": "npx drizzle-kit migrate",
@@ -25,6 +26,7 @@
     "db:recreate": "pnpm db:drop && pnpm db:push && pnpm db:seed"
   },
   "devDependencies": {
+    "@eslint/js": "^9.19.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
     "@types/jsonwebtoken": "^9.0.8",

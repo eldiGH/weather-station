@@ -4,7 +4,6 @@ import {
   char,
   doublePrecision,
   integer,
-  pgEnum,
   pgTable,
   primaryKey,
   serial,
@@ -15,7 +14,7 @@ import {
   uuid,
   jsonb
 } from 'drizzle-orm/pg-core';
-import type { SensorTemplateData } from '../../types/SensorTemplateData';
+import type { CreateSensorTemplateInput } from '../../schemas';
 
 const myTimestamp = customType<{ data: Date; driverData: string }>({
   dataType() {
@@ -105,14 +104,21 @@ export const refreshTokenRelations = relations(refreshTokenSchema, ({ one }) => 
 
 export const sensorTemplateSchema = pgTable('sensor_template', {
   id: serial('id').primaryKey().unique().notNull(),
+  name: text('name').notNull(),
 
-  data: jsonb().$type<SensorTemplateData>().notNull(),
+  fields: jsonb().$type<CreateSensorTemplateInput['fields']>().notNull(),
 
-  name: text('name').notNull()
+  authorId: integer('author_id')
+    .references(() => userSchema.id)
+    .notNull(),
+  isPublic: boolean('is_public').default(false).notNull(),
+
+  createdAt: defaultNow(myTimestamp('created_at')).notNull()
 });
 
-export const sensorTemplateRelations = relations(sensorTemplateSchema, ({ many }) => ({
-  sensors: many(sensorSchema)
+export const sensorTemplateRelations = relations(sensorTemplateSchema, ({ many, one }) => ({
+  sensors: many(sensorSchema),
+  author: one(userSchema, { fields: [sensorTemplateSchema.authorId], references: [userSchema.id] })
 }));
 
 export const sensorSchema = pgTable('sensor', {

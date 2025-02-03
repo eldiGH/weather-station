@@ -1,31 +1,24 @@
 import { z } from 'zod';
-import { getBME68xDataInputSchema } from './bme68x';
-import { timestampRangeQuerySchema } from './helpers';
-import { createInsertSchema } from 'drizzle-zod';
-import { sensorSchema } from '../db/drizzle/schema';
-
-export const insertSensorSchema = createInsertSchema(sensorSchema);
-
-export const getSensorOutputSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  type: insertSensorSchema.shape.type
-});
-
-export const getSensorWithCurrentDataSchema = getSensorOutputSchema.extend({
-  currentData: getBME68xDataInputSchema.optional()
-});
-
-export const getSensorDataInputSchema = z.object({
-  sensorId: z.number().min(1),
-  dateRangeQuery: timestampRangeQuerySchema
-});
-
-export const getSensorDataOutputSchema = z.array(getBME68xDataInputSchema);
 
 export const createSensorInputSchema = z.object({
   name: z.string().min(3),
-  type: insertSensorSchema.shape.type
+  templateId: z.number().int().nonnegative()
+});
+export type CreateSensorInput = z.infer<typeof createSensorInputSchema>;
+
+export const createSensorTemplateSchema = z.object({
+  name: z.string().min(3).max(30),
+  fields: z
+    .array(
+      z.object({
+        propertyName: z.string().min(1).max(100),
+        isOptional: z.boolean(),
+        type: z.enum(['text', 'integer', 'doublePrecision', 'boolean']),
+        isPublic: z.boolean().optional()
+      })
+    )
+    .min(1)
+    .max(50)
 });
 
-export type CreateSensorInput = z.infer<typeof createSensorInputSchema>;
+export type CreateSensorTemplateInput = z.infer<typeof createSensorTemplateSchema>;
