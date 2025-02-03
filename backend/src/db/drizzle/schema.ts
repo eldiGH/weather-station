@@ -106,7 +106,7 @@ export const refreshTokenRelations = relations(refreshTokenSchema, ({ one }) => 
 export const sensorTemplateSchema = pgTable('sensor_template', {
   id: serial('id').primaryKey().unique().notNull(),
 
-  data: jsonb().$type<SensorTemplateData>(),
+  data: jsonb().$type<SensorTemplateData>().notNull(),
 
   name: text('name').notNull()
 });
