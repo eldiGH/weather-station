@@ -1,5 +1,5 @@
 {
-  "id": "2af5d58c-34e7-4151-b08c-2c21ec610520",
+  "id": "189387fe-06d3-47da-a63d-62f4695c47de",
   "prevId": "88b19b9e-41cf-47f7-bc88-aecea79309de",
   "version": "7",
   "dialect": "postgresql",
@@ -315,7 +315,7 @@
           "name": "sensor_template_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "owner_id": {
           "name": "owner_id",
@@ -384,21 +384,55 @@
           "primaryKey": true,
           "notNull": true
         },
-        "data": {
-          "name": "data",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": true
-        },
         "name": {
           "name": "name",
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "fields": {
+          "name": "fields",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "author_id": {
+          "name": "author_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_public": {
+          "name": "is_public",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp without time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "(now() at time zone 'utc')"
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "sensor_template_author_id_user_id_fk": {
+          "name": "sensor_template_author_id_user_id_fk",
+          "tableFrom": "sensor_template",
+          "tableTo": "user",
+          "columnsFrom": [
+            "author_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "sensor_template_id_unique": {
