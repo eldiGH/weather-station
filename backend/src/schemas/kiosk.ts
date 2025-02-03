@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { getSensorWithCurrentDataSchema } from './sensor';
 import { timestampRangeQuerySchema } from './helpers';
 
 export const getKioskDataInputSchema = z.object({
@@ -10,9 +9,9 @@ export const subscribeKioskInputSchema = z.object({
   kioskUuid: z.string().uuid()
 });
 
-export const getKioskDataOutputSchema = z.object({
-  sensors: z.array(getSensorWithCurrentDataSchema)
-});
+// export const getKioskDataOutputSchema = z.object({
+//   sensors: z.array(getSensorWithCurrentDataSchema)
+// });
 
 export const getForecastForKioskInputSchema = z.object({
   kioskUuid: z.string().uuid()

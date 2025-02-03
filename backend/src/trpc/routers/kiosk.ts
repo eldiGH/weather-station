@@ -3,7 +3,6 @@ import { Err, Ok } from '../../helpers/control';
 import { addNewSensorDataListener } from '../../helpers/eventEmitter';
 import {
   getKioskDataInputSchema,
-  getKioskDataOutputSchema,
   getForecastForKioskInputSchema,
   getKioskSensorDetailsInputSchema,
   subscribeKioskInputSchema,

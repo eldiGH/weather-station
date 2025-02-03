@@ -16,7 +16,6 @@ import {
   getKioskWithBme68xSensors,
   getKioskWithSensors
 } from '../repositories/kiosk';
-import { getSensorsWithIds } from '../repositories/sensor';
 import type { userSchema } from '../db/drizzle/schema';
 import { Err, Ok } from '../helpers/control';
 

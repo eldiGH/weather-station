@@ -73,7 +73,7 @@ const refreshTokens = async (
 			throw jsonResp.error;
 		}
 
-		const tokens: TokensData = parse(jsonResp.data);
+		const tokens: TokensData = parse(jsonResp.result.data);
 
 		const cookieOptions = {
 			sameSite: 'lax',

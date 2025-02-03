@@ -126,6 +126,9 @@
 	.dialog {
 		background-color: white;
 		width: min(100%, 600px);
+		max-height: 90vh;
+		display: flex;
+		flex-direction: column;
 
 		&-container {
 			z-index: v.$loaderZIndex - 1;
@@ -159,6 +162,8 @@
 
 		.content {
 			padding: 1rem;
+			flex-grow: 1;
+			overflow-y: auto;
 		}
 
 		&.danger {

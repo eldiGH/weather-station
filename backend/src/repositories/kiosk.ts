@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm';
 import { db } from '../db/drizzle';
 import type { QueryDates, QueryLimit, QueryOrder } from '../types/QueryOptions';
 import { getSQLForDates, getSQLForOrder } from '../helpers/db';
-import { kioskSchema, kioskToSensorSchema, bme68xDataSchema } from '../db/drizzle/schema';
+import { kioskSchema, kioskToSensorSchema } from '../db/drizzle/schema';
 
 export const getKioskByUuid = async (kioskUuid: string) =>
   (await db.select().from(kioskSchema).where(eq(kioskSchema.kioskUuid, kioskUuid))).shift();
