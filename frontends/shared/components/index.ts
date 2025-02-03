@@ -1,5 +1,6 @@
 export { default as Button } from './Button.svelte';
 export { default as Card } from './Card.svelte';
+export { default as Checkbox } from './Checkbox.svelte';
 export { default as ConfirmationDialog } from './ConfirmationDialog.svelte';
 export { default as Container } from './Container.svelte';
 export { default as Dialog } from './Dialog.svelte';

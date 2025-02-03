@@ -130,6 +130,10 @@
 		display: flex;
 		flex-direction: column;
 
+		@media only screen and (max-width: 600px) {
+			max-height: 100vh;
+		}
+
 		&-container {
 			z-index: v.$loaderZIndex - 1;
 			position: fixed;
