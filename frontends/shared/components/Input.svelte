@@ -1,11 +1,11 @@
-<script lang="ts">
+<script lang="ts" generics="T extends boolean = false">
 	import type { HTMLInputAttributes } from 'svelte/elements';
 	import { v4 as uuid } from 'uuid';
 
 	interface Props extends HTMLInputAttributes {
 		id?: string;
 		label?: string;
-		value?: string | null;
+		value?: T extends true ? string | null : string;
 		error?: string | false;
 		required?: boolean;
 		centerText?: boolean;
@@ -13,15 +13,15 @@
 		inputRef?: HTMLInputElement;
 		touched?: boolean;
 		fullWidth?: boolean;
-		nullWhenEmpty?: boolean;
+		nullWhenEmpty?: T;
 	}
 
 	let {
 		id = uuid(),
-		nullWhenEmpty = false,
+		nullWhenEmpty = false as T,
 		error = '',
 		label = '',
-		value = $bindable(nullWhenEmpty ? null : ''),
+		value = $bindable(nullWhenEmpty ? null : '') as T extends true ? string | null : string,
 		required,
 		centerText,
 		short,
@@ -41,7 +41,8 @@
 			bind:value={
 				() => (value === null ? '' : value),
 				(v) => {
-					value = nullWhenEmpty && v.length === 0 ? null : v;
+					const newValue = nullWhenEmpty && v.length === 0 ? null : v;
+					value = newValue as T extends true ? string | null : string;
 				}
 			}
 			class:center-text={centerText}

@@ -5,6 +5,7 @@
 	import type { KeyboardEventHandler } from 'svelte/elements';
 	import { onDestroy, onMount } from 'svelte';
 	import type { SelectOption } from '../types/SelectOption';
+	import { on } from 'svelte/events';
 
 	interface Props {
 		value: T | null;
@@ -128,7 +129,12 @@
 	};
 
 	onMount(() => {
-		document.addEventListener('click', handleClickOutside);
+		const off = on(document, 'click', handleClickOutside);
+
+		return () => {
+			off();
+			console.log('off');
+		};
 	});
 
 	onDestroy(() => {

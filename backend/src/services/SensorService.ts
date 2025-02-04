@@ -13,7 +13,7 @@ import {
 } from '../db/drizzle/schema';
 import { Err, Ok } from '../helpers/control';
 import { db } from '../db/drizzle';
-import { eq } from 'drizzle-orm';
+import { eq, or, sql } from 'drizzle-orm';
 import { SensorTemplateNotFound } from '../errors/SensorTemplateNotFound';
 import { SecretIsNotValid } from '../errors/SecretIsNotValid';
 import { SensorDataFieldMissing } from '../errors/SensorDataFieldMissing';
@@ -129,5 +129,16 @@ export const SensorService = {
     });
 
     return Ok();
-  }
+  },
+
+  getSensorTemplates: async (user: typeof userSchema.$inferSelect) =>
+    Ok(
+      db
+        .select({ id: sensorTemplateSchema.id, name: sensorTemplateSchema.name })
+        .from(sensorTemplateSchema)
+        .where(
+          or(eq(sensorTemplateSchema.authorId, user.id), eq(sensorTemplateSchema.isPublic, true))
+        )
+        .orderBy(sql`CASE WHEN ${sensorTemplateSchema.authorId} = ${user.id} THEN 0 ELSE 1 END`)
+    )
 };

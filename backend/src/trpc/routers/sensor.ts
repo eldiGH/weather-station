@@ -48,18 +48,13 @@ export const sensorRouter = router({
 
   createSensorTemplate: authedProcedure
     .input(createSensorTemplateSchema)
-    .mutation(async ({ ctx, input }) => {
-      const { data, error } = await SensorService.createSensorTemplate(input, ctx.user);
-      if (error) {
-        return Err(error);
-      }
-
-      return Ok(data);
-    }),
+    .mutation(({ ctx, input }) => SensorService.createSensorTemplate(input, ctx.user)),
 
   postSensorData: sensorSecretProcedure.mutation(({ input, ctx }) =>
     SensorService.postSensorData(ctx.sensorSecret, input)
-  )
+  ),
+
+  getSensorTemplates: authedProcedure.query(({ ctx }) => SensorService.getSensorTemplates(ctx.user))
 
   // getSensorData: authedProcedure.input(getSensorDataInputSchema).query(async ({ input }) => {
   //   const { data, error } = await SensorService.getBME68XData(input.sensorId, input.dateRangeQuery);
