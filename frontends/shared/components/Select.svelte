@@ -140,7 +140,7 @@
 	<button class="select" onkeydown={handleSelectKeydown} onclick={toggle}>
 		<div>
 			{#if selectedOption}
-				<div>{selectedOption.label}</div>
+				<div class="select-selected-option">{selectedOption.label}</div>
 			{/if}
 			<div class="select-label" class:raised={!!selectedOption}>
 				{label}
@@ -248,6 +248,7 @@
 			top: 100%;
 			display: inline-flex;
 			flex-direction: column;
+			width: 100%;
 
 			z-index: v.$loaderZIndex - 5;
 
@@ -292,6 +293,14 @@
 					border-bottom: none;
 				}
 			}
+		}
+
+		&-selected-option {
+			overflow-x: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			width: 200px;
+			text-align: start;
 		}
 	}
 </style>

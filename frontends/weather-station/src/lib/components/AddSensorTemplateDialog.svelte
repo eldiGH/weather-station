@@ -22,7 +22,7 @@
 	const getEmptyProperty = (): CreateSensorTemplateFormInput['fields'][0] => ({
 		isOptional: false,
 		propertyName: '',
-		type: 'doublePrecision',
+		type: 'number',
 		label: null,
 		uuid: uuid()
 	});
@@ -61,8 +61,7 @@
 	};
 
 	const sensorFieldTypeOptions: SelectOption<SensorTemplateFieldType>[] = [
-		{ label: 'Liczba całkowita', value: 'integer' },
-		{ label: 'L. zmiennoprzecinkowa', value: 'doublePrecision' },
+		{ label: 'Liczba', value: 'number' },
 		{ label: 'Tekst', value: 'text' },
 		{ label: 'Boolean', value: 'boolean' }
 	];
@@ -106,7 +105,7 @@
 				<Input required label="Nazwa właściwości" bind:value={$values.fields[i].propertyName} />
 				<Select
 					required
-					defaultOption={sensorFieldTypeOptions[1]}
+					defaultOption={sensorFieldTypeOptions[0]}
 					options={sensorFieldTypeOptions}
 					bind:value={$values.fields[i].type}
 					label="Typ" />

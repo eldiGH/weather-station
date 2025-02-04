@@ -107,8 +107,7 @@ export const SensorService = {
             return Err(SensorDataFieldInvalidType(field.propertyName, field.type));
           }
           break;
-        case 'integer':
-        case 'doublePrecision':
+        case 'number':
           if (typeof value === 'string') {
             parsedValue = Number(value);
             if (Number.isNaN(parsedValue)) {
@@ -118,10 +117,6 @@ export const SensorService = {
             return Err(SensorDataFieldInvalidType(field.propertyName, field.type));
           } else {
             parsedValue = value;
-          }
-
-          if (field.type === 'integer') {
-            parsedValue = Math.round(parsedValue);
           }
       }
 
