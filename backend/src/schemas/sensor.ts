@@ -8,6 +8,14 @@ export const createSensorInputSchema = z.object({
 });
 export type CreateSensorInput = z.infer<typeof createSensorInputSchema>;
 
+export const sensorTemplateFieldTypeSchema = z.enum([
+  'text',
+  'integer',
+  'doublePrecision',
+  'boolean'
+]);
+export type SensorTemplateFieldType = z.infer<typeof sensorTemplateFieldTypeSchema>;
+
 export const sensorTemplateField = z.object({
   propertyName: z
     .string()
@@ -15,7 +23,7 @@ export const sensorTemplateField = z.object({
     .max(100)
     .refine((name) => name !== 'sensorSecret', { message: "Field name cannot be 'sensorSecret'" }),
   isOptional: z.boolean(),
-  type: z.enum(['text', 'integer', 'doublePrecision', 'boolean']),
+  type: sensorTemplateFieldTypeSchema,
   label: z.string().min(1).max(100).nullable()
 });
 

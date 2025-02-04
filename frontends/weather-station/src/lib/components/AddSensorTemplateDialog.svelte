@@ -3,11 +3,15 @@
 	import {
 		createSensorTemplateFormSchema,
 		MAX_SENSORS_FIELDS,
-		type CreateSensorTemplateFormInput
+		type CreateSensorTemplateFormInput,
+		type SensorTemplateFieldType
 	} from 'backend/schemas';
-	import { Button, Checkbox, IconButton, Input, FormDialog } from '@shared/ui/components';
+	import { Button, Checkbox, IconButton, Input, FormDialog, Select } from '@shared/ui/components';
 	import { slide, scale } from 'svelte/transition';
 	import { v4 as uuid } from 'uuid';
+	import type { SelectOption } from '@shared/ui/types';
+	import { snackbar } from '@shared/ui/helpers';
+	import { trpcAuthed } from '@shared/ui/api';
 
 	interface Props {
 		open?: () => void;
@@ -56,10 +60,36 @@
 		}));
 	};
 
+	const sensorFieldTypeOptions: SelectOption<SensorTemplateFieldType>[] = [
+		{ label: 'Liczba całkowita', value: 'integer' },
+		{ label: 'L. zmiennoprzecinkowa', value: 'doublePrecision' },
+		{ label: 'Tekst', value: 'text' },
+		{ label: 'Boolean', value: 'boolean' }
+	];
+
+	const submit = async (data: CreateSensorTemplateFormInput) => {
+		const { error } = await trpcAuthed(fetch).sensor.createSensorTemplate.mutate({
+			...data,
+			fields: data.fields.map(({ uuid, ...data }) => data)
+		});
+
+		if (error) {
+			snackbar.pushError(error.message);
+			return false;
+		}
+
+		return true;
+	};
+
 	$inspect($values);
 </script>
 
-<FormDialog {form} bind:open title="Dodaj szablon czujnika">
+<FormDialog
+	{form}
+	submitButtonLabel="Dodaj"
+	onSubmit={submit}
+	bind:open
+	title="Dodaj szablon czujnika">
 	<Input required label="Nazwa szablonu" bind:value={$values.name} />
 
 	<div class="property-group">
@@ -74,6 +104,12 @@
 					{/if}
 				</div>
 				<Input required label="Nazwa właściwości" bind:value={$values.fields[i].propertyName} />
+				<Select
+					required
+					defaultOption={sensorFieldTypeOptions[1]}
+					options={sensorFieldTypeOptions}
+					bind:value={$values.fields[i].type}
+					label="Typ" />
 				<Input label="Etykieta" bind:value={$values.fields[i].label} nullWhenEmpty />
 				<div class="property-group-checkbox">
 					<Checkbox bind:checked={$values.fields[i].isOptional}>Opcjonalna</Checkbox>

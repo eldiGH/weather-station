@@ -74,7 +74,7 @@
 		background-color: transparent !important;
 		border: none;
 		border-bottom: 1px solid var(--input-inactive-border);
-		padding: 0.5rem 0.5rem 0;
+		padding: 0.5rem 0.5rem 1px;
 		transition: border-color $animationOpts;
 		font-size: 1rem;
 		color: var(--input-text-color) !important;

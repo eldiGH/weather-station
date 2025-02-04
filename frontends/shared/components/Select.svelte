@@ -1,26 +1,31 @@
-<script lang="ts">
+<script lang="ts" generics="T = unknown">
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import Icon from './Icon.svelte';
-	import type { KeyboardEventHandler, MouseEventHandler } from 'svelte/elements';
+	import type { KeyboardEventHandler } from 'svelte/elements';
 	import { onDestroy, onMount } from 'svelte';
+	import type { SelectOption } from '../types/SelectOption';
 
 	interface Props {
-		value: Option | null;
-		notSelectedLabel?: string;
-		options: Option[];
+		value: T | null;
+		defaultOption?: SelectOption<T>;
+		options: SelectOption<T>[];
+		required?: boolean;
+		label?: string;
 	}
 
-	interface Option {
-		label: string;
-		value: unknown;
-	}
-
-	let { value = $bindable(null), notSelectedLabel, options }: Props = $props();
+	let {
+		defaultOption,
+		value = $bindable(defaultOption ? defaultOption.value : null),
+		options,
+		label,
+		required
+	}: Props = $props();
 
 	let isOpen = $state(true);
 	let ulRef = $state<HTMLUListElement | null>(null);
 	let containerRef = $state<HTMLDivElement | null>(null);
+	let selectedOption = $state(defaultOption ? defaultOption : null);
 
 	const toggle = () => {
 		if (!isOpen) {
@@ -40,8 +45,9 @@
 		}
 	};
 
-	const selectOption = (option: Option) => {
-		value = option;
+	const selectOption = (option: SelectOption<T>) => {
+		selectedOption = option;
+		value = option.value;
 		close();
 	};
 
@@ -132,12 +138,16 @@
 
 <div bind:this={containerRef} class="select-container" class:open={isOpen}>
 	<button class="select" onkeydown={handleSelectKeydown} onclick={toggle}>
-		<div class="select-selected-option">
-			{#if value !== null}
-				{value.label}
-			{:else}
-				<span class="select-no-option">{notSelectedLabel ?? 'Wybierz'}</span>
+		<div>
+			{#if selectedOption}
+				<div>{selectedOption.label}</div>
 			{/if}
+			<div class="select-label" class:raised={!!selectedOption}>
+				{label}
+				{#if required}
+					<span>*</span>
+				{/if}
+			</div>
 		</div>
 		<div class="select-dropdown-icon">
 			<Icon icon="expand_circle_down" />
@@ -164,11 +174,14 @@
 </div>
 
 <style lang="scss">
+	@use '../styles/vars.scss' as v;
+
+	$animationOpts: 150ms ease-in-out;
+
 	.select {
-		width: 10rem;
-		padding: 0.3rem 0.5rem;
-		border: 2px solid var(--primary-color);
-		border-radius: 5px;
+		padding: 0.5rem 0.5rem 1px;
+		border: none;
+		border-bottom: 1px solid var(--input-inactive-border);
 		background-color: white;
 		color: black;
 		cursor: pointer;
@@ -178,23 +191,56 @@
 		user-select: none;
 		font-size: 1rem;
 
+		transition: border-color $animationOpts;
+
+		.open & {
+			border-color: var(--input-border);
+		}
+
+		.select-label {
+			color: var(--input-inactive-border);
+
+			transform-origin: left;
+
+			position: absolute;
+			left: 0.4rem;
+			bottom: 1px;
+			pointer-events: none;
+			user-select: none;
+
+			transition: color $animationOpts;
+
+			> span {
+				color: var(--input-required-asterisk);
+			}
+
+			&.raised {
+				transform: translateY(-1.1rem) scale(0.75);
+			}
+
+			.open & {
+				color: var(--input-border);
+			}
+		}
+
 		&-dropdown-icon {
 			display: inline-flex;
-			transition: transform 200ms ease-in-out;
+			transition:
+				transform $animationOpts,
+				color $animationOpts;
 		}
 
 		.open &-dropdown-icon {
 			transform: rotate(180deg);
+			color: var(--input-border);
 		}
 
 		&-container {
 			display: inline-flex;
 			flex-direction: column;
 			position: relative;
-		}
-
-		&-no-option {
-			opacity: 0.2;
+			width: 100%;
+			max-width: 220px;
 		}
 
 		&-dropdown {
@@ -202,22 +248,8 @@
 			top: 100%;
 			display: inline-flex;
 			flex-direction: column;
-			width: 10rem;
 
-			&::before {
-				content: '';
-
-				align-self: flex-end;
-				margin-right: 0.5rem;
-				margin-top: 0.1rem;
-
-				width: 0;
-
-				border-left: 10px solid transparent;
-				border-right: 10px solid transparent;
-
-				border-bottom: 15px solid white;
-			}
+			z-index: v.$loaderZIndex - 5;
 
 			ul {
 				background-color: white;
@@ -228,11 +260,13 @@
 				border-radius: 5px;
 
 				margin: 0;
+				margin-top: 5px;
 				padding: 0;
 
 				list-style: none;
 
 				max-height: 10rem;
+				box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 
 				li > div {
 					padding: 0.5rem 1rem;
@@ -252,6 +286,10 @@
 						outline: 3px solid var(--primary-color);
 						outline-offset: -3px;
 					}
+				}
+
+				li:last-child > div {
+					border-bottom: none;
 				}
 			}
 		}
