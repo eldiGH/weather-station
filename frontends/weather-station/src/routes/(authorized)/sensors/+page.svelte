@@ -1,7 +1,7 @@
 <script lang="ts">
 	import AddSensorDialog from '$lib/components/AddSensorDialog.svelte';
 	import AddSensorTemplateDialog from '$lib/components/AddSensorTemplateDialog.svelte';
-	import { Button, Checkbox } from '@shared/ui/components';
+	import { Button } from '@shared/ui/components';
 
 	let openAddSensorDialog: undefined | (() => void) = $state();
 	let openAddSensorTemplateDialog: undefined | (() => void) = $state();
@@ -12,5 +12,3 @@
 
 <AddSensorDialog bind:open={openAddSensorDialog} />
 <AddSensorTemplateDialog bind:open={openAddSensorTemplateDialog} />
-
-<Checkbox />

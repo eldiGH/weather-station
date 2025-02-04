@@ -16,7 +16,7 @@ export const sensorTemplateField = z.object({
     .refine((name) => name !== 'sensorSecret', { message: "Field name cannot be 'sensorSecret'" }),
   isOptional: z.boolean(),
   type: z.enum(['text', 'integer', 'doublePrecision', 'boolean']),
-  label: z.string().min(1).max(100).optional()
+  label: z.string().min(1).max(100).nullable()
 });
 
 export const createSensorTemplateSchema = z.object({

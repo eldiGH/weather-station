@@ -129,9 +129,12 @@
 		max-height: 90vh;
 		display: flex;
 		flex-direction: column;
+		border-radius: 5px;
+		overflow: hidden;
 
 		@media only screen and (max-width: 600px) {
 			max-height: 100vh;
+			border-radius: 0;
 		}
 
 		&-container {

@@ -26,7 +26,7 @@
 	style="
 	font-variation-settings:'FILL' {filled ? 1 : 0}, 
 	'wght' {weight}, 
-	'GRAD' ${grade}, 
+	'GRAD' {grade}, 
 	'opsz' {opticalSize};
 	font-size: {size ? size + 'px' : 'inherit'}"
 	class={`material-symbols-${variant}`}>{icon}</i>

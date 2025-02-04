@@ -5,9 +5,8 @@
 		MAX_SENSORS_FIELDS,
 		type CreateSensorTemplateFormInput
 	} from 'backend/schemas';
-	import FormDialog from '../../../../shared/components/FormDialog.svelte';
-	import { Button, IconButton, Input } from '@shared/ui/components';
-	import { fade, slide } from 'svelte/transition';
+	import { Button, Checkbox, IconButton, Input, FormDialog } from '@shared/ui/components';
+	import { slide, scale } from 'svelte/transition';
 	import { v4 as uuid } from 'uuid';
 
 	interface Props {
@@ -19,8 +18,8 @@
 	const getEmptyProperty = (): CreateSensorTemplateFormInput['fields'][0] => ({
 		isOptional: false,
 		propertyName: '',
-		type: 'integer',
-		label: '',
+		type: 'doublePrecision',
+		label: null,
 		uuid: uuid()
 	});
 
@@ -69,13 +68,16 @@
 				<div class="property-header">
 					Właściwość&nbsp;{i + 1}
 					{#if $values.fields.length > 1}
-						<div transition:fade>
+						<div transition:scale>
 							<IconButton icon="delete" onclick={() => removeProperty(field.uuid)} />
 						</div>
 					{/if}
 				</div>
 				<Input required label="Nazwa właściwości" bind:value={$values.fields[i].propertyName} />
-				<Input label="Etykieta" bind:value={$values.fields[i].label} />
+				<Input label="Etykieta" bind:value={$values.fields[i].label} nullWhenEmpty />
+				<div class="property-group-checkbox">
+					<Checkbox bind:checked={$values.fields[i].isOptional}>Opcjonalna</Checkbox>
+				</div>
 			</div>
 		{/each}
 	</div>
@@ -89,7 +91,7 @@
 		&-container {
 			display: flex;
 			flex-direction: column;
-			align-items: center;
+			align-items: baseline;
 			gap: 1rem;
 			border: 1px dashed gray;
 			border-radius: 5px;
@@ -109,6 +111,10 @@
 		&-group {
 			display: flex;
 			flex-direction: column;
+
+			&-checkbox {
+				padding-top: 1rem;
+			}
 		}
 	}
 </style>

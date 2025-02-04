@@ -1,5 +1,16 @@
+<script lang="ts">
+	import type { Snippet } from 'svelte';
+
+	interface Props {
+		checked?: boolean;
+		children?: Snippet;
+	}
+
+	let { checked = $bindable(false), children }: Props = $props();
+</script>
+
 <label class="checkbox-container">
-	<input type="checkbox" />
+	<input bind:checked type="checkbox" />
 	<div class="checkbox">
 		<svg fill="none" viewBox="0 0 24 24" class="checkbox-icon">
 			<path
@@ -8,32 +19,53 @@
 				stroke-width="3"
 				stroke="currentColor"
 				d="M4 12L10 18L20 6"
-				class="check-path"></path>
+				class="checkbox-tick-path"></path>
 		</svg>
 	</div>
+	{#if children}
+		<div>
+			{@render children()}
+		</div>
+	{/if}
 </label>
 
 <style lang="scss">
+	$animationParams: 0.15s ease-in-out;
+
 	.checkbox-container {
-		display: inline-block;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
 		cursor: pointer;
 		user-select: none;
 
 		& input {
-			display: none;
+			position: absolute;
+			width: 0;
+			height: 0;
+			padding: 0;
+			margin: 0;
+			overflow: hidden;
+			clip: rect(0, 0, 0, 0);
+			border: 0;
+
+			&:focus + .checkbox {
+				outline: 3px solid var(--primary-color);
+				outline-offset: -1px;
+			}
 		}
 
 		.checkbox {
 			position: relative;
-			width: 2rem;
-			height: 2rem;
-			border-radius: 8px;
+			width: 1.5rem;
+			height: 1.5rem;
+			border-radius: 4px;
 			transition:
-				transform 0.2s ease,
-				color 0.2s ease;
+				transform $animationParams,
+				background-color $animationParams;
 
 			background-color: white;
-			border: 2px solid #93c5fd;
+			border: 2px solid var(--primary-color);
 
 			&-icon {
 				position: absolute;
@@ -41,45 +73,42 @@
 				margin: auto;
 				width: 80%;
 				height: 80%;
-				color: white;
-				transform: scale(0);
-				transition: all 0.2s ease;
+				color: var(--primary-color);
+				transform: scale(1);
+				transition:
+					stroke-dashoffset $animationParams,
+					color $animationParams;
+			}
+
+			&-tick-path {
+				stroke-dasharray: 25;
+				stroke-dashoffset: 25;
+				transition: stroke-dashoffset $animationParams;
 			}
 		}
-	}
 
-	.check-path {
-		stroke-dasharray: 40;
-		stroke-dashoffset: 40;
-		transition: stroke-dashoffset 0.3s ease 0.1s;
-	}
+		input:checked + .checkbox {
+			background: var(--primary-color);
+			border-color: var(--primary-color);
 
-	/* Checked State */
-	.ios-checkbox input:checked + .checkbox-wrapper .checkbox-bg {
-		background: var(--checkbox-color);
-		border-color: var(--checkbox-color);
-	}
+			& .checkbox-icon {
+				transform: scale(1);
+				color: white;
+			}
 
-	.ios-checkbox input:checked + .checkbox-wrapper .checkbox-icon {
-		transform: scale(1);
-	}
+			& .checkbox-tick-path {
+				stroke-dashoffset: 0;
+			}
+		}
 
-	.ios-checkbox input:checked + .checkbox-wrapper .check-path {
-		stroke-dashoffset: 0;
-	}
+		&:hover .checkbox {
+			transform: scale(1.1);
+		}
 
-	/* Hover Effects */
-	.ios-checkbox:hover .checkbox-wrapper {
-		transform: scale(1.05);
-	}
-
-	/* Active Animation */
-	.ios-checkbox:active .checkbox-wrapper {
-		transform: scale(0.95);
-	}
-
-	/* Focus Styles */
-	.ios-checkbox input:focus + .checkbox-wrapper .checkbox-bg {
-		box-shadow: 0 0 0 4px var(--checkbox-bg);
+		&:active .checkbox {
+			transform: scale(0.95);
+			outline: 3px solid var(--primary-color);
+			outline-offset: -1px;
+		}
 	}
 </style>

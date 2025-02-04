@@ -5,7 +5,7 @@
 	interface Props extends HTMLInputAttributes {
 		id?: string;
 		label?: string;
-		value?: string;
+		value?: string | null;
 		error?: string | false;
 		required?: boolean;
 		centerText?: boolean;
@@ -13,13 +13,15 @@
 		inputRef?: HTMLInputElement;
 		touched?: boolean;
 		fullWidth?: boolean;
+		nullWhenEmpty?: boolean;
 	}
 
 	let {
 		id = uuid(),
+		nullWhenEmpty = false,
 		error = '',
 		label = '',
-		value = $bindable(''),
+		value = $bindable(nullWhenEmpty ? null : ''),
 		required,
 		centerText,
 		short,
@@ -36,7 +38,12 @@
 			{...restProps}
 			{id}
 			class="input"
-			bind:value
+			bind:value={
+				() => (value === null ? '' : value),
+				(v) => {
+					value = nullWhenEmpty && v.length === 0 ? null : v;
+				}
+			}
 			class:center-text={centerText}
 			class:short
 			class:error

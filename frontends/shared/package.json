@@ -26,7 +26,9 @@
 		"http-proxy": "^1.18.1"
 	},
 	"devDependencies": {
+		"@eslint/js": "^9.19.0",
 		"@sveltejs/kit": "^2.16.1",
+		"@sveltejs/vite-plugin-svelte": "5.0.3",
 		"@trpc/client": "^10.45.2",
 		"@trpc/server": "^10.45.2",
 		"@types/http-proxy": "^1.17.15",

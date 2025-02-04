@@ -14,6 +14,7 @@ export { default as Loader } from './Loader.svelte';
 export { default as NavigationLoader } from './NavigationLoader.svelte';
 export { default as NumericInput } from './NumericInput.svelte';
 export { default as Ripple } from './Ripple.svelte';
+export { default as Select } from './Select.svelte';
 export { default as Snackbar } from './Snackbar.svelte';
 export { default as SnackbarProvider } from './SnackbarProvider.svelte';
 export { default as Spinner } from './Spinner.svelte';

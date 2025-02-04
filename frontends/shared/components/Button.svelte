@@ -48,9 +48,9 @@
 {#snippet buttonContent()}
 	<div class="content">
 		{#if icon}
-			<span>
+			<div>
 				<Icon {icon} />
-			</span>
+			</div>
 		{/if}
 		{@render children?.()}
 	</div>
@@ -181,7 +181,9 @@
 			display: flex;
 			align-items: center;
 
-			> span {
+			> div {
+				display: inline-flex;
+				align-items: center;
 				padding-right: 0.3rem;
 				font-size: 1.5rem;
 			}
