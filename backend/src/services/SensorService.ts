@@ -133,7 +133,7 @@ export const SensorService = {
 
   getSensorTemplates: async (user: typeof userSchema.$inferSelect) =>
     Ok(
-      db
+      await db
         .select({ id: sensorTemplateSchema.id, name: sensorTemplateSchema.name })
         .from(sensorTemplateSchema)
         .where(

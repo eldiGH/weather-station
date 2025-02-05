@@ -2,6 +2,14 @@
 	import AddSensorDialog from '$lib/components/AddSensorDialog.svelte';
 	import AddSensorTemplateDialog from '$lib/components/AddSensorTemplateDialog.svelte';
 	import { Button } from '@shared/ui/components';
+	import type { PageData } from './$types';
+
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
+	let { sensorTemplates } = $derived(data);
 
 	let openAddSensorDialog: undefined | (() => void) = $state();
 	let openAddSensorTemplateDialog: undefined | (() => void) = $state();
@@ -10,5 +18,5 @@
 <Button icon="add" onclick={openAddSensorDialog}>Test</Button>
 <Button icon="add" onclick={openAddSensorTemplateDialog}>Dodaj szablon czujnika</Button>
 
-<AddSensorDialog bind:open={openAddSensorDialog} />
+<AddSensorDialog bind:open={openAddSensorDialog} sensorTemplates={$sensorTemplates} />
 <AddSensorTemplateDialog bind:open={openAddSensorTemplateDialog} />

@@ -103,13 +103,17 @@ interface FormConfig<S extends Schema | undefined = undefined> {
 	shouldInitialBeValid?: boolean;
 }
 
+type Nullish<T> = {
+	[key in keyof T]: T[key] | null;
+};
+
 export const createForm = <
 	T extends MySchema extends Schema ? z.infer<MySchema> : Record<string, unknown>,
 	MySchema extends Schema | undefined = undefined,
 	InferredValues extends Record<string, unknown> = MySchema extends Schema ? z.infer<MySchema> : T,
 	R extends FormReturn<T, MySchema, InferredValues> = FormReturn<T, MySchema, InferredValues>
 >(
-	initialValues: T,
+	initialValues: Nullish<T>,
 	config?: FormConfig<MySchema>
 ): FormReturn<T, MySchema, InferredValues> => {
 	const { schema, shouldInitialBeValid }: FormConfig<MySchema> = {
