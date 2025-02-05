@@ -1,5 +1,4 @@
 import { router, authedProcedure, publicProcedure } from '..';
-import { Err, Ok } from '../../helpers/control';
 import {
   createSensorInputSchema,
   createSensorTemplateSchema,
@@ -13,17 +12,9 @@ const SENSOR_SECRET_HEADER = 'Sensor-Secret';
 const sensorSecretProcedure = publicProcedure
   .input(postSensorDataSchema)
   .use(({ input, ctx, next }) => {
-    if (
-      'params' in ctx.req &&
-      ctx.req.params &&
-      typeof ctx.req.params === 'object' &&
-      'urlParam' in ctx.req.params
-    ) {
-      const sensorSecretUrl = ctx.req.params.urlParam;
-
-      if (typeof sensorSecretUrl === 'string' && uuid.validate(sensorSecretUrl)) {
-        return next({ ctx: { sensorSecret: sensorSecretUrl } });
-      }
+    const sensorSecretUrl = ctx.urlParam;
+    if (sensorSecretUrl && uuid.validate(sensorSecretUrl)) {
+      return next({ ctx: { sensorSecret: sensorSecretUrl } });
     }
 
     const sensorSecretHeader = ctx.req.headers[SENSOR_SECRET_HEADER];

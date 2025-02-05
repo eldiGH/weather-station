@@ -59,6 +59,17 @@ export const createContext = (opts: CreateFastifyContextOptions | CreateWSSConte
   const deleteRefreshToken = () =>
     setCookie(REFRESH_TOKEN_COOKIE_NAME, '', { expires: fromUnixTime(0), path: '/' });
 
+  let urlParam: string | null = null;
+  if (
+    'params' in req &&
+    req.params &&
+    typeof req.params === 'object' &&
+    'urlParam' in req.params &&
+    typeof req.params.urlParam === 'string'
+  ) {
+    urlParam = req.params.urlParam;
+  }
+
   return {
     req,
     setCookie,
@@ -66,7 +77,8 @@ export const createContext = (opts: CreateFastifyContextOptions | CreateWSSConte
     getRefreshToken,
     setRefreshToken,
     deleteRefreshToken,
-    isHttp
+    isHttp,
+    urlParam
   };
 };
 
