@@ -1,11 +1,12 @@
 <script lang="ts" generics="T = unknown">
-	import { slide } from 'svelte/transition';
-	import { cubicOut } from 'svelte/easing';
 	import Icon from './Icon.svelte';
 	import type { KeyboardEventHandler } from 'svelte/elements';
-	import { onDestroy, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import type { SelectOption } from '../types/SelectOption';
 	import { on } from 'svelte/events';
+	import { portal } from '../actions/portal';
+	import { slide } from 'svelte/transition';
+	import { delayDestroy } from '../transitions/delayDestroy';
 
 	interface Props {
 		value: T | null;
@@ -23,26 +24,33 @@
 		required
 	}: Props = $props();
 
-	let isOpen = $state(true);
+	let isOpen = $state(false);
 	let ulRef = $state<HTMLUListElement | null>(null);
-	let containerRef = $state<HTMLDivElement | null>(null);
+	let selectRef = $state<HTMLDivElement | null>(null);
+	let dropdownRef = $state<HTMLDivElement | null>(null);
 	let selectedOption = $state(defaultOption ? defaultOption : null);
-
-	const toggle = () => {
-		if (!isOpen) {
-			open();
-		} else {
-			close();
-		}
-	};
 
 	const close = () => {
 		isOpen = false;
 	};
 
 	const open = () => {
-		if (options.length > 0) {
-			isOpen = true;
+		const buttonRect = selectRef?.getBoundingClientRect();
+		if (!buttonRect || !dropdownRef) {
+			return;
+		}
+
+		dropdownRef.style.top = `${buttonRect.bottom}px`;
+		dropdownRef.style.left = `${buttonRect.left}px`;
+
+		isOpen = true;
+	};
+
+	const toggle = () => {
+		if (isOpen) {
+			close();
+		} else {
+			open();
 		}
 	};
 
@@ -101,9 +109,8 @@
 		}
 	};
 
-	const handleSelectKeydown: KeyboardEventHandler<HTMLButtonElement> = (e) => {
+	const handleSelectKeydown: KeyboardEventHandler<HTMLDivElement> = (e) => {
 		if (e.key === 'Escape') {
-			e.preventDefault();
 			close();
 		} else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
 			let element;
@@ -117,13 +124,22 @@
 			if (element && 'focus' in element && typeof element.focus === 'function') {
 				element.focus();
 			}
-
-			e.preventDefault();
+		} else if (e.key === 'Enter') {
+			open();
+		} else {
+			return;
 		}
+
+		e.preventDefault();
 	};
 
 	const handleClickOutside = (e: MouseEvent) => {
-		if (containerRef && !containerRef.contains(e.target as Node)) {
+		if (
+			dropdownRef &&
+			!dropdownRef.contains(e.target as Node) &&
+			selectRef &&
+			!selectRef.contains(e.target as Node)
+		) {
 			close();
 		}
 	};
@@ -133,34 +149,33 @@
 
 		return () => {
 			off();
-			console.log('off');
 		};
-	});
-
-	onDestroy(() => {
-		document.removeEventListener('click', handleClickOutside);
 	});
 </script>
 
-<div bind:this={containerRef} class="select-container" class:open={isOpen}>
-	<button class="select" onkeydown={handleSelectKeydown} onclick={toggle}>
-		<div>
-			{#if selectedOption}
-				<div class="select-selected-option">{selectedOption.label}</div>
-			{/if}
-			<div class="select-label" class:raised={!!selectedOption}>
-				{label}
-				{#if required}
-					<span>*</span>
-				{/if}
-			</div>
-		</div>
-		<div class="select-dropdown-icon">
-			<Icon icon="expand_circle_down" />
-		</div>
-	</button>
+<div
+	role="button"
+	tabindex="0"
+	bind:this={selectRef}
+	class="select"
+	class:open={isOpen}
+	onclick={toggle}
+	onkeydown={handleSelectKeydown}>
+	<div class="selected-option">{selectedOption?.label}</div>
+	<div class="open-dropdown-icon">
+		<Icon icon="expand_circle_down" />
+	</div>
+	<div class="label" class:raised={!!selectedOption}>
+		{label}
+		{#if required}
+			<span>*</span>
+		{/if}
+	</div>
+</div>
+
+<div bind:this={dropdownRef} class="dropdown-container" class:close={!isOpen}>
 	{#if isOpen}
-		<div transition:slide={{ duration: 200, easing: cubicOut }} class="select-dropdown">
+		<div transition:delayDestroy={{ duration: 400 }} class="dropdown">
 			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 			<ul bind:this={ulRef} onkeydown={(e) => e.preventDefault()}>
 				{#each options as option, i (option.label)}
@@ -185,25 +200,39 @@
 	$animationOpts: 150ms ease-in-out;
 
 	.select {
-		padding: 0.5rem 0.5rem 1px;
+		padding: 0;
 		border: none;
 		border-bottom: 1px solid var(--input-inactive-border);
-		background-color: white;
+		background-color: transparent;
 		color: black;
 		cursor: pointer;
 		display: inline-flex;
-		justify-content: space-between;
 		align-items: center;
 		user-select: none;
 		font-size: 1rem;
 
+		position: relative;
+
+		max-width: 220px;
+		width: 100%;
+
 		transition: border-color $animationOpts;
 
-		.open & {
-			border-color: var(--input-border);
+		&:focus {
+			outline: 2px solid var(--primary-color);
+			outline-offset: 2px;
 		}
 
-		.select-label {
+		.selected-option {
+			overflow-x: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			text-align: start;
+			flex-grow: 1;
+			padding: 0 0.5rem;
+		}
+
+		.label {
 			color: var(--input-inactive-border);
 
 			transform-origin: left;
@@ -223,90 +252,98 @@
 			&.raised {
 				transform: translateY(-1.1rem) scale(0.75);
 			}
-
-			.open & {
-				color: var(--input-border);
-			}
 		}
 
-		&-dropdown-icon {
+		.open-dropdown-icon {
 			display: inline-flex;
 			transition:
 				transform $animationOpts,
 				color $animationOpts;
 		}
 
-		.open &-dropdown-icon {
-			transform: rotate(180deg);
-			color: var(--input-border);
+		&.open {
+			border-color: var(--input-border);
+
+			.open-dropdown-icon {
+				transform: rotate(180deg);
+				color: var(--input-border);
+			}
+
+			.label {
+				color: var(--input-border);
+			}
+		}
+	}
+
+	@keyframes slide {
+		0% {
+			transform: translateY(-100%);
+		}
+
+		100% {
+			transform: translateY(0);
+		}
+	}
+
+	.dropdown {
+		width: 220px;
+
+		background: none;
+		border: none;
+
+		animation: slide 400ms cubic-bezier(0.4, 0, 0.2, 1) normal;
+
+		z-index: v.$loaderZIndex + 100;
+
+		&-container.close > & {
+			animation-direction: reverse;
 		}
 
 		&-container {
-			display: inline-flex;
-			flex-direction: column;
-			position: relative;
-			width: 100%;
-			max-width: 220px;
+			overflow-y: hidden;
+			position: absolute;
 		}
 
-		&-dropdown {
-			position: absolute;
-			top: 100%;
-			display: inline-flex;
-			flex-direction: column;
-			width: 100%;
+		ul {
+			background-color: white;
+			color: black;
 
-			z-index: v.$loaderZIndex - 5;
+			overflow-y: auto;
 
-			ul {
+			border-radius: 5px;
+
+			margin: 0;
+			margin-top: 5px;
+			padding: 0;
+
+			list-style: none;
+
+			max-height: 10rem;
+			box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+
+			li > div {
+				padding: 0.5rem 1rem;
+				cursor: pointer;
+				user-select: none;
+
+				border-bottom: 1px solid black;
+
 				background-color: white;
-				color: black;
 
-				overflow-y: auto;
-
-				border-radius: 5px;
-
-				margin: 0;
-				margin-top: 5px;
-				padding: 0;
-
-				list-style: none;
-
-				max-height: 10rem;
-				box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-
-				li > div {
-					padding: 0.5rem 1rem;
-					cursor: pointer;
-					user-select: none;
-
-					border-bottom: 1px solid black;
-
-					background-color: white;
-
-					&:hover {
-						background-color: var(--primary-color);
-						color: white;
-					}
-
-					&:focus {
-						outline: 3px solid var(--primary-color);
-						outline-offset: -3px;
-					}
+				&:hover {
+					background-color: var(--primary-color);
+					color: white;
 				}
 
-				li:last-child > div {
-					border-bottom: none;
+				&:focus {
+					outline: 3px solid var(--primary-color);
+					outline-offset: -3px;
 				}
 			}
-		}
 
-		&-selected-option {
-			overflow-x: hidden;
-			white-space: nowrap;
-			text-overflow: ellipsis;
-			width: 200px;
-			text-align: start;
+			li:last-child > div {
+				border-bottom: none;
+			}
 		}
 	}
 </style>

@@ -7,6 +7,7 @@
 	import { browser } from '$app/environment';
 	import ActionPoller from '$lib/components/ActionPoller.svelte';
 	import { NavigationLoader } from '@shared/ui/components';
+	import { BODY_PORTAL_KEY, createPortal } from '../../../shared/actions/portal';
 
 	Chart.defaults.borderColor = '#545454';
 	Chart.defaults.color = '#FFFFFF';
@@ -22,6 +23,8 @@
 
 <ActionPoller />
 <slot />
+
+<div use:createPortal={BODY_PORTAL_KEY}></div>
 
 <style lang="scss">
 	@use '@shared/ui/styles/themes' as t;
