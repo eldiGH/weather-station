@@ -17,6 +17,8 @@
 	setDefaultOptions({ locale: pl });
 </script>
 
+<div class="body-portal" use:createPortal={BODY_PORTAL_KEY}></div>
+
 {#if browser}
 	<NavigationLoader />
 {/if}
@@ -24,12 +26,16 @@
 <ActionPoller />
 <slot />
 
-<div use:createPortal={BODY_PORTAL_KEY}></div>
-
 <style lang="scss">
 	@use '@shared/ui/styles/themes' as t;
+	@use '@shared/ui/styles/vars' as v;
 
 	:root {
 		@include t.add-theme('weather-station');
+	}
+
+	.body-portal {
+		z-index: v.$loaderZIndex;
+		position: relative;
 	}
 </style>

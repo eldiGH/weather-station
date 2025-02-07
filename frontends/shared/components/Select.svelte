@@ -5,8 +5,8 @@
 	import type { SelectOption } from '../types/SelectOption';
 	import { on } from 'svelte/events';
 	import { portal } from '../actions/portal';
-	import { slide } from 'svelte/transition';
-	import { delayDestroy } from '../transitions/delayDestroy';
+	import { type EasingFunction, type TransitionConfig } from 'svelte/transition';
+	import { cubicOut } from 'svelte/easing';
 
 	interface Props {
 		value: T | null;
@@ -35,13 +35,14 @@
 	};
 
 	const open = () => {
-		const buttonRect = selectRef?.getBoundingClientRect();
-		if (!buttonRect || !dropdownRef) {
+		if (!selectRef || !dropdownRef) {
 			return;
 		}
+		const selectRect = selectRef.getBoundingClientRect();
 
-		dropdownRef.style.top = `${buttonRect.bottom}px`;
-		dropdownRef.style.left = `${buttonRect.left}px`;
+		dropdownRef.style.top = `${selectRef.offsetTop + selectRect.height}px`;
+		dropdownRef.style.left = `${selectRef.offsetLeft}px`;
+		dropdownRef.style.width = `${selectRect.width}px`;
 
 		isOpen = true;
 	};
@@ -151,6 +152,25 @@
 			off();
 		};
 	});
+
+	interface SlideTransformParams {
+		easing?: EasingFunction;
+		delay?: number;
+		duration?: number;
+	}
+
+	export const dropdownTransition = (_: Element, opts?: SlideTransformParams): TransitionConfig => {
+		const { delay, duration, easing } = { duration: 400, delay: 0, easing: cubicOut, ...opts };
+
+		console.log({ opts, delay, duration, easing });
+
+		return {
+			css: (_, u) => `overflow: hidden; transform: translateY(${-100 * u}%);`,
+			delay,
+			duration,
+			easing
+		};
+	};
 </script>
 
 <div
@@ -173,9 +193,9 @@
 	</div>
 </div>
 
-<div bind:this={dropdownRef} class="dropdown-container" class:close={!isOpen}>
+<div use:portal bind:this={dropdownRef} class="dropdown-container" class:close={!isOpen}>
 	{#if isOpen}
-		<div transition:delayDestroy={{ duration: 400 }} class="dropdown">
+		<div transition:dropdownTransition class="dropdown">
 			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 			<ul bind:this={ulRef} onkeydown={(e) => e.preventDefault()}>
 				{#each options as option, i (option.label)}
@@ -195,8 +215,6 @@
 </div>
 
 <style lang="scss">
-	@use '../styles/vars.scss' as v;
-
 	$animationOpts: 150ms ease-in-out;
 
 	.select {
@@ -275,29 +293,21 @@
 		}
 	}
 
-	@keyframes slide {
-		0% {
-			transform: translateY(-100%);
-		}
-
-		100% {
-			transform: translateY(0);
-		}
-	}
-
 	.dropdown {
-		width: 220px;
-
+		width: 100%;
 		background: none;
 		border: none;
 
-		animation: slide 400ms cubic-bezier(0.4, 0, 0.2, 1) normal;
+		position: relative;
 
-		z-index: v.$loaderZIndex + 100;
+		background-color: white;
 
-		&-container.close > & {
-			animation-direction: reverse;
-		}
+		outline: 1px solid black;
+		outline-offset: -1px;
+		border-radius: 10px;
+		overflow: hidden;
+
+		margin-top: 5px;
 
 		&-container {
 			overflow-y: hidden;
@@ -310,10 +320,7 @@
 
 			overflow-y: auto;
 
-			border-radius: 5px;
-
 			margin: 0;
-			margin-top: 5px;
 			padding: 0;
 
 			list-style: none;
