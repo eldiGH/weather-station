@@ -9,7 +9,15 @@
 		columns: Column[];
 	}
 
+	let columnWidths = $state([]);
+
 	let { columns, data }: Props = $props();
+
+	$effect(() => {
+		if (columns.length > columnWidths.length) {
+			columnWidths = [...columnWidths];
+		}
+	});
 </script>
 
 <div class="datagrid">
