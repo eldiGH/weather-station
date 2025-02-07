@@ -3,6 +3,7 @@ export { default as Card } from './Card.svelte';
 export { default as Checkbox } from './Checkbox.svelte';
 export { default as ConfirmationDialog } from './ConfirmationDialog.svelte';
 export { default as Container } from './Container.svelte';
+export { default as DataGrid } from './DataGrid.svelte';
 export { default as Dialog } from './Dialog.svelte';
 export { default as FormDialog } from './FormDialog.svelte';
 export { default as Icon } from './Icon.svelte';
