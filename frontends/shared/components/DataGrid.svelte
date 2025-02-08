@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { type MouseEventHandler } from 'svelte/elements';
+	import { on } from 'svelte/events';
+
 	interface Column {
 		label: string;
 		dataKey: string;
@@ -9,31 +12,54 @@
 		columns: Column[];
 	}
 
-	let columnWidths = $state([]);
+	let columnsWidths: number[] = $state([]);
 
 	let { columns, data }: Props = $props();
 
+	let separatorOffsetToMiddle = -1;
+	const handleColumnResize =
+		(separatorIndex: number): MouseEventHandler<HTMLDivElement> =>
+		(e) => {
+			const separator = e.currentTarget;
+
+			if (separatorOffsetToMiddle === -1) {
+				separatorOffsetToMiddle = separator.getBoundingClientRect().width / 2;
+			}
+
+			const onMouseMove = (e: MouseEvent) => {
+				columnsWidths[separatorIndex] +=
+					e.clientX - (separator.offsetLeft + separatorOffsetToMiddle);
+			};
+
+			const onMouseUp = () => {
+				mouseMoveOff();
+				mouseUpOff();
+			};
+
+			const mouseMoveOff = on(window, 'mousemove', onMouseMove);
+			const mouseUpOff = on(window, 'mouseup', onMouseUp);
+		};
+
 	$effect(() => {
-		if (columns.length > columnWidths.length) {
-			columnWidths = [...columnWidths];
-		}
+		columnsWidths = columns.map(() => 80);
 	});
 </script>
 
 <div class="datagrid">
 	<div class="header">
 		{#each columns as column, i}
-			<div class="header-item">{column.label}</div>
-			{#if i !== columns.length - 1}
-				<div class="header-separator"></div>
-			{/if}
+			<div role="columnheader" style:width="{columnsWidths[i]}px" class="header-item">
+				{column.label}
+			</div>
+			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+			<div role="separator" class="header-separator" onmousedown={handleColumnResize(i)}></div>
 		{/each}
 	</div>
 	<div class="body">
 		{#each data as row}
-			<div>
-				{#each columns as column}
-					<div>{row[column.dataKey]}</div>
+			<div class="row">
+				{#each columns as column, i}
+					<div class="row-item" style:width="{columnsWidths[i]}px">{row[column.dataKey]}</div>
 				{/each}
 			</div>
 		{/each}
@@ -51,10 +77,21 @@
 
 			.header-item {
 				padding: 1rem;
+				overflow: hidden;
 			}
 
 			.header-separator {
 				border-right: 1px solid #ccc;
+				cursor: col-resize;
+				padding: 0 0.2rem;
+			}
+		}
+
+		.row {
+			display: flex;
+
+			.row-item {
+				overflow: hidden;
 			}
 		}
 	}
