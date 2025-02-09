@@ -29,4 +29,10 @@
 	'GRAD' {grade}, 
 	'opsz' {opticalSize};
 	font-size: {size ? size + 'px' : 'inherit'}"
-	class={`material-symbols-${variant}`}>{icon}</i>
+	class="material-symbols-{variant}">{icon}</i>
+
+<style lang="scss">
+	i {
+		user-select: none;
+	}
+</style>
