@@ -16,19 +16,18 @@
 
 	let { columns, data }: Props = $props();
 
-	let separatorOffsetToMiddle = -1;
 	const handleColumnResize =
 		(separatorIndex: number): MouseEventHandler<HTMLDivElement> =>
 		(e) => {
 			const separator = e.currentTarget;
-
-			if (separatorOffsetToMiddle === -1) {
-				separatorOffsetToMiddle = separator.getBoundingClientRect().width / 2;
-			}
+			const parent = separator.parentElement;
+			if (!parent) return;
 
 			const onMouseMove = (e: MouseEvent) => {
-				columnsWidths[separatorIndex] +=
-					e.clientX - (separator.offsetLeft + separatorOffsetToMiddle);
+				const newWidth = e.clientX - parent.offsetLeft + 1;
+				if (newWidth < 40) return;
+
+				columnsWidths[separatorIndex] = newWidth;
 			};
 
 			const onMouseUp = () => {
@@ -49,10 +48,12 @@
 	<div class="header">
 		{#each columns as column, i}
 			<div role="columnheader" style:width="{columnsWidths[i]}px" class="header-item">
-				{column.label}
+				<div class="header-item-label">
+					{column.label}
+				</div>
+				<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+				<div role="separator" class="header-separator" onmousedown={handleColumnResize(i)}></div>
 			</div>
-			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-			<div role="separator" class="header-separator" onmousedown={handleColumnResize(i)}></div>
 		{/each}
 	</div>
 	<div class="body">
@@ -76,14 +77,19 @@
 			border-bottom: 1px solid #ccc;
 
 			.header-item {
-				padding: 1rem;
-				overflow: hidden;
-			}
+				display: flex;
+				justify-content: space-between;
 
-			.header-separator {
-				border-right: 1px solid #ccc;
-				cursor: col-resize;
-				padding: 0 0.2rem;
+				.header-item-label {
+					padding: 1rem;
+					overflow: hidden;
+				}
+
+				.header-separator {
+					cursor: col-resize;
+					padding-left: 0.2rem;
+					border-right: 1px solid #ccc;
+				}
 			}
 		}
 
@@ -92,6 +98,9 @@
 
 			.row-item {
 				overflow: hidden;
+				display: flex;
+				align-self: center;
+				padding: 0 1rem;
 			}
 		}
 	}

@@ -5,7 +5,12 @@
 		{ name: 'Sensor1', lastUpdate: new Date(), template: 'Sensor Template', status: 'Active' },
 		{ name: 'Sensor2', lastUpdate: new Date(), template: 'Sensor Template', status: 'Active' },
 		{ name: 'Sensor3', lastUpdate: new Date(), template: 'Sensor Template', status: 'Active' },
-		{ name: 'Sensor4', lastUpdate: new Date(), template: 'Sensor Template', status: 'Active' },
+		{
+			name: 'Sensor4',
+			lastUpdate: new Date(),
+			template: 'Sensor Templatewwwwwwwwwwwwwwwwwwwwwwwwwwwwwww',
+			status: 'Active'
+		},
 		{ name: 'Sensor5', lastUpdate: new Date(), template: 'Sensor Template', status: 'Active' },
 		{ name: 'Sensor6', lastUpdate: new Date(), template: 'Sensor Template', status: 'Active' },
 		{ name: 'Sensor7', lastUpdate: new Date(), template: 'Sensor Template', status: 'Active' },
