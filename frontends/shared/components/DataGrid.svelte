@@ -148,6 +148,9 @@
 		flex-direction: column;
 
 		border: 1px solid #ccc;
+		border-radius: 15px;
+
+		overflow-x: auto;
 
 		&.resizing {
 			cursor: col-resize;
@@ -205,9 +208,16 @@
 
 					height: 100%;
 
+					&:hover .header-separator-line,
+					&:active .header-separator-line {
+						outline: 2px solid var(--primary-color);
+					}
+
 					&-line {
 						border-right: 1px solid #ccc;
 						height: 50%;
+						border-radius: 5px;
+						outline-offset: 2px;
 					}
 				}
 			}
