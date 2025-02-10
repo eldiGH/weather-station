@@ -61,7 +61,7 @@
 			if (!parent) return;
 
 			const onMouseMove = (e: MouseEvent) => {
-				const newWidth = e.clientX - parent.offsetLeft;
+				const newWidth = e.clientX - parent.offsetLeft + 6;
 				if (newWidth <= 70) return;
 
 				columnsWidths[separatorIndex] = newWidth;
@@ -103,22 +103,23 @@
 <div class="datagrid" class:resizing={isResizingColumns}>
 	<div class="header">
 		{#each columns as column, i}
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<div
-				title={column.label}
-				role="columnheader"
-				style:width="{columnsWidths[i]}px"
-				class="header-item"
-				onclick={() => handleSort(i)}
-				tabindex="0">
-				<div class="header-item-label">
-					{column.label}
-				</div>
+			<div style:width="{columnsWidths[i]}px" class="header-item">
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<div
-					class="header-item-sort"
-					class:asc={i === sortBy?.columnIndex && sortBy?.direction === 'asc'}
-					class:desc={i === sortBy?.columnIndex && sortBy?.direction === 'desc'}>
-					<Icon icon="north" />
+					role="columnheader"
+					class="header-item-content"
+					onclick={() => handleSort(i)}
+					title={column.label}
+					tabindex="0">
+					<div class="header-item-label">
+						{column.label}
+					</div>
+					<div
+						class="header-item-sort"
+						class:asc={i === sortBy?.columnIndex && sortBy?.direction === 'asc'}
+						class:desc={i === sortBy?.columnIndex && sortBy?.direction === 'desc'}>
+						<Icon icon="north" />
+					</div>
 				</div>
 				<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 				<div role="separator" class="header-separator" onmousedown={handleColumnResize(i)}>
@@ -167,30 +168,38 @@
 				align-items: center;
 				cursor: pointer;
 
-				.header-item-label {
-					white-space: nowrap;
-					overflow: hidden;
-					text-overflow: ellipsis;
-					padding-left: 1rem;
-				}
+				.header-item-content {
+					flex-grow: 1;
+					display: inline-flex;
+					height: 100%;
+					align-items: center;
+					min-width: 0;
 
-				&:hover .header-item-sort {
-					opacity: 0.5;
-				}
-
-				&-sort {
-					font-size: 1.5rem;
-					opacity: 0;
-					transition:
-						opacity 0.2s ease-in-out,
-						transform 0.2s ease-in-out;
-
-					&.asc,
-					&.desc {
-						opacity: 1 !important;
+					.header-item-label {
+						white-space: nowrap;
+						overflow: hidden;
+						text-overflow: ellipsis;
+						padding-left: 1rem;
 					}
-					&.desc {
-						transform: rotate(180deg);
+
+					&:hover .header-item-sort {
+						opacity: 0.5;
+					}
+
+					.header-item-sort {
+						font-size: 1.5rem;
+						opacity: 0;
+						transition:
+							opacity 0.2s ease-in-out,
+							transform 0.2s ease-in-out;
+
+						&.asc,
+						&.desc {
+							opacity: 1 !important;
+						}
+						&.desc {
+							transform: rotate(180deg);
+						}
 					}
 				}
 
@@ -200,8 +209,6 @@
 					display: flex;
 					align-items: center;
 					justify-content: space-around;
-
-					margin-left: auto;
 
 					position: relative;
 					right: -6px;
