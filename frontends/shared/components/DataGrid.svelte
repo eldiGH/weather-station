@@ -160,6 +160,8 @@
 	.datagrid-container {
 		border: 1px solid #ccc;
 		border-radius: 15px;
+		border-bottom-right-radius: 0;
+		border-bottom-left-radius: 0;
 		overflow-x: auto;
 		flex-grow: 1;
 
