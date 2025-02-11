@@ -50,6 +50,7 @@
 		.sidebar {
 			background-color: var(--sidebar-color);
 			z-index: 2000;
+			max-width: 100%;
 
 			width: $closedWidth;
 
@@ -89,6 +90,11 @@
 			.sidebar {
 				width: $openedWidth;
 			}
+		}
+
+		.content {
+			flex-grow: 1;
+			min-width: 0;
 		}
 	}
 </style>

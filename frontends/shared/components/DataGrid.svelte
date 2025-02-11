@@ -16,6 +16,13 @@
 	let columnsWidths: number[] = $state([]);
 	let isResizingColumns: boolean = $state(false);
 
+	let containerWidth = $state(0);
+
+	let rowFillerWidth = $derived.by(() => {
+		const sum = columnsWidths.reduce((acc, width) => acc + width, 0);
+		return Math.max(containerWidth - sum, 0);
+	});
+
 	let { columns, data }: Props = $props();
 
 	let sortBy: null | { columnIndex: number; direction: 'asc' | 'desc' } = $state(null);
@@ -61,7 +68,9 @@
 			if (!parent) return;
 
 			const onMouseMove = (e: MouseEvent) => {
-				const newWidth = e.clientX - parent.offsetLeft + 6;
+				const { x } = parent.getBoundingClientRect();
+
+				const newWidth = e.clientX - x + 6;
 				if (newWidth <= 70) return;
 
 				columnsWidths[separatorIndex] = newWidth;
@@ -96,11 +105,11 @@
 	};
 
 	$effect(() => {
-		columnsWidths = columns.map(() => 180);
+		columnsWidths = columns.map(() => 120);
 	});
 </script>
 
-<div class="datagrid-container">
+<div class="datagrid-container" bind:clientWidth={containerWidth}>
 	<div class="datagrid" class:resizing={isResizingColumns}>
 		<div class="header">
 			{#each columns as column, i}
@@ -128,6 +137,7 @@
 					</div>
 				</div>
 			{/each}
+			<div style:width="{rowFillerWidth}px"></div>
 		</div>
 		<div class="body">
 			{#each sortedData as row, i}
@@ -139,6 +149,7 @@
 							</div>
 						</div>
 					{/each}
+					<div style:width="{rowFillerWidth}px"></div>
 				</div>
 			{/each}
 		</div>
@@ -150,7 +161,9 @@
 		border: 1px solid #ccc;
 		border-radius: 15px;
 		overflow-x: auto;
-		width: min(100%, 1000px);
+		flex-grow: 1;
+
+		width: min(1000px, 100%);
 
 		.datagrid {
 			display: flex;
@@ -164,6 +177,7 @@
 				display: flex;
 				border-bottom: 1px solid #ccc;
 				height: 60px;
+				width: fit-content;
 
 				.header-item {
 					display: flex;
@@ -237,6 +251,7 @@
 					padding: 0.5rem 0;
 					height: 60px;
 					border-bottom: 1px solid #ccc;
+					width: fit-content;
 
 					&:hover {
 						background-color: rgba(0, 0, 0, 0.2);
