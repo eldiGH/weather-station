@@ -1,16 +1,18 @@
-<script lang="ts">
+<script lang="ts" module>
+	export interface DataGridColumn<T extends Record<string, unknown>> {
+		label: string;
+		dataKey: keyof T;
+	}
+</script>
+
+<script lang="ts" generics="Data extends Record<string, unknown>">
 	import { type MouseEventHandler } from 'svelte/elements';
 	import { on } from 'svelte/events';
 	import Icon from './Icon.svelte';
 
-	interface Column {
-		label: string;
-		dataKey: string;
-	}
-
 	interface Props {
-		data: Record<string, unknown>[];
-		columns: Column[];
+		data: Data[];
+		columns: DataGridColumn<Data>[];
 	}
 
 	let columnsWidths: number[] = $state([]);

@@ -1,9 +1,8 @@
 import { trpcAuthed } from "@shared/ui/api";
-import type { PageLoad } from "./$types";
-import { createArrayApiCache } from "@shared/ui/stores";
 import { writable } from "svelte/store";
+import type { LayoutLoad } from "./$types";
 
-export const load: PageLoad = async ({ fetch }) => {
+export const load: LayoutLoad = async ({ fetch }) => {
   const { data } = await trpcAuthed(fetch).sensor.getSensorTemplates.query();
 
   const sensorTemplates = writable(data);

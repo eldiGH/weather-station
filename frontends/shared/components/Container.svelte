@@ -11,7 +11,8 @@
 </script>
 
 <div
-	style={`padding-top: ${pt ?? 'inherit'}rem; padding-bottom: ${pb ?? 'inherit'}rem`}
+	style:padding-top={pt ? `${pt}rem` : 'inherit'}
+	style:padding-bottom={pb ? `${pb}rem` : 'inherit'}
 	class="container__root">
 	<div class="container">{@render children?.()}</div>
 </div>
@@ -22,7 +23,6 @@
 		min-height: 100%;
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
 
 		&__root {
 			min-height: 100%;

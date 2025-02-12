@@ -49,13 +49,12 @@ export const generateIndexesForDir = async (directory: string) => {
 			? item.replace(EXTENSION_REGEX, '')
 			: item;
 
-		let importLine;
+		let importLine = `export * from './${importFrom}';\n`;
+
 		if (importDefaultPatterns.some((pattern) => pattern.test(item))) {
 			const itemWithoutExtension = isDirectory ? item : item.replace(EXTENSION_REGEX, '');
 
-			importLine = `export { default as ${itemWithoutExtension} } from './${importFrom}';\n`;
-		} else {
-			importLine = `export * from './${importFrom}';\n`;
+			importLine += `export { default as ${itemWithoutExtension} } from './${importFrom}';\n`;
 		}
 
 		newIndexContent += importLine;
