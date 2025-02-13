@@ -111,178 +111,198 @@
 	});
 </script>
 
-<div class="datagrid-container" bind:clientWidth={containerWidth}>
-	<div class="datagrid" class:resizing={isResizingColumns}>
-		<div class="header">
-			{#each columns as column, i}
-				<div style:width="{columnsWidths[i]}px" class="header-item">
-					<!-- svelte-ignore a11y_click_events_have_key_events -->
-					<div
-						role="columnheader"
-						class="header-item-content"
-						onclick={() => handleSort(i)}
-						title={column.label}
-						tabindex="0">
-						<div class="header-item-label">
-							{column.label}
-						</div>
+<div class="root">
+	<div class="datagrid-container" bind:clientWidth={containerWidth}>
+		<div class="datagrid" class:resizing={isResizingColumns}>
+			<div class="header">
+				{#each columns as column, i}
+					<div style:width="{columnsWidths[i]}px" class="header-item">
+						<!-- svelte-ignore a11y_click_events_have_key_events -->
 						<div
-							class="header-item-sort"
-							class:asc={i === sortBy?.columnIndex && sortBy?.direction === 'asc'}
-							class:desc={i === sortBy?.columnIndex && sortBy?.direction === 'desc'}>
-							<Icon icon="north" />
-						</div>
-					</div>
-					<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-					<div role="separator" class="header-separator" onmousedown={handleColumnResize(i)}>
-						<div class="header-separator-line"></div>
-					</div>
-				</div>
-			{/each}
-			<div style:width="{rowFillerWidth}px"></div>
-		</div>
-		<div class="body">
-			{#each sortedData as row, i}
-				<div class="row" class:even={i % 2 === 0}>
-					{#each columns as column, i}
-						<div
-							class="row-item"
-							style:width="{columnsWidths[i]}px"
-							style:justify-content={typeof row[column.dataKey] === 'number'
-								? 'flex-end'
-								: 'flex-start'}>
-							<div title={row[column.dataKey]?.toString()} class="row-item-text">
-								{row[column.dataKey]}
+							role="columnheader"
+							class="header-item-content"
+							onclick={() => handleSort(i)}
+							title={column.label}
+							tabindex="0">
+							<div class="header-item-label">
+								{column.label}
+							</div>
+							<div
+								class="header-item-sort"
+								class:asc={i === sortBy?.columnIndex && sortBy?.direction === 'asc'}
+								class:desc={i === sortBy?.columnIndex && sortBy?.direction === 'desc'}>
+								<Icon icon="north" />
 							</div>
 						</div>
-					{/each}
-					<div style:width="{rowFillerWidth}px"></div>
-				</div>
-			{/each}
+						<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+						<div role="separator" class="header-separator" onmousedown={handleColumnResize(i)}>
+							<div class="header-separator-line"></div>
+						</div>
+					</div>
+				{/each}
+				<div style:width="{rowFillerWidth}px"></div>
+			</div>
+			<div class="body">
+				{#each sortedData as row, i}
+					<div class="row" class:even={i % 2 === 0}>
+						{#each columns as column, i}
+							<div
+								class="row-item"
+								style:width="{columnsWidths[i]}px"
+								style:justify-content={typeof row[column.dataKey] === 'number'
+									? 'flex-end'
+									: 'flex-start'}>
+								<div title={row[column.dataKey]?.toString()} class="row-item-text">
+									{row[column.dataKey]}
+								</div>
+							</div>
+						{/each}
+						<div style:width="{rowFillerWidth}px"></div>
+					</div>
+				{/each}
+			</div>
 		</div>
 	</div>
+	<div class="border-bottom"></div>
 </div>
 
 <style lang="scss">
-	.datagrid-container {
-		border: 1px solid #ccc;
-		border-radius: 15px;
-		border-bottom-right-radius: 0;
-		border-bottom-left-radius: 0;
-		overflow-x: auto;
-		flex-grow: 1;
+	$border-radius: 10px;
+	$border-color: #707070;
 
+	.root {
 		width: min(1000px, 100%);
 
-		.datagrid {
-			display: flex;
-			flex-direction: column;
-			&.resizing {
-				cursor: col-resize;
-				user-select: none;
-			}
+		.datagrid-container {
+			border: 1px solid $border-color;
+			border-radius: $border-radius;
+			border-bottom-right-radius: 0;
+			border-bottom-left-radius: 0;
+			border-bottom: none;
+			overflow-x: auto;
+			flex-grow: 1;
+			width: 100%;
 
-			.header {
+			.datagrid {
 				display: flex;
-				border-bottom: 1px solid #ccc;
-				height: 60px;
-				width: fit-content;
-
-				.header-item {
-					display: flex;
-					align-items: center;
-					cursor: pointer;
-
-					.header-item-content {
-						flex-grow: 1;
-						display: inline-flex;
-						height: 100%;
-						align-items: center;
-						min-width: 0;
-
-						.header-item-label {
-							white-space: nowrap;
-							overflow: hidden;
-							text-overflow: ellipsis;
-							padding-left: 1rem;
-						}
-
-						&:hover .header-item-sort {
-							opacity: 0.5;
-						}
-
-						.header-item-sort {
-							font-size: 1.5rem;
-							opacity: 0;
-							transition:
-								opacity 0.2s ease-in-out,
-								transform 0.2s ease-in-out;
-
-							&.asc,
-							&.desc {
-								opacity: 1 !important;
-							}
-							&.desc {
-								transform: rotate(180deg);
-							}
-						}
-					}
-
-					.header-separator {
-						cursor: col-resize;
-						padding: 0 0.3rem;
-						display: flex;
-						align-items: center;
-						justify-content: space-around;
-
-						position: relative;
-
-						height: 100%;
-
-						&:hover .header-separator-line,
-						&:active .header-separator-line {
-							outline: 2px solid var(--primary-color);
-						}
-
-						&-line {
-							border-right: 1px solid #ccc;
-							height: 50%;
-							border-radius: 5px;
-							outline-offset: 2px;
-						}
-					}
+				flex-direction: column;
+				&.resizing {
+					cursor: col-resize;
+					user-select: none;
 				}
-			}
 
-			.body {
-				.row {
+				.header {
 					display: flex;
-					padding: 0.5rem 0;
+					border-bottom: 1px solid $border-color;
 					height: 60px;
-					border-bottom: 1px solid #ccc;
 					width: fit-content;
 
-					&:hover {
-						background-color: rgba(0, 0, 0, 0.2);
-					}
-
-					&:last-child {
-						border-bottom: none;
-					}
-
-					.row-item {
-						padding: 0 1rem;
+					.header-item {
 						display: flex;
 						align-items: center;
+						cursor: pointer;
 
-						&-text {
-							white-space: nowrap;
-							overflow: hidden;
-							text-overflow: ellipsis;
+						.header-item-content {
+							flex-grow: 1;
+							display: inline-flex;
+							height: 100%;
+							align-items: center;
+							min-width: 0;
+
+							.header-item-label {
+								white-space: nowrap;
+								overflow: hidden;
+								text-overflow: ellipsis;
+								padding-left: 1rem;
+							}
+
+							&:hover .header-item-sort {
+								opacity: 0.5;
+							}
+
+							.header-item-sort {
+								font-size: 1.5rem;
+								opacity: 0;
+								transition:
+									opacity 0.2s ease-in-out,
+									transform 0.2s ease-in-out;
+
+								&.asc,
+								&.desc {
+									opacity: 1 !important;
+								}
+								&.desc {
+									transform: rotate(180deg);
+								}
+							}
+						}
+
+						.header-separator {
+							cursor: col-resize;
+							padding: 0 0.3rem;
+							display: flex;
+							align-items: center;
+							justify-content: space-around;
+
+							position: relative;
+
+							height: 100%;
+
+							&:hover .header-separator-line,
+							&:active .header-separator-line {
+								outline: 2px solid var(--primary-color);
+							}
+
+							&-line {
+								border-right: 1px solid $border-color;
+								height: 50%;
+								border-radius: 5px;
+								outline-offset: 2px;
+							}
+						}
+					}
+				}
+
+				.body {
+					.row {
+						display: flex;
+						padding: 0.5rem 0;
+						height: 60px;
+						border-bottom: 1px solid #ccc;
+						width: fit-content;
+
+						&:hover {
+							background-color: rgba(0, 0, 0, 0.2);
+						}
+
+						&:last-child {
+							border-bottom: none;
+						}
+
+						.row-item {
+							padding: 0 1rem;
+							display: flex;
+							align-items: center;
+
+							&-text {
+								white-space: nowrap;
+								overflow: hidden;
+								text-overflow: ellipsis;
+							}
 						}
 					}
 				}
 			}
+		}
+
+		.border-bottom {
+			border: 1px solid $border-color;
+			border-top: none;
+			border-radius: $border-radius;
+			border-top-left-radius: 0;
+			border-top-right-radius: 0;
+			padding-top: $border-radius;
+			width: 100%;
 		}
 	}
 </style>
