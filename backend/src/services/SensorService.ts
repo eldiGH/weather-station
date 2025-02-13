@@ -142,11 +142,16 @@ export const SensorService = {
         .orderBy(sql`CASE WHEN ${sensorTemplateSchema.authorId} = ${user.id} THEN 0 ELSE 1 END`)
     ),
 
-  getSensors: async (user: typeof userSchema.$inferSelect) =>
-    Ok(
-      await db.query.sensorSchema.findMany({
-        where: eq(sensorSchema.ownerId, user.id),
-        with: { sensorTemplate: true }
-      })
-    )
+  getSensors: async (user: typeof userSchema.$inferSelect) => {
+    const sensors = await db.query.sensorSchema.findMany({
+      where: eq(sensorSchema.ownerId, user.id),
+      extras: {},
+      with: {
+        sensorTemplate: true,
+        data: { limit: 1, orderBy: (data, { desc }) => [desc(data.createdAt)] }
+      }
+    });
+
+    return Ok(sensors.map(({ data, ...sensor }) => ({ ...sensor, lastData: data[0] ?? null })));
+  }
 };

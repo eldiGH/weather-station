@@ -45,7 +45,11 @@ export const sensorRouter = router({
     SensorService.postSensorData(ctx.sensorSecret, input)
   ),
 
-  getSensorTemplates: authedProcedure.query(({ ctx }) => SensorService.getSensorTemplates(ctx.user))
+  getSensorTemplates: authedProcedure.query(({ ctx }) =>
+    SensorService.getSensorTemplates(ctx.user)
+  ),
+
+  getSensors: authedProcedure.query(({ ctx }) => SensorService.getSensors(ctx.user))
 
   // getSensorData: authedProcedure.input(getSensorDataInputSchema).query(async ({ input }) => {
   //   const { data, error } = await SensorService.getBME68XData(input.sensorId, input.dateRangeQuery);
