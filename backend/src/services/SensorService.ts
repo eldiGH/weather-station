@@ -145,9 +145,8 @@ export const SensorService = {
   getSensors: async (user: typeof userSchema.$inferSelect) => {
     const sensors = await db.query.sensorSchema.findMany({
       where: eq(sensorSchema.ownerId, user.id),
-      extras: {},
+      orderBy: (sensor, { asc }) => [asc(sensor.id)],
       with: {
-        sensorTemplate: true,
         data: { limit: 1, orderBy: (data, { desc }) => [desc(data.createdAt)] }
       }
     });

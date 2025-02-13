@@ -145,8 +145,13 @@
 			{#each sortedData as row, i}
 				<div class="row" class:even={i % 2 === 0}>
 					{#each columns as column, i}
-						<div class="row-item" style:width="{columnsWidths[i]}px">
-							<div title="{row[column.dataKey]} " class="row-item-text">
+						<div
+							class="row-item"
+							style:width="{columnsWidths[i]}px"
+							style:justify-content={typeof row[column.dataKey] === 'number'
+								? 'flex-end'
+								: 'flex-start'}>
+							<div title={row[column.dataKey]?.toString()} class="row-item-text">
 								{row[column.dataKey]}
 							</div>
 						</div>

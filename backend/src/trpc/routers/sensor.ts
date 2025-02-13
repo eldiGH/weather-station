@@ -1,8 +1,11 @@
+import { z } from 'zod';
 import { router, authedProcedure, publicProcedure } from '..';
+import { Ok } from '../../helpers/control';
 import {
   createSensorInputSchema,
   createSensorTemplateSchema,
-  postSensorDataSchema
+  postSensorDataSchema,
+  sensorOutputSchema
 } from '../../schemas/sensor';
 import { SensorService } from '../../services/SensorService';
 import * as uuid from 'uuid';
@@ -49,7 +52,11 @@ export const sensorRouter = router({
     SensorService.getSensorTemplates(ctx.user)
   ),
 
-  getSensors: authedProcedure.query(({ ctx }) => SensorService.getSensors(ctx.user))
+  getSensors: authedProcedure.query(async ({ ctx }) => {
+    const { data } = await SensorService.getSensors(ctx.user);
+
+    return Ok(await z.array(sensorOutputSchema).parseAsync(data));
+  })
 
   // getSensorData: authedProcedure.input(getSensorDataInputSchema).query(async ({ input }) => {
   //   const { data, error } = await SensorService.getBME68XData(input.sensorId, input.dateRangeQuery);

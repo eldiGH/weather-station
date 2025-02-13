@@ -46,3 +46,16 @@ export type SensorDataItem = z.infer<typeof sensorDataItemSchema>;
 
 export const postSensorDataSchema = z.record(sensorDataItemSchema);
 export type PostSensorDataInput = z.infer<typeof postSensorDataSchema>;
+
+export const sensorDataOutputSchema = z.object({
+  createdAt: z.date(),
+  data: z.array(sensorDataItemSchema)
+});
+
+export const sensorOutputSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  sensorTemplateId: z.number().int().nonnegative().nullable(),
+  lastData: sensorDataOutputSchema.nullable(),
+  secret: z.string()
+});

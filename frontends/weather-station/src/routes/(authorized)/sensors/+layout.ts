@@ -1,5 +1,5 @@
 import { trpcAuthed } from "@shared/ui/api";
-import { writable } from "svelte/store";
+import { get, writable } from "svelte/store";
 import type { LayoutLoad } from "./$types";
 
 export const load: LayoutLoad = async ({ fetch }) => {
@@ -7,5 +7,12 @@ export const load: LayoutLoad = async ({ fetch }) => {
 
   const sensorTemplates = writable(data);
 
-  return { sensorTemplates: { subscribe: sensorTemplates.subscribe } };
+  return {
+    sensorTemplates: {
+      subscribe: sensorTemplates.subscribe,
+
+      getById: (id: number) =>
+        get(sensorTemplates).find((template) => template.id === id),
+    },
+  };
 };
