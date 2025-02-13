@@ -25,11 +25,11 @@ const sensorSecretProcedure = publicProcedure
 
     const sensorSecretBody = input['sensorSecret'];
 
-    if (typeof sensorSecretBody !== 'string' || !uuid.validate(sensorSecretBody)) {
-      throw new Error('No sensor secret provided.');
+    if (typeof sensorSecretBody === 'string' && uuid.validate(sensorSecretBody)) {
+      return next({ ctx: { sensorSecret: sensorSecretBody } });
     }
 
-    return next({ ctx: { sensorSecret: sensorSecretBody } });
+    throw new Error('No sensor secret provided.');
   });
 
 export const sensorRouter = router({

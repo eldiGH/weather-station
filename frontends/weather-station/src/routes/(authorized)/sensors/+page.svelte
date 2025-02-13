@@ -1,6 +1,6 @@
 <script lang="ts">
 	import AddSensorDialog from '$lib/components/AddSensorDialog.svelte';
-	import { Button } from '@shared/ui/components';
+	import { Button, Container, DataGrid } from '@shared/ui/components';
 	import type { PageData } from './$types';
 
 	interface Props {
@@ -13,6 +13,11 @@
 	let openAddSensorDialog: undefined | (() => void) = $state();
 </script>
 
-<Button icon="add" onclick={openAddSensorDialog}>Test</Button>
+<Container pt={3}>
+	<div>
+		<Button icon="add" onclick={openAddSensorDialog}>Test</Button>
+		<DataGrid {columns} data={$sensors} />
+	</div>
+</Container>
 
 <AddSensorDialog bind:open={openAddSensorDialog} sensorTemplates={$sensorTemplates} />

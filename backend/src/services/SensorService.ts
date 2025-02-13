@@ -140,5 +140,13 @@ export const SensorService = {
           or(eq(sensorTemplateSchema.authorId, user.id), eq(sensorTemplateSchema.isPublic, true))
         )
         .orderBy(sql`CASE WHEN ${sensorTemplateSchema.authorId} = ${user.id} THEN 0 ELSE 1 END`)
+    ),
+
+  getSensors: async (user: typeof userSchema.$inferSelect) =>
+    Ok(
+      await db.query.sensorSchema.findMany({
+        where: eq(sensorSchema.ownerId, user.id),
+        with: { sensorTemplate: true }
+      })
     )
 };
