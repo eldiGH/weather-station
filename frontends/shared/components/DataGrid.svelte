@@ -28,7 +28,10 @@
 
 	let { columns, data }: Props = $props();
 
-	type FormattedData = Record<keyof Data, { value: string; align: 'left' | 'right' | 'center' }>;
+	type FormattedData = Record<
+		keyof Data,
+		{ formattedValue: string; align: 'left' | 'right' | 'center'; value: unknown }
+	>;
 
 	let sortBy: null | { columnIndex: number; direction: 'asc' | 'desc' } = $state(null);
 	let formattedData = $derived.by(() =>
@@ -37,7 +40,11 @@
 				const value = row[column.dataKey];
 
 				if (column.dataFormatter) {
-					acc[column.dataKey] = { value: column.dataFormatter(value), align: 'left' };
+					acc[column.dataKey] = {
+						formattedValue: column.dataFormatter(value),
+						align: 'left',
+						value
+					};
 					return acc;
 				}
 
@@ -67,8 +74,9 @@
 				}
 
 				acc[column.dataKey] = {
-					value: formattedValue,
-					align: alignment
+					formattedValue,
+					align: alignment,
+					value
 				};
 				return acc;
 			}, {} as FormattedData)
@@ -77,15 +85,15 @@
 
 	let sortedData = $derived.by(() => {
 		if (!sortBy) {
-			return data;
+			return formattedData;
 		}
 
 		const { columnIndex, direction } = $state(sortBy);
 		const column = columns[columnIndex];
 
-		return data.toSorted((a, b) => {
-			const aValue = a[column.dataKey];
-			const bValue = b[column.dataKey];
+		return formattedData.toSorted((a, b) => {
+			const aValue = a[column.dataKey].value;
+			const bValue = b[column.dataKey].value;
 
 			if (typeof aValue === 'string' && typeof bValue === 'string') {
 				return direction === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
@@ -190,7 +198,7 @@
 				<div style:width="{rowFillerWidth}px"></div>
 			</div>
 			<div class="body">
-				{#each formattedData as row, i}
+				{#each sortedData as row, i}
 					<div class="row" class:even={i % 2 === 0}>
 						{#each columns as column, i}
 							<div
@@ -198,7 +206,7 @@
 								style:width="{columnsWidths[i]}px"
 								style:justify-content={row[column.dataKey].align}>
 								<div title={row[column.dataKey]?.toString()} class="row-item-text">
-									{row[column.dataKey].value}
+									{row[column.dataKey].formattedValue}
 								</div>
 							</div>
 						{/each}
