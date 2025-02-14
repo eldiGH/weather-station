@@ -23,7 +23,8 @@
 		{ dataKey: 'id', label: 'ID' },
 		{ dataKey: 'name', label: 'Nazwa' },
 		{ dataKey: 'templateName', label: 'Szablon' },
-		{ dataKey: 'lastDataDate', label: 'Ostatni odczyt' }
+		{ dataKey: 'lastDataDate', label: 'Ostatni odczyt' },
+		{ dataKey: 'test', label: 'TEST' }
 	];
 
 	let openAddSensorDialog: undefined | (() => void) = $state();
@@ -32,7 +33,7 @@
 <Container pt={3}>
 	<div>
 		<Button icon="add" onclick={openAddSensorDialog}>Dodaj czujnik</Button>
-		<DataGrid {columns} data={tableSensors} />
+		<DataGrid {columns} data={tableSensors.map((s) => ({ ...s, test: 1000000000000000 }))} />
 	</div>
 </Container>
 

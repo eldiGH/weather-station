@@ -2,6 +2,7 @@
 	export interface DataGridColumn<T extends Record<string, unknown>> {
 		label: string;
 		dataKey: keyof T;
+		dataFormatter?: (value: T[keyof T]) => string;
 	}
 </script>
 
@@ -27,7 +28,53 @@
 
 	let { columns, data }: Props = $props();
 
+	type FormattedData = Record<keyof Data, { value: string; align: 'left' | 'right' | 'center' }>;
+
 	let sortBy: null | { columnIndex: number; direction: 'asc' | 'desc' } = $state(null);
+	let formattedData = $derived.by(() =>
+		data.map((row) =>
+			columns.reduce<FormattedData>((acc, column) => {
+				const value = row[column.dataKey];
+
+				if (column.dataFormatter) {
+					acc[column.dataKey] = { value: column.dataFormatter(value), align: 'left' };
+					return acc;
+				}
+
+				let formattedValue = '';
+				let alignment: FormattedData[string]['align'] = 'left';
+
+				switch (typeof value) {
+					case 'string': {
+						formattedValue = value.trim();
+						break;
+					}
+					case 'number':
+					case 'bigint': {
+						formattedValue = value.toLocaleString(undefined, { useGrouping: true });
+						alignment = 'right';
+						break;
+					}
+					case 'boolean': {
+						formattedValue = value ? 'True' : 'False';
+						break;
+					}
+					default: {
+						formattedValue = '-';
+						alignment = 'center';
+						break;
+					}
+				}
+
+				acc[column.dataKey] = {
+					value: formattedValue,
+					align: alignment
+				};
+				return acc;
+			}, {} as FormattedData)
+		)
+	);
+
 	let sortedData = $derived.by(() => {
 		if (!sortBy) {
 			return data;
@@ -143,17 +190,15 @@
 				<div style:width="{rowFillerWidth}px"></div>
 			</div>
 			<div class="body">
-				{#each sortedData as row, i}
+				{#each formattedData as row, i}
 					<div class="row" class:even={i % 2 === 0}>
 						{#each columns as column, i}
 							<div
 								class="row-item"
 								style:width="{columnsWidths[i]}px"
-								style:justify-content={typeof row[column.dataKey] === 'number'
-									? 'flex-end'
-									: 'flex-start'}>
+								style:justify-content={row[column.dataKey].align}>
 								<div title={row[column.dataKey]?.toString()} class="row-item-text">
-									{row[column.dataKey]}
+									{row[column.dataKey].value}
 								</div>
 							</div>
 						{/each}
