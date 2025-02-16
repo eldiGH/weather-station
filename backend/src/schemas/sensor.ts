@@ -8,6 +8,13 @@ export const createSensorInputSchema = z.object({
 });
 export type CreateSensorInput = z.infer<typeof createSensorInputSchema>;
 
+export const editSensorInputSchema = z.object({
+  id: z.number().int().nonnegative(),
+  name: z.string().min(3),
+  templateId: z.number().int().nonnegative()
+});
+export type EditSensorInput = z.infer<typeof editSensorInputSchema>;
+
 export const sensorTemplateFieldTypeSchema = z.enum(['text', 'number', 'boolean']);
 export type SensorTemplateFieldType = z.infer<typeof sensorTemplateFieldTypeSchema>;
 

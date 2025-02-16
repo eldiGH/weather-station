@@ -3,6 +3,7 @@ import { SensorNameAlreadyUsed } from '../errors/SensorNameAlreadyUsed';
 import type {
   CreateSensorInput,
   CreateSensorTemplateInput,
+  EditSensorInput,
   PostSensorDataInput
 } from '../schemas/sensor';
 import {
@@ -13,11 +14,12 @@ import {
 } from '../db/drizzle/schema';
 import { Err, Ok } from '../helpers/control';
 import { db } from '../db/drizzle';
-import { eq, or, sql } from 'drizzle-orm';
+import { and, eq, or, sql } from 'drizzle-orm';
 import { SensorTemplateNotFound } from '../errors/SensorTemplateNotFound';
 import { SecretIsNotValid } from '../errors/SecretIsNotValid';
 import { SensorDataFieldMissing } from '../errors/SensorDataFieldMissing';
 import { SensorDataFieldInvalidType } from '../errors/SensorDataFieldInvalidType';
+import { SensorNotFound } from '../errors/SensorNotFound';
 
 export const SensorService = {
   addNewSensor: async (data: CreateSensorInput, user: typeof userSchema.$inferSelect) => {
@@ -54,6 +56,38 @@ export const SensorService = {
       .values({ name, secret, ownerId: user.id, sensorTemplateId: templateId });
 
     return Ok(secret);
+  },
+
+  editSensor: async (data: EditSensorInput, user: typeof userSchema.$inferSelect) => {
+    const { id, name, templateId } = data;
+
+    const sensor = await db.query.sensorSchema.findFirst({
+      where: and(eq(sensorSchema.id, id), eq(sensorSchema.ownerId, user.id))
+    });
+
+    if (!sensor) {
+      return Err(SensorNotFound(id));
+    }
+
+    if (data.templateId !== sensor.sensorTemplateId) {
+      const sensorTemplate = await db.query.sensorTemplateSchema.findFirst({
+        where: and(
+          eq(sensorTemplateSchema.id, templateId),
+          or(eq(sensorTemplateSchema.authorId, user.id), eq(sensorTemplateSchema.isPublic, true))
+        )
+      });
+
+      if (!sensorTemplate) {
+        return Err(SensorTemplateNotFound(templateId));
+      }
+    }
+
+    await db
+      .update(sensorSchema)
+      .set({ name, sensorTemplateId: templateId })
+      .where(eq(sensorSchema.id, id));
+
+    return Ok();
   },
 
   createSensorTemplate: async (

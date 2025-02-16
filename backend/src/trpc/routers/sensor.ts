@@ -4,6 +4,7 @@ import { Ok } from '../../helpers/control';
 import {
   createSensorInputSchema,
   createSensorTemplateSchema,
+  editSensorInputSchema,
   postSensorDataSchema,
   sensorOutputSchema
 } from '../../schemas/sensor';
@@ -39,6 +40,10 @@ export const sensorRouter = router({
   createSensor: authedProcedure
     .input(createSensorInputSchema)
     .mutation(({ input, ctx }) => SensorService.addNewSensor(input, ctx.user)),
+
+  editSensor: authedProcedure
+    .input(editSensorInputSchema)
+    .mutation(({ input, ctx }) => SensorService.editSensor(input, ctx.user)),
 
   createSensorTemplate: authedProcedure
     .input(createSensorTemplateSchema)

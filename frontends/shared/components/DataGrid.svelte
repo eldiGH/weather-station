@@ -321,15 +321,11 @@
 						display: flex;
 						padding: 0.5rem 0;
 						height: 60px;
-						border-bottom: 1px solid #ccc;
+						border-bottom: 1px solid $border-color;
 						width: fit-content;
 
 						&:hover {
 							background-color: rgba(0, 0, 0, 0.2);
-						}
-
-						&:last-child {
-							border-bottom: none;
 						}
 
 						.row-item {

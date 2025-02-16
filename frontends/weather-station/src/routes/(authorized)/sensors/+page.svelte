@@ -1,7 +1,9 @@
 <script lang="ts">
-	import AddSensorDialog from '$lib/components/AddSensorDialog.svelte';
+	import AddSensorDialog from '$lib/components/AddEditSensorDialog.svelte';
 	import { Button, Container, DataGrid, type DataGridColumn } from '@shared/ui/components';
 	import type { PageData } from './$types';
+	import type { CreateSensorInput, EditSensorInput } from 'backend/schemas';
+	import { trpcAuthed } from '@shared/ui/api';
 
 	interface Props {
 		data: PageData;
@@ -23,21 +25,36 @@
 		{ dataKey: 'id', label: 'ID' },
 		{ dataKey: 'name', label: 'Nazwa' },
 		{ dataKey: 'templateName', label: 'Szablon' },
-		{ dataKey: 'lastDataDate', label: 'Ostatni odczyt' },
-		{ dataKey: 'test', label: 'TEST' }
+		{ dataKey: 'lastDataDate', label: 'Ostatni odczyt' }
 	];
 
 	let openAddSensorDialog: undefined | (() => void) = $state();
+
+	const handleAddSensor = async (data: CreateSensorInput) => {
+		const { error } = await trpcAuthed(fetch).sensor.createSensor.mutate(data);
+
+		return Boolean(error);
+	};
+
+	const handleEditSensor = async (data: EditSensorInput) => {
+		const { error } = await trpcAuthed(fetch).sensor.editSensor.mutate(data);
+
+		return Boolean(error);
+	};
 </script>
 
 <Container pt={3}>
 	<div>
 		<Button icon="add" onclick={openAddSensorDialog}>Dodaj czujnik</Button>
-		<DataGrid {columns} data={tableSensors.map((s) => ({ ...s, test: 1000000000000000 }))} />
+		<DataGrid {columns} data={tableSensors} />
 	</div>
 </Container>
 
-<AddSensorDialog bind:open={openAddSensorDialog} sensorTemplates={$sensorTemplates} />
+<AddSensorDialog
+	bind:open={openAddSensorDialog}
+	sensorTemplates={$sensorTemplates}
+	onAdd={handleAddSensor}
+	onEdit={handleEditSensor} />
 
 <style lang="scss">
 	div {
