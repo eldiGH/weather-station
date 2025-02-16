@@ -11,11 +11,16 @@
 	import { on } from 'svelte/events';
 	import Icon from './Icon.svelte';
 	import { isDate } from 'date-fns';
+	import { onMount } from 'svelte';
 
 	interface Props {
 		data: Data[];
 		columns: DataGridColumn<Data>[];
 	}
+
+	const MINIMUM_COLUMN_WIDTH = 70;
+	const ROW_PADDING = 32;
+	const MAXIMUM_INITIAL_WIDTH = 300;
 
 	let columnsWidths: number[] = $state([]);
 	let isResizingColumns: boolean = $state(false);
@@ -142,8 +147,6 @@
 	const handleColumnResize =
 		(separatorIndex: number): MouseEventHandler<HTMLDivElement> =>
 		(e) => {
-			e.stopPropagation();
-
 			const separator = e.currentTarget;
 			const parent = separator.parentElement;
 			if (!parent) return;
@@ -152,7 +155,7 @@
 				const { x } = parent.getBoundingClientRect();
 
 				const newWidth = e.clientX - x + 6;
-				if (newWidth <= 70) return;
+				if (newWidth <= MINIMUM_COLUMN_WIDTH) return;
 
 				columnsWidths[separatorIndex] = newWidth;
 			};
@@ -185,8 +188,42 @@
 		sortBy = { columnIndex, direction };
 	};
 
+	let bodyRef: HTMLDivElement | null = $state(null);
+
+	const handleColumnAutoResize = (columnIndex: number, maximumWidth?: number) => () => {
+		console.log('1234');
+		if (!bodyRef) return;
+
+		let maxWidth = MINIMUM_COLUMN_WIDTH - ROW_PADDING;
+
+		for (let row of bodyRef.children) {
+			const column = row.children[columnIndex]?.children[0];
+			if (!column) {
+				continue;
+			}
+
+			if (column.scrollWidth > maxWidth) {
+				maxWidth = column.scrollWidth; // Updated to check scrollWidth directly from the column
+			}
+		}
+
+		console.log({ maxWidth });
+
+		if (maximumWidth && maxWidth > maximumWidth) {
+			maxWidth = maximumWidth;
+		}
+
+		columnsWidths[columnIndex] = maxWidth + ROW_PADDING + 1;
+	};
+
 	$effect(() => {
 		columnsWidths = columns.map(() => 120);
+	});
+
+	onMount(() => {
+		for (let [i] of columns.entries()) {
+			handleColumnAutoResize(i, MAXIMUM_INITIAL_WIDTH)();
+		}
 	});
 </script>
 
@@ -214,14 +251,18 @@
 							</div>
 						</div>
 						<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-						<div role="separator" class="header-separator" onmousedown={handleColumnResize(i)}>
+						<div
+							role="separator"
+							class="header-separator"
+							onmousedown={handleColumnResize(i)}
+							ondblclick={handleColumnAutoResize(i)}>
 							<div class="header-separator-line"></div>
 						</div>
 					</div>
 				{/each}
 				<div style:width="{rowFillerWidth}px"></div>
 			</div>
-			<div class="body">
+			<div class="body" bind:this={bodyRef}>
 				{#each sortedData as row, i}
 					<div class="row" class:even={i % 2 === 0}>
 						{#each columns as column, i}
