@@ -10,6 +10,7 @@
 	import { type MouseEventHandler } from 'svelte/elements';
 	import { on } from 'svelte/events';
 	import Icon from './Icon.svelte';
+	import { isDate } from 'date-fns';
 
 	interface Props {
 		data: Data[];
@@ -67,6 +68,14 @@
 						break;
 					}
 					default: {
+						if (isDate(value)) {
+							formattedValue = value.toLocaleString(undefined, {
+								dateStyle: 'short',
+								timeStyle: 'short'
+							});
+							break;
+						}
+
 						formattedValue = '-';
 						alignment = 'center';
 						break;
@@ -88,32 +97,47 @@
 			return formattedData;
 		}
 
-		const { columnIndex, direction } = $state(sortBy);
+		const { columnIndex } = $state(sortBy);
 		const column = columns[columnIndex];
 
-		return formattedData.toSorted((a, b) => {
+		const sortedData = formattedData.toSorted((a, b) => {
 			const aValue = a[column.dataKey].value;
 			const bValue = b[column.dataKey].value;
 
 			if (typeof aValue === 'string' && typeof bValue === 'string') {
-				return direction === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+				return aValue.localeCompare(bValue);
 			}
 
-			if (typeof aValue !== 'number' || typeof bValue !== 'number') {
+			if (isDate(aValue) && isDate(bValue)) {
+				aValue.getTime() - bValue.getTime();
+			}
+
+			if (typeof aValue === 'number' && typeof bValue === 'number') {
+				return aValue - bValue;
+			}
+
+			const isANullish = aValue === null || aValue === undefined;
+			const isBNullish = bValue === null || bValue === undefined;
+
+			if (isANullish && isBNullish) {
 				return 0;
-			}
-
-			if (aValue < bValue) {
-				return direction === 'asc' ? -1 : 1;
-			}
-
-			if (aValue > bValue) {
-				return direction === 'asc' ? 1 : -1;
+			} else if (isANullish) {
+				return -1;
+			} else if (isBNullish) {
+				return 1;
 			}
 
 			return 0;
 		});
+
+		if (sortBy.direction === 'desc') {
+			sortedData.reverse();
+		}
+
+		return sortedData;
 	});
+
+	$inspect({ sortedData });
 
 	const handleColumnResize =
 		(separatorIndex: number): MouseEventHandler<HTMLDivElement> =>
@@ -145,17 +169,17 @@
 		};
 
 	const handleSort = (columnIndex: number) => {
-		let direction: 'asc' | 'desc' = 'asc';
+		let direction: 'asc' | 'desc' = 'desc';
 
 		if (sortBy && sortBy.columnIndex === columnIndex) {
-			if (sortBy.direction === 'asc') {
-				direction = 'desc';
+			if (sortBy.direction === 'desc') {
+				direction = 'asc';
 			} else {
 				sortBy = null;
 				return;
 			}
 
-			direction = 'desc';
+			direction = 'asc';
 		}
 
 		sortBy = { columnIndex, direction };
@@ -186,7 +210,7 @@
 								class="header-item-sort"
 								class:asc={i === sortBy?.columnIndex && sortBy?.direction === 'asc'}
 								class:desc={i === sortBy?.columnIndex && sortBy?.direction === 'desc'}>
-								<Icon icon="north" />
+								<Icon icon="south" />
 							</div>
 						</div>
 						<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
@@ -284,7 +308,7 @@
 								&.desc {
 									opacity: 1 !important;
 								}
-								&.desc {
+								&.asc {
 									transform: rotate(180deg);
 								}
 							}
