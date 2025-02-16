@@ -19,7 +19,8 @@
 	}
 
 	const MINIMUM_COLUMN_WIDTH = 70;
-	const ROW_PADDING = 32;
+	const AUTO_RESIZE_ROW_PADDING = 33;
+	const AUTO_RESIZE_HEADER_PADDING = 35;
 	const MAXIMUM_INITIAL_WIDTH = 300;
 
 	let columnsWidths: number[] = $state([]);
@@ -189,12 +190,15 @@
 	};
 
 	let bodyRef: HTMLDivElement | null = $state(null);
+	let headerRef: HTMLDivElement | null = $state(null);
 
-	const handleColumnAutoResize = (columnIndex: number, maximumWidth?: number) => () => {
-		console.log('1234');
-		if (!bodyRef) return;
+	const getColumnIdealWidth = (columnIndex: number) => {
+		if (!bodyRef || !headerRef) return MINIMUM_COLUMN_WIDTH;
 
-		let maxWidth = MINIMUM_COLUMN_WIDTH - ROW_PADDING;
+		let columnMaxWidth = MINIMUM_COLUMN_WIDTH - AUTO_RESIZE_ROW_PADDING;
+
+		const headerWidth =
+			headerRef.children[columnIndex]?.firstElementChild?.firstElementChild?.scrollWidth;
 
 		for (let row of bodyRef.children) {
 			const column = row.children[columnIndex]?.children[0];
@@ -202,18 +206,34 @@
 				continue;
 			}
 
-			if (column.scrollWidth > maxWidth) {
-				maxWidth = column.scrollWidth; // Updated to check scrollWidth directly from the column
+			if (column.scrollWidth > columnMaxWidth) {
+				columnMaxWidth = column.scrollWidth;
 			}
 		}
 
-		console.log({ maxWidth });
-
-		if (maximumWidth && maxWidth > maximumWidth) {
-			maxWidth = maximumWidth;
+		const columnIdealWidth = columnMaxWidth + AUTO_RESIZE_ROW_PADDING;
+		if (headerWidth) {
+			const headerIdealWidth = headerWidth + AUTO_RESIZE_HEADER_PADDING;
+			return Math.max(columnIdealWidth, headerIdealWidth);
 		}
 
-		columnsWidths[columnIndex] = maxWidth + ROW_PADDING + 1;
+		return columnIdealWidth;
+	};
+
+	const handleColumnAutoResize = (columnIndex: number) => () => {
+		const idealWidth = getColumnIdealWidth(columnIndex);
+		columnsWidths[columnIndex] = idealWidth;
+	};
+
+	const autoResizeAllColumns = () => {
+		for (let [i] of columns.entries()) {
+			const width = getColumnIdealWidth(i);
+			if (width === null) {
+				continue;
+			}
+
+			columnsWidths[i] = Math.min(width, MAXIMUM_INITIAL_WIDTH);
+		}
 	};
 
 	$effect(() => {
@@ -221,16 +241,14 @@
 	});
 
 	onMount(() => {
-		for (let [i] of columns.entries()) {
-			handleColumnAutoResize(i, MAXIMUM_INITIAL_WIDTH)();
-		}
+		setTimeout(autoResizeAllColumns, 5);
 	});
 </script>
 
 <div class="root">
 	<div class="datagrid-container" bind:clientWidth={containerWidth}>
 		<div class="datagrid" class:resizing={isResizingColumns}>
-			<div class="header">
+			<div class="header" bind:this={headerRef}>
 				{#each columns as column, i}
 					<div style:width="{columnsWidths[i]}px" class="header-item">
 						<!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -270,7 +288,7 @@
 								class="row-item"
 								style:width="{columnsWidths[i]}px"
 								style:justify-content={row[column.dataKey].align}>
-								<div title={row[column.dataKey]?.toString()} class="row-item-text">
+								<div title={row[column.dataKey]?.toString()} class="row-item-content">
 									{row[column.dataKey].formattedValue}
 								</div>
 							</div>
@@ -398,7 +416,7 @@
 							display: flex;
 							align-items: center;
 
-							&-text {
+							&-content {
 								white-space: nowrap;
 								overflow: hidden;
 								text-overflow: ellipsis;
