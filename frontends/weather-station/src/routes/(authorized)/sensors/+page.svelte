@@ -1,9 +1,10 @@
 <script lang="ts">
 	import AddSensorDialog from '$lib/components/AddEditSensorDialog.svelte';
-	import { Button, Container, DataGrid, type DataGridColumn } from '@shared/ui/components';
+	import { Button, Container, DataGrid } from '@shared/ui/components';
 	import type { PageData } from './$types';
 	import type { CreateSensorInput, EditSensorInput } from 'backend/schemas';
 	import { trpcAuthed } from '@shared/ui/api';
+	import { dataGridColumns } from '@shared/ui/types';
 
 	interface Props {
 		data: PageData;
@@ -21,12 +22,13 @@
 		}))
 	);
 
-	const columns: DataGridColumn<(typeof tableSensors)[number]>[] = [
-		{ dataKey: 'id', label: 'ID' },
-		{ dataKey: 'name', label: 'Nazwa' },
-		{ dataKey: 'templateName', label: 'Szablon' },
-		{ dataKey: 'lastDataDate', label: 'Ostatni odczyt' }
-	];
+	const columns = dataGridColumns([] as typeof tableSensors, (col) => [
+		col({ dataKey: 'id', label: 'ID' }),
+		col({ dataKey: 'name', label: 'Nazwa' }),
+		col({ dataKey: 'templateName', label: 'Szablon' }),
+		col({ dataKey: 'lastDataDate', label: 'Ostatni odczyt' }),
+		col({ dataKey: 'id', label: 'Akcje', sortable: false, snippet: ActionButtons })
+	]);
 
 	let openAddSensorDialog: undefined | (() => void) = $state();
 
@@ -42,6 +44,11 @@
 		return Boolean(error);
 	};
 </script>
+
+{#snippet ActionButtons(sensorId: number, sensor: (typeof tableSensors)[number])}
+	<Button>Edit</Button>
+	<Button>Delete</Button>
+{/snippet}
 
 <Container pt={3}>
 	<div>

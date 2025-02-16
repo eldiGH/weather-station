@@ -1,21 +1,14 @@
-<script lang="ts" module>
-	export interface DataGridColumn<T extends Record<string, unknown>> {
-		label: string;
-		dataKey: keyof T;
-		dataFormatter?: (value: T[keyof T]) => string;
-	}
-</script>
-
 <script lang="ts" generics="Data extends Record<string, unknown>">
 	import { type MouseEventHandler } from 'svelte/elements';
 	import { on } from 'svelte/events';
 	import Icon from './Icon.svelte';
 	import { isDate } from 'date-fns';
 	import { onMount } from 'svelte';
+	import type { DataGridColumn } from '../types';
 
 	interface Props {
 		data: Data[];
-		columns: DataGridColumn<Data>[];
+		columns: DataGridColumn<Data, any>[];
 	}
 
 	const MINIMUM_COLUMN_WIDTH = 70;
@@ -37,7 +30,7 @@
 
 	type FormattedData = Record<
 		keyof Data,
-		{ formattedValue: string; align: 'left' | 'right' | 'center'; value: unknown }
+		{ formattedValue: string; align: 'left' | 'right' | 'center'; row: Data; value: unknown }
 	>;
 
 	let sortBy: null | { columnIndex: number; direction: 'asc' | 'desc' } = $state(null);
@@ -47,9 +40,10 @@
 				const value = row[column.dataKey];
 
 				if (column.dataFormatter) {
-					acc[column.dataKey] = {
-						formattedValue: column.dataFormatter(value),
+					acc[column.dataKey as keyof Data] = {
+						formattedValue: column.dataFormatter(value as Data[any]),
 						align: 'left',
+						row,
 						value
 					};
 					return acc;
@@ -88,9 +82,10 @@
 					}
 				}
 
-				acc[column.dataKey] = {
+				acc[column.dataKey as keyof Data] = {
 					formattedValue,
 					align: alignment,
+					row,
 					value
 				};
 				return acc;
@@ -255,18 +250,20 @@
 						<div
 							role="columnheader"
 							class="header-item-content"
-							onclick={() => handleSort(i)}
+							onclick={column.sortable !== false ? () => handleSort(i) : undefined}
 							title={column.label}
 							tabindex="0">
 							<div class="header-item-label">
 								{column.label}
 							</div>
-							<div
-								class="header-item-sort"
-								class:asc={i === sortBy?.columnIndex && sortBy?.direction === 'asc'}
-								class:desc={i === sortBy?.columnIndex && sortBy?.direction === 'desc'}>
-								<Icon icon="south" />
-							</div>
+							{#if column.sortable !== false}
+								<div
+									class="header-item-sort"
+									class:asc={i === sortBy?.columnIndex && sortBy?.direction === 'asc'}
+									class:desc={i === sortBy?.columnIndex && sortBy?.direction === 'desc'}>
+									<Icon icon="south" />
+								</div>
+							{/if}
 						</div>
 						<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 						<div
@@ -281,15 +278,26 @@
 				<div style:width="{rowFillerWidth}px"></div>
 			</div>
 			<div class="body" bind:this={bodyRef}>
-				{#each sortedData as row, i}
+				{#each sortedData as formattedRow, i}
 					<div class="row" class:even={i % 2 === 0}>
 						{#each columns as column, i}
 							<div
 								class="row-item"
 								style:width="{columnsWidths[i]}px"
-								style:justify-content={row[column.dataKey].align}>
-								<div title={row[column.dataKey]?.toString()} class="row-item-content">
-									{row[column.dataKey].formattedValue}
+								style:justify-content={formattedRow[column.dataKey].align}>
+								<div
+									title={column.snippet === undefined
+										? formattedRow[column.dataKey].formattedValue
+										: undefined}
+									class="row-item-content">
+									{#if column.snippet}
+										{@render column.snippet(
+											formattedRow[column.dataKey].value as Data[any],
+											formattedRow[column.dataKey].row
+										)}
+									{:else}
+										{formattedRow[column.dataKey].formattedValue}
+									{/if}
 								</div>
 							</div>
 						{/each}
@@ -357,6 +365,7 @@
 							}
 
 							.header-item-sort {
+								display: inline-flex;
 								font-size: 1.5rem;
 								opacity: 0;
 								transition:
@@ -403,7 +412,7 @@
 					.row {
 						display: flex;
 						padding: 0.5rem 0;
-						height: 60px;
+						min-height: 60px;
 						border-bottom: 1px solid $border-color;
 						width: fit-content;
 

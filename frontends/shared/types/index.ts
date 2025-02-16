@@ -1,3 +1,4 @@
+export * from './DataGridColumn';
 export * from './Icon';
 export * from './Jwt';
 export * from './LayoutProps';
