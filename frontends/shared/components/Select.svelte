@@ -61,6 +61,19 @@
 		close();
 	};
 
+	$effect(() => {
+		if (value === selectedOption?.value) {
+			return;
+		}
+
+		if (value === null || value === undefined) {
+			selectedOption = null;
+			return;
+		}
+
+		selectedOption = options.find((option) => option.value === value) ?? null;
+	});
+
 	const handleListItemKeypress: KeyboardEventHandler<HTMLDivElement> = (e) => {
 		const key = e.key;
 

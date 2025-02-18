@@ -13,7 +13,8 @@
 	interface Props {
 		open?: () => void;
 		sensorTemplates: ExtractResponseDataType<AppRouterOutputs['sensor']['getSensorTemplates']>;
-		editSensor?: EditSensorInput | null;
+		// TODO: Remove this complex type when templateId is not nullable
+		editSensor?: (Omit<EditSensorInput, 'templateId'> & { templateId: number | null }) | null;
 		onAdd: (data: CreateSensorInput) => Promise<boolean>;
 		onEdit: (data: EditSensorInput) => Promise<boolean>;
 	}
@@ -27,11 +28,13 @@
 		}))
 	);
 
-	const form = createForm(
-		editSensor
-			? { name: editSensor.name, templateId: editSensor.templateId }
-			: { name: '', templateId: null },
-		{ schema: createSensorInputSchema, shouldInitialBeValid: false }
+	const form = $derived(
+		createForm(
+			editSensor
+				? { name: editSensor.name, templateId: editSensor.templateId }
+				: { name: '', templateId: null },
+			{ schema: createSensorInputSchema, shouldInitialBeValid: false }
+		)
 	);
 
 	const handleEdit = async (data: CreateSensorInput) => {

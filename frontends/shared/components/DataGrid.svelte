@@ -64,7 +64,7 @@
 						break;
 					}
 					case 'boolean': {
-						formattedValue = value ? 'True' : 'False';
+						formattedValue = value ? 'Prawda' : 'Fałsz';
 						break;
 					}
 					default: {
@@ -221,13 +221,17 @@
 	};
 
 	const autoResizeAllColumns = () => {
-		for (let [i] of columns.entries()) {
-			const width = getColumnIdealWidth(i);
+		for (let [i, column] of columns.entries()) {
+			let width = getColumnIdealWidth(i);
 			if (width === null) {
 				continue;
 			}
 
-			columnsWidths[i] = Math.min(width, MAXIMUM_INITIAL_WIDTH);
+			if (column.resizable !== false) {
+				width = Math.min(width, MAXIMUM_INITIAL_WIDTH);
+			}
+
+			columnsWidths[i] = width;
 		}
 	};
 
@@ -265,17 +269,19 @@
 								</div>
 							{/if}
 						</div>
-						<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-						<div
-							role="separator"
-							class="header-separator"
-							onmousedown={handleColumnResize(i)}
-							ondblclick={handleColumnAutoResize(i)}>
-							<div class="header-separator-line"></div>
-						</div>
+						{#if column.resizable !== false}
+							<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+							<div
+								role="separator"
+								class="header-separator"
+								onmousedown={handleColumnResize(i)}
+								ondblclick={handleColumnAutoResize(i)}>
+								<div class="header-separator-line"></div>
+							</div>
+						{/if}
 					</div>
 				{/each}
-				<div style:width="{rowFillerWidth}px"></div>
+				<!-- <div style:width="{rowFillerWidth}px"></div> -->
 			</div>
 			<div class="body" bind:this={bodyRef}>
 				{#each sortedData as formattedRow, i}
@@ -301,7 +307,7 @@
 								</div>
 							</div>
 						{/each}
-						<div style:width="{rowFillerWidth}px"></div>
+						<!-- <div style:width="{rowFillerWidth}px"></div> -->
 					</div>
 				{/each}
 			</div>

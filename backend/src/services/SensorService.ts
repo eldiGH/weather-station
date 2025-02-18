@@ -51,9 +51,7 @@ export const SensorService = {
       ).shift();
     } while (existingSecret);
 
-    await db
-      .insert(sensorSchema)
-      .values({ name, secret, ownerId: user.id, sensorTemplateId: templateId });
+    await db.insert(sensorSchema).values({ name, secret, ownerId: user.id, templateId });
 
     return Ok(secret);
   },
@@ -69,7 +67,7 @@ export const SensorService = {
       return Err(SensorNotFound(id));
     }
 
-    if (data.templateId !== sensor.sensorTemplateId) {
+    if (data.templateId !== sensor.templateId) {
       const sensorTemplate = await db.query.sensorTemplateSchema.findFirst({
         where: and(
           eq(sensorTemplateSchema.id, templateId),
@@ -82,10 +80,7 @@ export const SensorService = {
       }
     }
 
-    await db
-      .update(sensorSchema)
-      .set({ name, sensorTemplateId: templateId })
-      .where(eq(sensorSchema.id, id));
+    await db.update(sensorSchema).set({ name, templateId }).where(eq(sensorSchema.id, id));
 
     return Ok();
   },
@@ -113,7 +108,7 @@ export const SensorService = {
 
     // TODO: remove that if when notNull will be added to schema
     if (!sensor.sensorTemplate) {
-      return Err(SensorTemplateNotFound(sensor.sensorTemplateId ?? -1));
+      return Err(SensorTemplateNotFound(sensor.templateId ?? -1));
     }
 
     for (const field of sensor.sensorTemplate.fields) {

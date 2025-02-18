@@ -6,6 +6,7 @@ export interface DataGridColumn<T extends Record<string, unknown>, K extends key
 	dataFormatter?: (value: T[K]) => string;
 	snippet?: Snippet<[T[K], T]>;
 	sortable?: boolean;
+	resizable?: boolean;
 }
 
 type MakeCol<T extends Record<string, unknown>> = <const K extends keyof T>(

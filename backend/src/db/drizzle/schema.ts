@@ -129,7 +129,7 @@ export const sensorSchema = pgTable('sensor', {
 
   createdAt: defaultNow(myTimestamp('created_at')).notNull(),
 
-  sensorTemplateId: integer('sensor_template_id').references(() => sensorTemplateSchema.id),
+  templateId: integer('sensor_template_id').references(() => sensorTemplateSchema.id),
   ownerId: integer('owner_id')
     .references(() => userSchema.id)
     .notNull()
@@ -142,7 +142,7 @@ export const sensorRelations = relations(sensorSchema, ({ one, many }) => ({
   }),
 
   sensorTemplate: one(sensorTemplateSchema, {
-    fields: [sensorSchema.sensorTemplateId],
+    fields: [sensorSchema.templateId],
     references: [sensorTemplateSchema.id]
   }),
 

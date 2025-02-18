@@ -62,7 +62,7 @@ export const sensorDataOutputSchema = z.object({
 export const sensorOutputSchema = z.object({
   id: z.number(),
   name: z.string(),
-  sensorTemplateId: z.number().int().nonnegative().nullable(),
+  templateId: z.number().int().nonnegative().nullable(),
   lastData: sensorDataOutputSchema.nullable(),
   secret: z.string()
 });
