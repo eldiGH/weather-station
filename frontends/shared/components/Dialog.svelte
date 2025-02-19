@@ -131,7 +131,6 @@
 		flex-direction: column;
 		border-radius: 5px;
 		overflow: hidden;
-
 		@media only screen and (max-width: 600px) {
 			max-height: 100vh;
 			border-radius: 0;
@@ -171,6 +170,7 @@
 			padding: 1rem;
 			flex-grow: 1;
 			overflow-y: auto;
+			color: var(--dialog-text-color);
 		}
 
 		&.danger {

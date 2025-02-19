@@ -85,6 +85,23 @@ export const SensorService = {
     return Ok();
   },
 
+  deleteSensor: async (sensorId: number, user: typeof userSchema.$inferSelect) => {
+    const sensor = (
+      await db
+        .select()
+        .from(sensorSchema)
+        .where(and(eq(sensorSchema.id, sensorId), eq(sensorSchema.ownerId, user.id)))
+    ).shift();
+
+    if (!sensor) {
+      return Err(SensorNotFound(sensorId));
+    }
+
+    await db.delete(sensorSchema).where(eq(sensorSchema.id, sensorId));
+
+    return Ok();
+  },
+
   createSensorTemplate: async (
     template: CreateSensorTemplateInput,
     user: typeof userSchema.$inferSelect

@@ -31,7 +31,8 @@ $themes: (
 		link-color: #709dd4,
 
 		spinner-color: white,
-		loader-overlay-color: rgba(255, 255, 255, 0.1)
+		loader-overlay-color: rgba(255, 255, 255, 0.1),
+		dialog-text-color: c.$black
 	),
 	time-sheet: (
 		background-color: #fff,
@@ -63,7 +64,8 @@ $themes: (
 		link-color: #73b2ff,
 
 		spinner-color: var(--primary-color),
-		loader-overlay-color: rgba(0, 0, 0, 0.1)
+		loader-overlay-color: rgba(0, 0, 0, 0.1),
+		dialog-text-color: c.$white
 	)
 );
 

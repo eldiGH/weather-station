@@ -4,6 +4,7 @@ import { Ok } from '../../helpers/control';
 import {
   createSensorInputSchema,
   createSensorTemplateSchema,
+  deleteSensorInputSchema,
   editSensorInputSchema,
   postSensorDataSchema,
   sensorOutputSchema
@@ -61,7 +62,11 @@ export const sensorRouter = router({
     const { data } = await SensorService.getSensors(ctx.user);
 
     return Ok(await z.array(sensorOutputSchema).parseAsync(data));
-  })
+  }),
+
+  deleteSensor: authedProcedure
+    .input(deleteSensorInputSchema)
+    .mutation(({ input, ctx }) => SensorService.deleteSensor(input.sensorId, ctx.user))
 
   // getSensorData: authedProcedure.input(getSensorDataInputSchema).query(async ({ input }) => {
   //   const { data, error } = await SensorService.getBME68XData(input.sensorId, input.dateRangeQuery);

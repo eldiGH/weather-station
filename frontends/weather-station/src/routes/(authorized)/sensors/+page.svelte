@@ -1,6 +1,12 @@
 <script lang="ts">
 	import AddEditSensorDialog from '$lib/components/AddEditSensorDialog.svelte';
-	import { Button, Container, DataGrid, IconButton } from '@shared/ui/components';
+	import {
+		Button,
+		ConfirmationDialog,
+		Container,
+		DataGrid,
+		IconButton
+	} from '@shared/ui/components';
 	import type { PageData } from './$types';
 	import type { CreateSensorInput, EditSensorInput } from 'backend/schemas';
 	import { trpcAuthed } from '@shared/ui/api';
@@ -37,6 +43,7 @@
 	]);
 
 	let openAddEditSensorDialog: undefined | (() => void) = $state();
+	let openDeleteSensorDialog: undefined | (() => void) = $state();
 
 	const handleAddSensor = async (data: CreateSensorInput) => {
 		const { error } = await trpcAuthed(fetch).sensor.createSensor.mutate(data);
@@ -60,7 +67,6 @@
 		}
 
 		selectedSensor = sensor;
-		console.log({ sensor });
 		openAddEditSensorDialog?.();
 	};
 
@@ -71,6 +77,7 @@
 		}
 
 		selectedSensor = sensor;
+		openDeleteSensorDialog?.();
 	};
 </script>
 
@@ -94,6 +101,22 @@
 	onAdd={handleAddSensor}
 	onEdit={handleEditSensor}
 	editSensor={selectedSensor} />
+<ConfirmationDialog
+	bind:open={openDeleteSensorDialog}
+	confirmButtonLabel="Usuń"
+	variant="warning"
+	title="Usuń czujnik {selectedSensor?.name}"
+	onConfirm={async () => {
+		if (!selectedSensor) {
+			return false;
+		}
+
+		const { error } = await trpcAuthed(fetch).sensor.deleteSensor.mutate({
+			sensorId: selectedSensor.id
+		});
+
+		return Boolean(error);
+	}}>Czy na pewno chcesz usunąć czujnik {selectedSensor?.name}?</ConfirmationDialog>
 
 <style lang="scss">
 	.root {

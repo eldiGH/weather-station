@@ -15,6 +15,11 @@ export const editSensorInputSchema = z.object({
 });
 export type EditSensorInput = z.infer<typeof editSensorInputSchema>;
 
+export const deleteSensorInputSchema = z.object({
+  sensorId: z.number().int().nonnegative()
+});
+export type DeleteSensorInput = z.infer<typeof deleteSensorInputSchema>;
+
 export const sensorTemplateFieldTypeSchema = z.enum(['text', 'number', 'boolean']);
 export type SensorTemplateFieldType = z.infer<typeof sensorTemplateFieldTypeSchema>;
 
